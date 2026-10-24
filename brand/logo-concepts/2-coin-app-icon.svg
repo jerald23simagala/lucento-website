@@ -1,0 +1,9 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lucento concept 2 app icon"><rect width="120" height="120" rx="28" fill="#EAF1FF"/><g transform="translate(18 18) scale(0.7)"><defs><clipPath id="cc-light"><circle cx="60" cy="60" r="50"/></clipPath></defs>
+<circle cx="60" cy="60" r="50" fill="#3563F5"/>
+<g clip-path="url(#cc-light)">
+<path d="M28 70a32 32 0 0 1 64 0z" fill="#FFC928"/>
+<path d="M44 70a16 16 0 0 1 32 0z" fill="#FF8A24"/>
+<rect x="8" y="70" width="104" height="5" fill="#FFFDF5"/>
+<rect x="30" y="82" width="60" height="5" rx="2.5" fill="#FFFDF5" opacity=".85"/>
+<rect x="40" y="93" width="40" height="5" rx="2.5" fill="#FFFDF5" opacity=".6"/>
+</g></g></svg>

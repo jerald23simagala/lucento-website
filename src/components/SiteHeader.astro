@@ -1,0 +1,36 @@
+---
+// The logo is not final (see docs/BRAND-CONCEPTS.md). Until a concept is chosen
+// the header shows the name as plain text rather than a provisional mark.
+---
+
+<header class="site-header">
+  <div class="inner">
+    <a class="wordmark" href="/" aria-label="Lucento home">Lucento</a>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--outline-variant);
+  }
+
+  .inner {
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding: var(--space-lg) var(--page-gutter);
+    min-height: var(--top-bar);
+    display: flex;
+    align-items: center;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--min-touch);
+    font-size: 1.375rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--on-surface);
+    text-decoration: none;
+  }
+</style>

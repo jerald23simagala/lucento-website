@@ -1,0 +1,9 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lucento concept 2: Sunrise Coin"><defs><clipPath id="cc-dark"><circle cx="60" cy="60" r="50"/></clipPath></defs>
+<circle cx="60" cy="60" r="50" fill="#2A4FD6"/>
+<g clip-path="url(#cc-dark)">
+<path d="M28 70a32 32 0 0 1 64 0z" fill="#FFC928"/>
+<path d="M44 70a16 16 0 0 1 32 0z" fill="#FF8A24"/>
+<rect x="8" y="70" width="104" height="5" fill="#FFFDF5"/>
+<rect x="30" y="82" width="60" height="5" rx="2.5" fill="#FFFDF5" opacity=".85"/>
+<rect x="40" y="93" width="40" height="5" rx="2.5" fill="#FFFDF5" opacity=".6"/>
+</g></svg>

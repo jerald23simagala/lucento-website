@@ -1,0 +1,66 @@
+# Lucento website
+
+Marketing website for **Lucento**, the native Android budget tracker
+("Financial clarity without the complexity"). The Android app lives in a separate
+repository (`lucento-android`); nothing here changes it.
+
+## Stack
+
+- [Astro](https://astro.build) 5 (static output, no client-side framework)
+- TypeScript (strict) with `astro check`
+- ESLint with `eslint-plugin-astro` and its strict accessibility rules
+- Manrope (self-hosted via `@fontsource-variable/manrope`), the brand's marketing face
+- All versions are pinned exactly (`.npmrc` sets `save-exact`)
+
+## Getting started
+
+Requires Node 22.22.3 or newer (see `.nvmrc`).
+
+```bash
+npm install
+npm run dev        # http://localhost:4321
+```
+
+| Command            | What it does                                                  |
+| ------------------ | ------------------------------------------------------------- |
+| `npm run dev`      | Local dev server with hot reload                              |
+| `npm run build`    | Production build to `dist/`                                   |
+| `npm run preview`  | Serves the built `dist/` locally                              |
+| `npm run lint`     | ESLint, including accessibility rules for `.astro` files      |
+| `npm run check`    | Astro and TypeScript type-check                               |
+| `npm run tokens`   | Regenerates `src/styles/tokens.css` from `design/tokens.json` |
+| `npm run verify`   | Token freshness check, lint, type-check and build in one go   |
+
+## Design tokens
+
+`design/tokens.json` is an export of the Lucento design system (Sunrise Energy:
+colours for day and night, spacing, radii, shadows, sizes). `npm run tokens`
+turns it into CSS custom properties. Night colours apply automatically through
+`prefers-color-scheme`, and `data-theme="light" | "dark"` on `<html>` can force
+either. Don't edit `tokens.css` by hand; `npm run verify` fails if it is stale.
+
+## Site URL, canonical links and sitemap
+
+The production domain isn't decided. Set `SITE_URL` (see `.env.example`) to
+enable canonical URLs, `og:url`, the sitemap and the `Sitemap:` line in
+`robots.txt`. Without it the site still builds and simply omits them instead of
+pointing at a guessed domain.
+
+## Brand status
+
+The logo is being reworked. Four concepts are in `brand/logo-concepts/` and
+explained in `docs/BRAND-CONCEPTS.md`. Until one is chosen, the header shows the
+name as text and the favicon is a neutral placeholder.
+
+## Structure
+
+```
+design/tokens.json        Design-system export (source of truth for tokens)
+scripts/build-tokens.mjs  tokens.json -> src/styles/tokens.css
+src/styles/               tokens.css (generated) and global.css
+src/layouts/              BaseLayout: metadata, skip link, header, footer
+src/components/           SiteHeader, SiteFooter
+src/pages/                index, 404, robots.txt
+brand/logo-concepts/      Logo concept SVGs (not final artwork)
+public/                   Static files (favicon)
+```

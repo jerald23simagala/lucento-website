@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found · Lucento" description="This page doesn’t exist." noindex>
+  <section class="notfound" aria-labelledby="nf-title">
+    <h1 id="nf-title">This page doesn’t exist</h1>
+    <p>The link may be out of date. <a href="/">Go to the Lucento home page</a>.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding: var(--space-xxxl) var(--page-gutter);
+  }
+
+  h1 {
+    margin: 0 0 var(--space-md);
+    font-size: 2rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+  }
+</style>
