@@ -48,9 +48,9 @@ pointing at a guessed domain.
 
 ## Brand status
 
-The logo is being reworked. Four concepts are in `brand/logo-concepts/` and
-explained in `docs/BRAND-CONCEPTS.md`. Until one is chosen, the header shows the
-name as text and the favicon is a neutral placeholder.
+The logo direction is Rising Crest. Final vector assets are in `brand/logo/`
+(symbol, wordmark and lockups as separate files, plus Android launcher assets).
+Earlier explorations stay in `brand/logo-concepts/` for reference.
 
 ## Structure
 
@@ -61,6 +61,7 @@ src/styles/               tokens.css (generated) and global.css
 src/layouts/              BaseLayout: metadata, skip link, header, footer
 src/components/           SiteHeader, SiteFooter
 src/pages/                index, 404, robots.txt
-brand/logo-concepts/      Logo concept SVGs (not final artwork)
+brand/logo/               Rising Crest logo: symbol, wordmark, lockups, Android
+brand/logo-concepts/      Earlier logo explorations
 public/                   Static files (favicon)
 ```

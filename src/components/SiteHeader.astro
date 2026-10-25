@@ -1,11 +1,12 @@
 ---
-// The logo is not final (see docs/BRAND-CONCEPTS.md). Until a concept is chosen
-// the header shows the name as plain text rather than a provisional mark.
+import Logo from './Logo.astro';
 ---
 
 <header class="site-header">
   <div class="inner">
-    <a class="wordmark" href="/" aria-label="Lucento home">Lucento</a>
+    <a class="home" href="/" aria-label="Lucento home">
+      <Logo />
+    </a>
   </div>
 </header>
 
@@ -23,14 +24,10 @@
     align-items: center;
   }
 
-  .wordmark {
+  .home {
     display: inline-flex;
     align-items: center;
     min-height: var(--min-touch);
-    font-size: 1.375rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--on-surface);
     text-decoration: none;
   }
 </style>
