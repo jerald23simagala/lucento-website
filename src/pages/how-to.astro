@@ -1,21 +1,21 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PhoneDemo from '../components/PhoneDemo.astro';
-import { guides } from '../data/guides';
+// Old guide URLs land here. A script keeps the hash (`#guide-budget`, `#add-transactions`)
+// because a meta refresh would drop it. The link is the no-JavaScript path.
 ---
 
-<BaseLayout
-  title="How to use Lucento — interactive guides"
-  description="Interactive, step-by-step guides for Lucento: try each task on a simulated phone — setting up, adding transactions, budgets, wallets, bills, debts, goals, a new phone, sync, Smarter reading and export."
->
-  <PhoneDemo
-    id="guide"
-    hashPrefix="guide-"
-    level={1}
-    eyebrow="Guides"
-    heading="Use it on the phone. The steps are here too."
-    intro="Every guide is the same simulation as the home page, with the written steps underneath. Fictional money. Nothing is saved or sent."
-    stories={guides.map((guide) => guide.id)}
-    initial="budget"
-  />
-</BaseLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guides · Lucento</title>
+    <meta name="robots" content="noindex" />
+    <script is:inline>
+      location.replace('/demo' + location.search + location.hash);
+    </script>
+    <meta http-equiv="refresh" content="0;url=/demo" />
+  </head>
+  <body>
+    <p><a href="/demo">Continue to the guides</a></p>
+  </body>
+</html>

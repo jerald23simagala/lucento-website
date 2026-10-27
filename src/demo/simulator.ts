@@ -232,6 +232,35 @@ function interpret(text: string): Row[] {
 // ------------------------------------------------------------------ stories
 interface Step { title: string; body: string; target?: string; done: (s: State) => boolean }
 export interface Story { kicker: string; title: string; text: string; steps: Step[]; finale: string }
+
+/** What the coach mark is currently pointing at. `target` is a live node inside the phone. */
+export interface SimStepDetail {
+  story: string;
+  index: number;
+  total: number;
+  title: string;
+  body: string;
+  finale: boolean;
+  target: HTMLElement | null;
+}
+
+/** The control a story step is asking for, using the same special cases as the old hint pulse. */
+export function findStepHit(screen: ParentNode, target: string | undefined, s?: State): HTMLElement | null {
+  if (!target) return null;
+  const q = (sel: string): HTMLElement | null => screen.querySelector<HTMLElement>(sel);
+  if (target === 'row-cat') return q('select.is-soft');
+  if (target === 'interest') return q('[data-action="interest-example"]') ?? q('[data-input="interest"]');
+  if (target === 'transfer-to-savings' && (s === undefined || s.transferTo === 'savings')) {
+    return q('[data-action="transfer-example"]') ?? q('[data-input="transfer"]') ?? q('[data-action="transfer-to-savings"]');
+  }
+  if (target === 'goal-save' && (s === undefined || !s.goalText)) {
+    return q('[data-action="goal-example"]') ?? q('[data-action="goal-save"]');
+  }
+  if (target === 'connect-google' && (s === undefined || s.sheet === 'chooser')) {
+    return q('[data-action="choose-account"]') ?? q('[data-action="connect-google"]');
+  }
+  return q(`[data-action="${target}"]`);
+}
 const EXAMPLE = 'Lunch 45, groceries 120, parking 15';
 const onSettings = (s: State) => s.screen === 'settings';
 
@@ -769,12 +798,14 @@ function dock(s: State): string {
 interface Options { stories: string[]; initial: string; hashPrefix: string }
 
 export function mountSimulator(root: HTMLElement, options: Options): void {
-  const screenEl = root.querySelector<HTMLElement>('[data-sim="screen"]') as HTMLElement;
-  const stepsEl = root.querySelector<HTMLOListElement>('[data-sim="steps"]') as HTMLOListElement;
-  const live = root.querySelector<HTMLElement>('[data-sim="live"]') as HTMLElement;
-  const kicker = root.querySelector<HTMLElement>('[data-sim="kicker"]') as HTMLElement;
-  const title = root.querySelector<HTMLElement>('[data-sim="title"]') as HTMLElement;
-  const text = root.querySelector<HTMLElement>('[data-sim="text"]') as HTMLElement;
+  const foundScreen = root.querySelector<HTMLElement>('[data-sim="screen"]');
+  if (!foundScreen) return;
+  const screenEl: HTMLElement = foundScreen;
+  const stepsEl = root.querySelector<HTMLOListElement>('[data-sim="steps"]');
+  const live = root.querySelector<HTMLElement>('[data-sim="live"]');
+  const kicker = root.querySelector<HTMLElement>('[data-sim="kicker"]');
+  const title = root.querySelector<HTMLElement>('[data-sim="title"]');
+  const text = root.querySelector<HTMLElement>('[data-sim="text"]');
   let state = fresh(options.initial);
   let lastStep = -1;
   let toastTimer = 0;
@@ -787,25 +818,27 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
 
   function renderGuide(): void {
     const story = STORIES[state.story];
-    kicker.textContent = story.kicker;
-    title.textContent = story.title;
-    text.textContent = story.text;
+    if (kicker) kicker.textContent = story.kicker;
+    if (title) title.textContent = story.title;
+    if (text) text.textContent = story.text;
     root.querySelectorAll<HTMLButtonElement>('[data-story]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.story === state.story)));
     const current = currentStep();
-    stepsEl.innerHTML =
-      story.steps
-        .map((st, i) => {
-          const status = i < current ? 'done' : i === current ? 'now' : 'later';
-          return `<li class="ld-step is-${status}" ${status === 'now' ? 'aria-current="step"' : ''}><span class="ld-num">${status === 'done' ? '✓' : i + 1}</span><span><b>${st.title}</b>${status === 'now' ? `<span class="ld-step-body">${st.body}</span>` : ''}</span></li>`;
-        })
-        .join('') +
-      (current >= story.steps.length
-        ? `<li class="ld-step is-finale"><span class="ld-num">★</span><span><b>Done</b><span class="ld-step-body">${story.finale}</span><button type="button" class="ld-next" data-next="1">Next guide</button></span></li>`
-        : '');
-    if (current !== lastStep) {
-      live.textContent = current >= story.steps.length ? `Done. ${story.finale}` : `Step ${current + 1}: ${story.steps[current].title}`;
-      lastStep = current;
+    if (stepsEl) {
+      stepsEl.innerHTML =
+        story.steps
+          .map((st, i) => {
+            const status = i < current ? 'done' : i === current ? 'now' : 'later';
+            return `<li class="ld-step is-${status}" ${status === 'now' ? 'aria-current="step"' : ''}><span class="ld-num">${status === 'done' ? '✓' : i + 1}</span><span><b>${st.title}</b>${status === 'now' ? `<span class="ld-step-body">${st.body}</span>` : ''}</span></li>`;
+          })
+          .join('') +
+        (current >= story.steps.length
+          ? `<li class="ld-step is-finale"><span class="ld-num">★</span><span><b>Done</b><span class="ld-step-body">${story.finale}</span><button type="button" class="ld-next" data-next="1">Next guide</button></span></li>`
+          : '');
     }
+    if (live && current !== lastStep) {
+      live.textContent = current >= story.steps.length ? `Done. ${story.finale}` : `Step ${current + 1}: ${story.steps[current].title}`;
+    }
+    lastStep = current;
   }
 
   function render(keepFocus?: string): void {
@@ -824,19 +857,22 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
       : onboarding(s);
     // Sheets and dialogs sit over the whole screen, dock included, as on the phone.
     screenEl.innerHTML = `${statusBar}<div class="ls-body">${body}</div>${dock(s)}${sheet(s)}${s.toast ? `<div class="ls-toast" role="status">${esc(s.toast)}</div>` : ''}`;
-    // Point at what the current step needs (the guiding pulse).
-    const step = STORIES[s.story].steps[currentStep()];
-    if (step?.target) {
-      const hit =
-        step.target === 'row-cat' ? screenEl.querySelector('select.is-soft')
-        : step.target === 'interest' ? screenEl.querySelector('[data-action="interest-example"]') ?? screenEl.querySelector('[data-input="interest"]')
-        : step.target === 'transfer-to-savings' && s.transferTo === 'savings' ? screenEl.querySelector('[data-action="transfer-example"]') ?? screenEl.querySelector('[data-input="transfer"]')
-        : step.target === 'goal-save' && !s.goalText ? screenEl.querySelector('[data-action="goal-example"]')
-        : step.target === 'connect-google' && s.sheet === 'chooser' ? screenEl.querySelector('[data-action="choose-account"]')
-        : screenEl.querySelector(`[data-action="${step.target}"]`);
-      hit?.classList.add('ls-hint');
-    }
+    // Point at what the current step needs (the guiding pulse) and tell the coach mark.
+    const stepIndex = currentStep();
+    const step = STORIES[s.story].steps[stepIndex];
+    const hit = findStepHit(screenEl, step?.target, s);
+    hit?.classList.add('ls-hint');
     renderGuide();
+    const detail: SimStepDetail = {
+      story: s.story,
+      index: stepIndex,
+      total: STORIES[s.story].steps.length,
+      title: step?.title ?? 'Done',
+      body: step?.body ?? STORIES[s.story].finale,
+      finale: stepIndex >= STORIES[s.story].steps.length,
+      target: hit,
+    };
+    root.dispatchEvent(new CustomEvent<SimStepDetail>('sim-step', { detail }));
     if (keepFocus) {
       const el = screenEl.querySelector<HTMLElement>(keepFocus);
       if (el) {
@@ -1049,8 +1085,13 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
     if (!STORIES[story] || !options.stories.includes(story)) return;
     state = fresh(story);
     lastStep = -1;
+    root.dataset.story = story;
     render();
-    if (scroll) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    root.dispatchEvent(new CustomEvent('sim-story', { detail: { story } }));
+    if (scroll) {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      root.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    }
   }
   root.querySelectorAll<HTMLButtonElement>('[data-story]').forEach((b) =>
     b.addEventListener('click', () => {
@@ -1059,7 +1100,15 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
     }),
   );
   root.querySelector('[data-sim="reset"]')?.addEventListener('click', () => choose(state.story));
-  stepsEl.addEventListener('click', (e) => {
+  // The dropdown (and the coach mark) ask for a story without relying on hashchange,
+  // which replaceState does not fire.
+  root.addEventListener('sim-choose', (event) => {
+    const story = (event as CustomEvent<{ story?: string }>).detail?.story;
+    if (!story) return;
+    choose(story);
+    history.replaceState(null, '', `#${options.hashPrefix}${story}`);
+  });
+  stepsEl?.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('[data-next]')) {
       const next = options.stories[(options.stories.indexOf(state.story) + 1) % options.stories.length];
       choose(next);

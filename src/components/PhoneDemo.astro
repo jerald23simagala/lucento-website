@@ -1,39 +1,24 @@
 ---
-// The interactive Lucento simulation (src/demo/simulator.ts) and the written guides,
-// in one section. Pick a story and do it on the phone, or open the same steps below.
+// Interactive Lucento simulation. A guide dropdown, the phone, and a coach mark.
+// Written steps stay below the phone so existing hashes still open them.
 // Fictional money; nothing is saved or sent.
 import Mascot from './Mascot.astro';
 import { guides } from '../data/guides';
 import { STORIES } from '../demo/simulator';
 
 interface Props {
-  /** Section id. Story links use hashPrefix, which stays `guide-` so existing hashes keep working. */
+  /** Section id. `/#try` redirects here. */
   id?: string;
   hashPrefix?: string;
-  /** 1 when this block is the page title. */
-  level?: 1 | 2;
-  eyebrow?: string;
-  heading: string;
-  intro: string;
   /** Which stories this instance offers, in order. */
   stories: string[];
-  /** Story shown first. Defaults to the first in `stories`. A hash still wins. */
+  /** Story shown first. A hash such as `#guide-budget` still wins. */
   initial?: string;
 }
 
-const {
-  id = 'try',
-  hashPrefix = 'guide-',
-  level = 1,
-  eyebrow = 'On the phone',
-  heading,
-  intro,
-  stories,
-  initial,
-} = Astro.props;
+const { id = 'try', hashPrefix = 'guide-', stories, initial } = Astro.props;
 
 const initialKey = initial && stories.includes(initial) && STORIES[initial] ? initial : stories[0];
-
 const guideById = new Map(guides.map((guide) => [guide.id, guide]));
 const notes = stories.flatMap((key) => {
   const guide = guideById.get(key);
@@ -41,24 +26,11 @@ const notes = stories.flatMap((key) => {
 });
 const first = STORIES[initialKey];
 if (!first) throw new Error(`Unknown story: ${initialKey}`);
-
-const shortLabel: Record<string, string> = {
-  'get-started': 'Set up',
-  'add-transactions': 'Transactions',
-  budget: 'Budget',
-  wallets: 'Wallets',
-  scheduled: 'Bills',
-  debts: 'Debts',
-  goals: 'Goals',
-  'new-phone': 'New phone',
-  sync: 'Sync',
-  'smarter-reading': 'Reading',
-  export: 'Export',
-};
+const firstStep = first.steps[0];
 ---
 
 <section
-  class="ld ld-hero"
+  class="ld is-guided"
   id={id}
   aria-labelledby={`${id}-title`}
   data-simulator
@@ -66,111 +38,96 @@ const shortLabel: Record<string, string> = {
   data-prefix={hashPrefix}
   data-initial={initialKey}
 >
-  <div class="ld-layout">
-    <div class="ld-copy">
-      <div class="ld-identity">
-        <Mascot
-          pose="greeting"
-          size="4.75rem"
-          eager
-          alt="Lucento mascot concept: a golden orb with a hair crest and a bright crystal torch."
-        />
-        <p class="kicker ruled">{eyebrow}</p>
-      </div>
-      {level === 1 ? (
-        <h1 id={`${id}-title`} class="ld-title">{heading}</h1>
-      ) : (
-        <h2 id={`${id}-title`} class="ld-title">{heading}</h2>
-      )}
-      <p class="ld-sub">{intro}</p>
-      <p class="ld-fine">Not on Google Play yet. Pricing has not been announced.</p>
-    </div>
-
-    <div class="ld-phone-wrap">
-      <div class="ld-phone">
-        <div class="ld-notch" aria-hidden="true"></div>
-        <div class="ld-screen" data-sim="screen" role="region" aria-label="Lucento app simulation"></div>
-      </div>
-      <p class="ld-note">Fictional data · simulation of the Android app</p>
-    </div>
-
-    <div class="ld-controls">
-      <div class="ld-stories" role="group" aria-label="Choose a story">
-        {
-          stories.map((key) => {
-            const story = STORIES[key];
-            if (!story) return null;
-            return (
-              <button
-                type="button"
-                class="ld-story"
-                id={`${hashPrefix}${key}`}
-                data-story={key}
-                aria-pressed={key === initialKey ? 'true' : 'false'}
-                aria-label={story.title}
-              >
-                {shortLabel[key] ?? story.title}
-              </button>
-            );
-          })
-        }
-      </div>
-      <div class="ld-card">
-        <p class="ld-kicker" data-sim="kicker">{first.kicker}</p>
-        <h2 class="ld-story-title" data-sim="title">{first.title}</h2>
-        <p class="ld-story-text" data-sim="text">{first.text}</p>
-        <ol class="ld-steps" data-sim="steps">
-          {
-            first.steps.map((step) => (
-              <li class="ld-step is-later">
-                <span class="ld-num">·</span>
-                <span>
-                  <b>{step.title}</b>
-                </span>
-              </li>
-            ))
-          }
-        </ol>
-        <div class="ld-actions">
-          <button type="button" class="ld-reset" data-sim="reset">Start this guide again</button>
-        </div>
-      </div>
-      <p class="ld-live" data-sim="live" aria-live="polite"></p>
-    </div>
-
-    {
-      notes.length > 0 && (
-        <div class="ld-notes">
-          <h2 id="guides" class="ld-notes-title">
-            The same steps, written out
-          </h2>
-          {notes.map((guide) => (
-            <details id={guide.id}>
-              <summary>
-                <span class="ld-note-title">{guide.title}</span>
-                <span class="ld-note-sum">{guide.summary}</span>
-              </summary>
-              <ol>
-                {guide.steps.map((step) => (
-                  <li>{step}</li>
-                ))}
-              </ol>
-              {guide.tip && <p class="ld-tip">{guide.tip}</p>}
-            </details>
-          ))}
-        </div>
-      )
-    }
+  <div class="ld-head">
+    <h1 id={`${id}-title`}>Try Lucento</h1>
+    <p class="ld-fine">Fictional money. Nothing is saved or sent. The steps follow the Android app.</p>
   </div>
+
+  <label class="ld-pick">
+    <span id={`${id}-guide-label`}>Guide</span>
+    <select id={`${id}-guide`} data-tour="story" aria-labelledby={`${id}-guide-label`}>
+      {
+        stories.map((key) => {
+          const guide = guideById.get(key);
+          const story = STORIES[key];
+          if (!story) return null;
+          return (
+            <option id={`${hashPrefix}${key}`} value={key} selected={key === initialKey}>
+              {guide?.title ?? story.title}
+            </option>
+          );
+        })
+      }
+    </select>
+  </label>
+
+  <p class="ld-reopen-row">
+    <button type="button" class="ld-reopen" data-tour="reopen" hidden>Show the steps</button>
+  </p>
+
+  <div class="ld-stage">
+    <div class="ld-bubble" data-tour="bubble" role="dialog" aria-modal="false" aria-labelledby="tour-title" tabindex="-1">
+      <Mascot
+        pose="pointing"
+        size="2.75rem"
+        alt=""
+      />
+      <p class="ld-count" data-tour="count">1 of {first.steps.length}</p>
+      <p class="ld-bubble-title" id="tour-title" data-tour="title">{firstStep?.title}</p>
+      <p class="ld-bubble-body" id="tour-body" data-tour="body">{firstStep?.body}</p>
+      <div class="ld-bubble-actions">
+        <button type="button" class="ld-next" data-tour="next">Next</button>
+        <button type="button" class="ld-skip" data-tour="skip">Skip</button>
+      </div>
+    </div>
+
+    <div class="ld-phone">
+      <div class="ld-notch" aria-hidden="true"></div>
+      <div class="ld-screen" data-sim="screen" role="region" aria-label="Lucento app simulation"></div>
+      <div class="ld-spot" data-tour="spot" aria-hidden="true">
+        <span class="ld-bar" data-bar="t"></span>
+        <span class="ld-bar" data-bar="l"></span>
+        <span class="ld-bar" data-bar="r"></span>
+        <span class="ld-bar" data-bar="b"></span>
+      </div>
+    </div>
+  </div>
+  <p class="ld-note">Fictional data · simulation of the Android app</p>
+  <p class="ld-live" data-sim="live" aria-live="polite"></p>
+
+  {
+    notes.length > 0 && (
+      <div class="ld-notes">
+        <h2 id="guides" class="ld-notes-title">The same steps, written out</h2>
+        {notes.map((guide) => (
+          <details id={guide.id}>
+            <summary>
+              <span class="ld-note-title">{guide.title}</span>
+              <span class="ld-note-sum">{guide.summary}</span>
+            </summary>
+            <ol>
+              {guide.steps.map((step) => (
+                <li>{step}</li>
+              ))}
+            </ol>
+            {guide.tip && <p class="ld-tip">{guide.tip}</p>}
+          </details>
+        ))}
+      </div>
+    )
+  }
 </section>
 
 <script>
   import { mountSimulator } from '../demo/simulator';
+  import { mountTour } from '../scripts/demo-tour';
 
   document.querySelectorAll<HTMLElement>('[data-simulator]').forEach((root) => {
     if (root.dataset.mounted) return;
     root.dataset.mounted = 'true';
     const stories = (root.dataset.stories ?? '').split(',').filter(Boolean);
+    // Listen before the simulator renders, so the first step opens the coach mark.
+    mountTour(root);
     mountSimulator(root, {
       stories,
       initial: root.dataset.initial || stories[0],
@@ -191,45 +148,39 @@ const shortLabel: Record<string, string> = {
   @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_semibold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
   @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
-  .ld { max-width: var(--page-max); margin: 0 auto; padding: clamp(1rem, 2.5vw, 1.75rem) var(--page-gutter) clamp(1.25rem, 3vw, 2.25rem); scroll-margin-top: 5.5rem; }
-  .ld-layout { display: grid; grid-template-columns: minmax(0, 1fr) 384px; grid-template-areas: "copy phone" "controls phone" "notes phone"; gap: 0.85rem 1.75rem; align-items: start; }
-  .ld-copy { grid-area: copy; min-width: 0; }
-  .ld-phone-wrap { grid-area: phone; display: grid; justify-items: center; gap: var(--space-sm); }
-  .ld-controls { grid-area: controls; min-width: 0; }
-  .ld-notes { grid-area: notes; min-width: 0; }
-  .ld-identity { display: flex; align-items: center; gap: 0.75rem; }
-  .ld-identity .kicker { margin: 0; }
-  .ld-title { margin: 0.45rem 0 0; max-width: 18ch; font-size: clamp(1.85rem, 1.6vw + 1.1rem, 2.65rem); line-height: 1.08; font-weight: 800; letter-spacing: -0.035em; }
-  .ld-sub { color: var(--on-surface-variant); margin: 0.65rem 0 0; max-width: 38rem; font-size: 1rem; }
-  .ld-fine { margin: 0.45rem 0 0; color: var(--on-surface-variant); font-size: 0.875rem; }
-  .ld-stories { display: flex; flex-wrap: wrap; gap: 0; border-bottom: 1px solid var(--outline-variant); }
-  .ld-story { min-height: 2.75rem; padding: 0.35rem 0.7rem; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--on-surface-variant); font: inherit; font-size: 0.875rem; font-weight: 700; cursor: pointer; scroll-margin-top: 5.5rem; }
-  .ld-story[aria-pressed='true'] { background: transparent; border-bottom-color: var(--primary); color: var(--on-surface); }
-  .ld-story:focus-visible, .ld-reset:focus-visible, .ld-next:focus-visible, .ld-notes summary:focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
-  .ld-card { margin-top: 0.85rem; padding: 0 0 0.85rem; border: 0; border-bottom: 1px solid var(--outline-variant); border-radius: 0; background: transparent; }
-  .ld-kicker { margin: 0; color: var(--primary); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.01em; }
-  .ld-story-title { margin: 0.2rem 0 0; font-size: 1.15rem; line-height: 1.25; letter-spacing: -0.02em; }
-  .ld-story-text { margin: 0.35rem 0 0; color: var(--on-surface-variant); font-size: 0.9375rem; }
-  .ld-steps { list-style: none; margin: 0.75rem 0 0; padding: 0; display: grid; gap: 0.35rem; }
-  .ld-step { display: grid; grid-template-columns: 1.75rem 1fr; gap: 0.45rem; align-items: start; color: var(--on-surface-variant); font-size: 0.9375rem; }
-  .ld-step b { display: block; font-weight: 650; }
-  .ld-step.is-now { color: var(--on-surface); padding: 0.45rem; margin: 0 -0.45rem; border-radius: var(--radius-md); background: var(--highlight); }
-  .ld-step.is-now b { color: var(--on-highlight); }
-  .ld-step-body { display: block; margin-top: 0.15rem; color: var(--on-surface-variant); }
-  .ld-step.is-now .ld-step-body { color: var(--on-highlight); }
-  .ld-num { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 1px solid var(--border-default); font-weight: 700; font-size: 0.8125rem; background: var(--surface); }
-  .ld-step.is-now .ld-num { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
-  .ld-step.is-done .ld-num { background: var(--positive-container); color: var(--positive); border-color: transparent; }
-  .ld-step.is-finale { color: var(--on-surface); }
-  .ld-step.is-finale .ld-num { background: var(--accent); color: var(--midnight-navy); border-color: transparent; }
-  .ld-next, .ld-reset { margin-top: 0.35rem; min-height: var(--min-touch); padding: 0 0.85rem; border-radius: var(--radius-md); font: inherit; font-weight: 650; cursor: pointer; }
-  .ld-next { border: 0; background: var(--primary); color: var(--on-primary); }
-  .ld-reset { border: 1px solid var(--border-default); background: transparent; color: var(--on-surface); }
-  .ld-actions { margin-top: 0.65rem; }
+  .ld { max-width: 40rem; margin: 0 auto; padding: clamp(1rem, 2.5vw, 1.75rem) var(--page-gutter) clamp(1.5rem, 3vw, 2.5rem); scroll-margin-top: 5.5rem; }
+  .ld-head { display: grid; gap: 0.35rem; }
+  .ld h1 { margin: 0; font-size: clamp(1.7rem, 1.2vw + 1.2rem, 2.15rem); line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; }
+  .ld-fine { margin: 0; color: var(--on-surface-variant); font-size: 0.9375rem; }
+  .ld-pick { display: grid; gap: 0.3rem; margin: 0.85rem 0 0; }
+  .ld-pick span { font-size: 0.8125rem; font-weight: 750; }
+  .ld-pick select { width: 100%; min-height: 3rem; padding: 0 2.4rem 0 0.85rem; border: 1px solid var(--border-default); border-radius: var(--radius-md); background-color: var(--surface-container-lowest); color: var(--on-surface); font: inherit; font-weight: 700; appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--on-surface) 50%), linear-gradient(135deg, var(--on-surface) 50%, transparent 50%); background-position: calc(100% - 1.15rem) 50%, calc(100% - 0.75rem) 50%; background-size: 0.4rem 0.4rem, 0.4rem 0.4rem; background-repeat: no-repeat; }
+  .ld-pick select:focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
+  .ld-reopen-row { margin: 0.45rem 0 0; min-height: 0; }
+  .ld-reopen { min-height: var(--min-touch); padding: 0; border: 0; background: transparent; color: var(--primary); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 0.18em; cursor: pointer; }
+  .ld-reopen[hidden] { display: none; }
+  .ld-stage { position: relative; width: min(360px, 100%); margin: 0.35rem auto 0; }
+  .ld-note { margin: 0.55rem 0 0; font-size: 0.8125rem; color: var(--on-surface-variant); text-align: center; }
   .ld-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .ld-note { margin: 0; font-size: 0.8125rem; color: var(--on-surface-variant); text-align: center; }
 
-  .ld-notes { border-top: 1px solid var(--outline-variant); }
+  .ld-bubble { position: absolute; z-index: 7; right: 0.5rem; bottom: 5.5rem; left: 0.5rem; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: 0.1rem 0.55rem; width: auto; padding: 0.65rem 0.7rem 0.6rem; border: 1px solid var(--outline-variant); border-radius: 1.15rem 1.15rem 1.15rem 0.4rem; background: var(--surface-container-lowest); color: var(--on-surface); box-shadow: var(--shadow-lg); }
+  .ld-bubble[hidden] { display: none; }
+  .ld-bubble .mascot { grid-row: 1 / span 4; align-self: end; width: 2.75rem; height: 2.75rem; }
+  .ld-count { margin: 0; color: var(--primary); font-size: 0.75rem; font-weight: 750; }
+  .ld-bubble-title { margin: 0; font-size: 0.95rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.25; }
+  .ld-bubble-body { margin: 0; color: var(--on-surface-variant); font-size: 0.875rem; line-height: 1.4; }
+  .ld-bubble-actions { display: flex; gap: 0.4rem; margin-top: 0.35rem; }
+  .ld-next, .ld-skip { min-height: 2.5rem; padding: 0 0.85rem; border-radius: var(--radius-md); font: inherit; font-weight: 700; cursor: pointer; }
+  .ld-next { border: 0; background: var(--primary); color: var(--on-primary); }
+  .ld-skip { border: 1px solid var(--border-default); background: transparent; color: var(--on-surface); }
+  .ld-next:focus-visible, .ld-skip:focus-visible, .ld-reopen:focus-visible, .ld-bubble:focus-visible, .ld-notes summary:focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
+
+  .ld-spot { position: absolute; z-index: 6; pointer-events: none; border-radius: 38px; overflow: hidden; }
+  .ld-spot[hidden] { display: none; }
+  .ld-bar { position: absolute; background: rgba(8, 12, 22, 0.78); pointer-events: auto; }
+  .ld.is-guided .ls-hint { animation: none; outline: none; }
+
+  .ld-notes { margin-top: 1.75rem; border-top: 1px solid var(--outline-variant); }
   .ld-notes-title { margin: 0.85rem 0 0.15rem; font-size: 1.05rem; letter-spacing: -0.02em; }
   .ld-notes details { border-bottom: 1px solid var(--outline-variant); scroll-margin-top: 5.5rem; }
   .ld-notes summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.1rem 0.75rem; align-items: center; min-height: 2.75rem; padding: 0.55rem 0; font-weight: 650; cursor: pointer; list-style: none; }
@@ -242,9 +193,12 @@ const shortLabel: Record<string, string> = {
   .ld-notes li + li { margin-top: 0.3rem; }
   .ld-tip { margin: 0 0 0.85rem; color: var(--on-surface-variant); font-size: 0.875rem; }
 
-  @media (max-width: 959px) {
-    .ld-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "phone" "copy" "controls" "notes"; }
-    .ld-title { max-width: none; }
+  @media (max-width: 400px) {
+    .ld-stage { width: 100%; }
+    .ld-spot { border-radius: 30px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ld-bubble { transition: none; }
   }
 
   /* ---------------------------------------------------------------- the phone */

@@ -1,5 +1,5 @@
 /**
- * The how-to guides, shown on /how-to and listed on the home page. They describe the Android app as it is today.
+ * The how-to guides, shown on /demo (and reached from /how-to). They describe the Android app as it is today.
  * Each `id` is also the key of its interactive story in src/demo/simulator.ts.
  */
 export interface Guide {
