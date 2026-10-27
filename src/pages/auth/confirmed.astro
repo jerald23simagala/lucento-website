@@ -28,13 +28,13 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 <script is:inline>
   (function () {
-    var hash = window.location.hash.replace(/^#/, '');
-    var params = new URLSearchParams(hash || window.location.search.replace(/^\?/, ''));
-    var error = params.get('error_description') || params.get('error');
+    const hash = window.location.hash.replace(/^#/, '');
+    const params = new URLSearchParams(hash || window.location.search.replace(/^\?/, ''));
+    const error = params.get('error_description') || params.get('error');
     if (error) {
       document.querySelector('[data-state="ok"]').hidden = true;
       document.querySelector('[data-state="error"]').hidden = false;
-      var text = document.querySelector('[data-error-text]');
+      const text = document.querySelector('[data-error-text]');
       if (text) text.textContent = error.replace(/\+/g, ' ');
     }
     // Never leave session tokens in the address bar or browser history.

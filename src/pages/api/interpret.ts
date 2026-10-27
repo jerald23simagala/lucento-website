@@ -1,5 +1,5 @@
 /**
- * Smarter reading for the Lucento app (opt-in; see lucento-android docs/CAPTURE.md).
+ * Smarter reading for the Lucento app — served on demand as a Vercel Function (Astro endpoint, @astrojs/vercel) (opt-in; see lucento-android docs/CAPTURE.md).
  *
  * POST /api/interpret with the signed-in user's Supabase access token. The body carries one composer message, today's
  * date, the main currency and the user's category and wallet names with their app-local ids. This function:
@@ -16,7 +16,12 @@
  *   GEMINI_MODEL              optional (default gemini-2.5-flash)
  */
 
+import type { APIRoute } from 'astro';
+
 declare const process: { env: Record<string, string | undefined> };
+
+// Runs per request (never prerendered): it reads secrets from the environment and answers each user.
+export const prerender = false;
 
 interface NamedRef {
   id: number;
@@ -106,7 +111,7 @@ function parseRequest(body: unknown): InterpretRequest | null {
   };
 }
 
-export async function POST(request: Request): Promise<Response> {
+export const POST: APIRoute = async ({ request }) => {
   const geminiKey = process.env.GEMINI_API_KEY;
   const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, '');
   const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
@@ -170,8 +175,6 @@ export async function POST(request: Request): Promise<Response> {
     return json(502, { error: 'model_unreadable' });
   }
   return json(200, { items, remaining: Math.max(0, limit - used) });
-}
+};
 
-export function GET(): Response {
-  return json(405, { error: 'method_not_allowed' });
-}
+export const GET: APIRoute = () => json(405, { error: 'method_not_allowed' });
