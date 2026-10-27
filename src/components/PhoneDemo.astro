@@ -38,9 +38,10 @@ const firstStep = first.steps[0];
   data-prefix={hashPrefix}
   data-initial={initialKey}
 >
+  <div class="ld-show">
   <div class="ld-head">
     <h1 id={`${id}-title`}>Try Lucento</h1>
-    <p class="ld-fine">Fictional money. Nothing is saved or sent. The steps follow the Android app.</p>
+    <p class="ld-fine">Fictional money. Nothing is saved or sent.</p>
   </div>
 
   <label class="ld-pick">
@@ -94,6 +95,7 @@ const firstStep = first.steps[0];
   </div>
   <p class="ld-note">Fictional data · simulation of the Android app</p>
   <p class="ld-live" data-sim="live" aria-live="polite"></p>
+  </div>
 
   {
     notes.length > 0 && (
@@ -148,11 +150,13 @@ const firstStep = first.steps[0];
   @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_semibold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
   @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
-  .ld { max-width: 40rem; margin: 0 auto; padding: clamp(1rem, 2.5vw, 1.75rem) var(--page-gutter) clamp(1.5rem, 3vw, 2.5rem); scroll-margin-top: 5.5rem; }
-  .ld-head { display: grid; gap: 0.35rem; }
-  .ld h1 { margin: 0; font-size: clamp(1.7rem, 1.2vw + 1.2rem, 2.15rem); line-height: 1.1; font-weight: 800; letter-spacing: -0.03em; }
-  .ld-fine { margin: 0; color: var(--on-surface-variant); font-size: 0.9375rem; }
-  .ld-pick { display: grid; gap: 0.3rem; margin: 0.85rem 0 0; }
+  .ld { margin: 0; padding: 0 0 clamp(2rem, 4vw, 3rem); scroll-margin-top: 5.5rem; }
+  .ld-show { background: var(--primary-container); color: var(--on-surface); padding: clamp(1.35rem, 3vw, 2.25rem) var(--page-gutter) clamp(1.75rem, 4vw, 3rem); }
+  .ld-head, .ld-pick, .ld-reopen-row, .ld-note { width: min(22.5rem, 100%); margin-left: auto; margin-right: auto; }
+  .ld-head { display: grid; gap: 0.2rem; }
+  .ld h1 { margin: 0; font-size: clamp(1.85rem, 2vw, 2.35rem); line-height: 1.05; font-weight: 800; letter-spacing: -0.04em; }
+  .ld-fine { margin: 0; color: var(--on-primary-container); font-size: 0.9375rem; }
+  .ld-pick { display: grid; gap: 0.3rem; margin: 0.85rem auto 0; }
   .ld-pick span { font-size: 0.8125rem; font-weight: 750; }
   .ld-pick select { width: 100%; min-height: 3rem; padding: 0 2.4rem 0 0.85rem; border: 1px solid var(--border-default); border-radius: var(--radius-md); background-color: var(--surface-container-lowest); color: var(--on-surface); font: inherit; font-weight: 700; appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--on-surface) 50%), linear-gradient(135deg, var(--on-surface) 50%, transparent 50%); background-position: calc(100% - 1.15rem) 50%, calc(100% - 0.75rem) 50%; background-size: 0.4rem 0.4rem, 0.4rem 0.4rem; background-repeat: no-repeat; }
   .ld-pick select:focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
@@ -160,7 +164,7 @@ const firstStep = first.steps[0];
   .ld-reopen { min-height: var(--min-touch); padding: 0; border: 0; background: transparent; color: var(--primary); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 0.18em; cursor: pointer; }
   .ld-reopen[hidden] { display: none; }
   .ld-stage { position: relative; width: min(360px, 100%); margin: 0.35rem auto 0; }
-  .ld-note { margin: 0.55rem 0 0; font-size: 0.8125rem; color: var(--on-surface-variant); text-align: center; }
+  .ld-note { margin: 0.7rem auto 0; font-size: 0.8125rem; color: var(--on-primary-container); text-align: center; }
   .ld-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
   .ld-bubble { position: absolute; z-index: 7; right: 0.5rem; bottom: 5.5rem; left: 0.5rem; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: 0.1rem 0.55rem; width: auto; padding: 0.65rem 0.7rem 0.6rem; border: 1px solid var(--outline-variant); border-radius: 1.15rem 1.15rem 1.15rem 0.4rem; background: var(--surface-container-lowest); color: var(--on-surface); box-shadow: var(--shadow-lg); }
@@ -180,7 +184,7 @@ const firstStep = first.steps[0];
   .ld-bar { position: absolute; background: rgba(8, 12, 22, 0.78); pointer-events: auto; }
   .ld.is-guided .ls-hint { animation: none; outline: none; }
 
-  .ld-notes { margin-top: 1.75rem; border-top: 1px solid var(--outline-variant); }
+  .ld-notes { max-width: 40rem; margin: 1.75rem auto 0; padding: 0 var(--page-gutter); border-top: 0; }
   .ld-notes-title { margin: 0.85rem 0 0.15rem; font-size: 1.05rem; letter-spacing: -0.02em; }
   .ld-notes details { border-bottom: 1px solid var(--outline-variant); scroll-margin-top: 5.5rem; }
   .ld-notes summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.1rem 0.75rem; align-items: center; min-height: 2.75rem; padding: 0.55rem 0; font-weight: 650; cursor: pointer; list-style: none; }

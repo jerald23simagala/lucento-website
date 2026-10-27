@@ -1,12 +1,34 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Explainer from '../components/Explainer.astro';
 import Mascot from '../components/Mascot.astro';
 import PaceCalculator from '../components/PaceCalculator.astro';
 import { guides } from '../data/guides';
 import { faq, limitations, realLife } from '../data/site';
 
 const guideIds = guides.map((guide) => guide.id);
+
+const also = [
+  {
+    name: 'Wallets',
+    eq: 'Assets − debts = net worth',
+    body: 'Cash, bank, e-wallets, savings, cards, and loans. A transfer is never income or spending. Currencies stay separate.',
+  },
+  {
+    name: 'Bills',
+    eq: 'Due, then you mark it paid',
+    body: 'Rent, subscriptions, and salary. The bell shows what is overdue or due within 7 days. Nothing is recorded until you confirm.',
+  },
+  {
+    name: 'Debts',
+    eq: 'You enter the interest',
+    body: 'That part is spending. The rest of the payment lowers what you owe. Lucento does not calculate the interest for you.',
+  },
+  {
+    name: 'Goals',
+    eq: 'Progress, one balance',
+    body: 'A target, an optional date, and a picture. The money stays in your wallets, so it is not counted twice.',
+  },
+];
 ---
 
 <BaseLayout
@@ -22,161 +44,162 @@ const guideIds = guides.map((guide) => guide.id);
     })();
   </script>
 
-  <header class="hero">
-    <div class="hero-id">
-      <Mascot
-        pose="greeting"
-        size="4.5rem"
-        eager
-        alt="Lucento mascot concept: a golden orb with a hair crest and a bright crystal torch."
-      />
-      <p class="kicker ruled">Android · in development</p>
+  <section class="open" id="pace" aria-labelledby="open-title">
+    <div class="open-copy">
+      <p class="kicker">Android · in development</p>
+      <h1 id="open-title">The month, beside what you’ve spent.</h1>
+      <p class="why">A budget tracker that keeps the record on your phone.</p>
+      <a class="btn" href="/demo">Try the demo</a>
     </div>
-    <h1>The month, beside what you’ve spent.</h1>
-    <p class="lede">A budget tracker that keeps the record on your phone.</p>
-    <a class="btn" href="/demo">Try the demo</a>
-    <Explainer />
-  </header>
 
-  <section class="block" aria-labelledby="pace-figure-title">
-    <h2 id="pace-figure-title">Budget beside the month</h2>
-    <figure class="pace">
-      <div class="pace-row">
-        <div class="pace-meta">
-          <span>Budget used</span>
-          <b class="num">63%</b>
+    <figure class="poster">
+      <div class="poster-card">
+        <Mascot
+          pose="greeting"
+          size="7.25rem"
+          eager
+          alt="Lucento mascot concept: a golden orb with a hair crest and a bright crystal torch, the pose the app uses when spending is in step with the month."
+        />
+        <p class="poster-month">October 2026</p>
+        <p class="poster-name">Monthly budget</p>
+        <p class="poster-figure"><b>63%</b> of $1,600 used</p>
+        <div class="poster-bars" aria-hidden="true">
+          <span class="track"><span class="fill used" style="width: 63%"></span></span>
+          <span class="track"><span class="fill month" style="width: 64%"></span></span>
         </div>
-        <div class="track" aria-hidden="true">
-          <span class="fill used" style="width: 63%"></span>
-        </div>
+        <p class="poster-keys"><span>63% used</span><span>64% of the month</span></p>
+        <dl class="poster-stats">
+          <div>
+            <dt>Spent</dt>
+            <dd>$1,000.00</dd>
+          </div>
+          <div>
+            <dt>Remaining</dt>
+            <dd>$600.00</dd>
+          </div>
+          <div>
+            <dt>Days left</dt>
+            <dd>12</dd>
+          </div>
+        </dl>
+        <p class="poster-advice">
+          <b>Spending in step with the month</b>
+          <span>About $50.00 a day keeps you within budget</span>
+        </p>
       </div>
-      <div class="pace-row">
-        <div class="pace-meta">
-          <span>Month passed</span>
-          <b class="num">64%</b>
-        </div>
-        <div class="track" aria-hidden="true">
-          <span class="fill month" style="width: 64%"></span>
-        </div>
-      </div>
-      <p class="verdict">In step <span class="sun" aria-hidden="true"></span></p>
-      <p class="allow">About <b class="num">$50.00</b> a day for the next 12 days</p>
       <figcaption>
-        Example only: day 20 of 31, budget $1,600, spent $1,000. Not your records. Close bars mean the spending is
-        keeping up with the calendar. The app never converts currencies.
+        The app’s own comparison, with example numbers: day 20 of 31. Not your records. Lucento never converts currencies.
+        <a href="#your-numbers">Use your own numbers</a>
       </figcaption>
     </figure>
   </section>
 
-  <section class="block" aria-labelledby="sentence-title">
-    <h2 id="sentence-title">A sentence becomes rows</h2>
-    <figure class="sentence">
-      <p class="said">Lunch 45, groceries 120, parking 15</p>
-      <ol>
-        <li>
-          <span>Lunch</span>
-          <b class="num">45.00</b>
-        </li>
-        <li>
-          <span>Groceries</span>
-          <b class="num">120.00</b>
-        </li>
-        <li>
-          <span>Parking</span>
-          <b class="num">15.00</b>
-        </li>
-      </ol>
-      <figcaption>
-        Nothing is written until you tap Save. A receipt or spoken English is read on the phone. A row with no amount
-        can’t be saved — Lucento does not guess a number.
-      </figcaption>
-    </figure>
+  <section class="band" aria-labelledby="sentence-title">
+    <div class="band-inner">
+      <h2 id="sentence-title">A sentence becomes rows</h2>
+      <figure class="sentence">
+        <p class="said">Lunch 45, groceries 120, parking 15</p>
+        <ol>
+          <li>
+            <span class="swatch food" aria-hidden="true"></span>
+            <span>Lunch</span>
+            <b>45.00</b>
+          </li>
+          <li>
+            <span class="swatch groceries" aria-hidden="true"></span>
+            <span>Groceries</span>
+            <b>120.00</b>
+          </li>
+          <li>
+            <span class="swatch travel" aria-hidden="true"></span>
+            <span>Parking</span>
+            <b>15.00</b>
+          </li>
+        </ol>
+        <figcaption>
+          Nothing is written until you tap Save. A receipt or spoken English is read on the phone. A row with no amount
+          cannot be saved — Lucento does not guess a number.
+          <a href="/demo#guide-add-transactions">Try it on the phone</a>
+        </figcaption>
+      </figure>
+    </div>
   </section>
 
   <section class="block" id="keeps" aria-labelledby="keeps-title">
     <h2 id="keeps-title">The record stays on the phone</h2>
-    <figure class="where">
-      <div class="where-main">
+    <div class="pair">
+      <div class="pair-main">
         <p>On this phone</p>
         <ul>
-          <li>Stored on the device</li>
-          <li>Core features work offline</li>
+          <li>Offline</li>
           <li>No bank login</li>
           <li>No ads, analytics, or crash reporting</li>
         </ul>
       </div>
-      <div class="where-opt">
+      <div class="pair-opt">
         <p>Optional</p>
         <ul>
-          <li>Google or email sync, for a backup and a new phone</li>
-          <li>Signing out leaves the phone’s copy in place</li>
+          <li>Google or email sync</li>
           <li>Smarter reading stays off until you turn it on</li>
-          <li>Then it sends the message, date, currency, and names — never balances or history</li>
+          <li>Then the message, date, currency, and names — never balances or history</li>
         </ul>
       </div>
-      <figcaption>
-        Sync uses your own signed-in account. Receipts are always read on the phone. Pricing has not been announced,
-        and Lucento is not on Google Play yet.
-      </figcaption>
-    </figure>
+    </div>
+    <p class="note">
+      Signing out leaves the copy on the phone. Receipts are always read on the device. Pricing has not been announced,
+      and Lucento is not on Google Play yet.
+    </p>
   </section>
 
   <section class="block" aria-labelledby="also-title">
     <h2 id="also-title">The rest of the month</h2>
     <div class="facts">
-      <article>
-        <h3>Wallets</h3>
-        <p class="eq"><span>Assets</span> − <span>debts</span> = <b>net worth</b></p>
-        <p>Cash, bank, e-wallets, savings, cards, and loans. A transfer is never income or spending. Currencies stay separate.</p>
-      </article>
-      <article>
-        <h3>Bills and income</h3>
-        <p class="eq">Due <b>→</b> you mark it paid</p>
-        <p>Rent, subscriptions, and salary. The bell shows what’s overdue or due within 7 days. Nothing is recorded until you confirm.</p>
-      </article>
-      <article>
-        <h3>Cards and loans</h3>
-        <p class="eq">Payment − <b>interest you enter</b> = principal</p>
-        <p>You type the interest from the statement. That part is spending. The rest lowers what you owe.</p>
-      </article>
-      <article>
-        <h3>Goals</h3>
-        <p class="eq">Progress <b>without</b> a second balance</p>
-        <p>A target, an optional date, and a picture. The money stays in your wallets, so it isn’t counted twice.</p>
-      </article>
+      {
+        also.map((item) => (
+          <article>
+            <h3>{item.name}</h3>
+            <p class="eq">{item.eq}</p>
+            <p>{item.body}</p>
+          </article>
+        ))
+      }
     </div>
-    <p class="aside">Insights show income, spending, and what net worth is made of, with the figures beside every chart.</p>
+    <p class="note">Insights show income, spending, and what net worth is made of, with the figures beside every chart.</p>
   </section>
 
   <PaceCalculator />
 
-  <section class="block" id="careful" aria-labelledby="careful-title">
-    <h2 id="careful-title">It will not guess</h2>
-    <dl class="rules">
-      {
-        realLife.map((item) => (
-          <div>
-            <dt>{item.title}</dt>
-            <dd>{item.body}</dd>
-          </div>
-        ))
-      }
-    </dl>
-  </section>
-
-  <section class="block" id="privacy" aria-labelledby="privacy-title">
-    <h2 id="privacy-title">What leaves the phone</h2>
-    <ul class="leaves">
-      <li><b>Nothing</b> until you opt in</li>
-      <li><b>Sync</b> only with Google or email, while it stays on</li>
-      <li><b>Smarter reading</b> only the message, date, currency, and names</li>
-      <li><b>Never</b> your balances or history</li>
-    </ul>
-    <a class="text-link" href="/privacy">How Lucento handles your data</a>
+  <section class="block trust" aria-labelledby="trust-title">
+    <h2 id="trust-title">Before you rely on it</h2>
+    <div class="trust-grid">
+      <div id="careful">
+        <h3 id="careful-title">It will not guess</h3>
+        <dl>
+          {
+            realLife.map((item) => (
+              <div>
+                <dt>{item.title}</dt>
+                <dd>{item.body}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <div id="privacy">
+        <h3 id="privacy-title">What leaves the phone</h3>
+        <ul class="leaves">
+          <li><b>Nothing</b> until you opt in</li>
+          <li><b>Sync</b> only while a Google or email account stays connected</li>
+          <li><b>Smarter reading</b> only the message, date, currency, and names</li>
+          <li><b>Never</b> your balances or history</li>
+        </ul>
+        <a class="text-link" href="/privacy">How Lucento handles your data</a>
+      </div>
+    </div>
   </section>
 
   <div class="split">
-    <section class="block" id="faq" aria-labelledby="faq-title">
+    <section id="faq" aria-labelledby="faq-title">
       <h2 id="faq-title">Questions</h2>
       <div class="faq">
         {
@@ -189,9 +212,9 @@ const guideIds = guides.map((guide) => guide.id);
         }
       </div>
     </section>
-    <section class="block" id="good-to-know" aria-labelledby="limits-title">
+    <section id="good-to-know" aria-labelledby="limits-title">
       <h2 id="limits-title">Current limitations</h2>
-      <dl class="rules">
+      <dl class="limits">
         {
           limitations.map((item) => (
             <div>
@@ -214,89 +237,147 @@ const guideIds = guides.map((guide) => guide.id);
 </BaseLayout>
 
 <style>
-  .hero,
-  .block {
+  @font-face {
+    font-family: 'Plus Jakarta Sans';
+    src: url('/demo/fonts/plus_jakarta_sans_regular.ttf') format('truetype');
+    font-weight: 400;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Plus Jakarta Sans';
+    src: url('/demo/fonts/plus_jakarta_sans_semibold.ttf') format('truetype');
+    font-weight: 600;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Plus Jakarta Sans';
+    src: url('/demo/fonts/plus_jakarta_sans_bold.ttf') format('truetype');
+    font-weight: 700;
+    font-display: swap;
+  }
+
+  .open,
+  .block,
+  .band-inner,
+  .split,
+  .close-inner {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: clamp(1.25rem, 3vw, 2.25rem) var(--page-gutter) 0;
+    padding-left: var(--page-gutter);
+    padding-right: var(--page-gutter);
   }
 
-  .hero {
-    padding-top: clamp(1.25rem, 3vw, 2rem);
-  }
-
-  .hero-id {
-    display: flex;
+  .open {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.9fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
     align-items: center;
-    gap: 0.75rem;
+    padding-top: clamp(1.75rem, 5vh, 4.5rem);
+    padding-bottom: clamp(2.5rem, 7vh, 5.5rem);
   }
 
-  .hero-id .kicker {
-    margin: 0;
+  .kicker {
+    font-size: 0.95rem;
+    font-weight: 750;
   }
 
   h1 {
-    margin: 0.55rem 0 0;
-    max-width: 14em;
-    font-size: clamp(2.15rem, 4vw + 1rem, 3.6rem);
-    line-height: 1.02;
+    margin: 0.45rem 0 0;
+    max-width: 11ch;
+    font-size: clamp(3.1rem, 5.6vw, 5.35rem);
+    line-height: 0.92;
     font-weight: 800;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.05em;
   }
 
   h2 {
     margin: 0;
-    font-size: clamp(1.35rem, 1vw + 1rem, 1.85rem);
-    line-height: 1.15;
+    max-width: 16ch;
+    font-size: clamp(2rem, 3.2vw, 3rem);
+    line-height: 1.02;
     font-weight: 800;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.045em;
   }
 
   h3 {
     margin: 0;
-    font-size: 1rem;
-    letter-spacing: -0.02em;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
   }
 
-  .lede {
-    margin: 0.6rem 0 0;
+  .why {
+    max-width: 28ch;
+    margin: 1.1rem 0 0;
+    font-size: clamp(1.15rem, 1.4vw, 1.35rem);
+    line-height: 1.35;
     color: var(--on-surface-variant);
   }
 
-  .hero .btn,
-  .close .btn {
-    margin-top: 0.9rem;
+  .open .btn {
+    margin-top: 1.35rem;
   }
 
-  .pace,
-  .sentence,
-  .where {
-    margin: 0.85rem 0 0;
+  .poster {
+    margin: 0;
   }
 
-  .pace-row + .pace-row {
-    margin-top: 0.75rem;
+  .poster-card {
+    position: relative;
+    padding: 1.35rem 1.25rem 1.15rem;
+    border: 1px solid color-mix(in srgb, var(--positive) 28%, var(--border-default));
+    border-radius: 1.75rem;
+    background: color-mix(in srgb, var(--positive-container) 92%, var(--surface));
+    font-family: 'Plus Jakarta Sans', var(--font-sans);
   }
 
-  .pace-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
+  .poster-card :global(.mascot) {
+    position: absolute;
+    top: -1.65rem;
+    right: 0.35rem;
+  }
+
+  .poster-month,
+  .poster-name {
+    margin: 0;
+  }
+
+  .poster-month {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--on-surface-variant);
+  }
+
+  .poster-name {
+    margin-top: 0.85rem;
+    font-size: 1.05rem;
     font-weight: 700;
   }
 
-  .pace-meta b {
-    font-size: 1.35rem;
-    letter-spacing: -0.03em;
+  .poster-figure {
+    margin: 0.15rem 6.5rem 0.85rem 0;
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  .poster-figure b {
+    font-size: clamp(2.6rem, 4vw, 3.4rem);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+  }
+
+  .poster-bars {
+    display: grid;
+    gap: 0.45rem;
   }
 
   .track {
     display: block;
-    height: 0.85rem;
-    margin-top: 0.3rem;
+    height: 1rem;
     border-radius: 999px;
-    background: var(--track);
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
     overflow: hidden;
   }
 
@@ -307,197 +388,289 @@ const guideIds = guides.map((guide) => guide.id);
   }
 
   .fill.used {
-    background: var(--mark-blue);
+    background: var(--success);
   }
 
   .fill.month {
-    background: var(--mark-sky);
+    background: color-mix(in srgb, var(--primary) 62%, var(--surface));
   }
 
-  .verdict,
-  .allow {
-    margin: 0.85rem 0 0;
-    font-size: 1.35rem;
+  .poster-keys {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0.4rem 0 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+
+  .poster-stats {
+    display: grid;
+    grid-template-columns: 1.2fr 1.15fr 0.7fr;
+    margin: 0.95rem 0 0;
+  }
+
+  .poster-stats div {
+    padding-left: 0.75rem;
+    border-left: 1px solid color-mix(in srgb, var(--on-surface) 16%, transparent);
+  }
+
+  .poster-stats div:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .poster-stats dt,
+  .poster-stats dd {
+    margin: 0;
+  }
+
+  .poster-stats dd {
+    font-size: 1.2rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
   }
 
-  .allow {
-    font-size: 1.05rem;
+  .poster-stats dt {
+    color: var(--on-surface-variant);
+    font-size: 0.75rem;
     font-weight: 650;
   }
 
-  .sun {
-    display: inline-block;
-    width: 0.7rem;
-    height: 0.7rem;
-    margin-left: 0.25rem;
-    border-radius: 50%;
-    background: var(--mark-sun);
-    box-shadow: -0.85rem 0 0 var(--mark-gold);
-    vertical-align: 0.05rem;
+  .poster-advice {
+    display: grid;
+    gap: 0.1rem;
+    margin: 0.95rem 0 0;
+    padding-top: 0.8rem;
+    border-top: 1px solid color-mix(in srgb, var(--on-surface) 12%, transparent);
+  }
+
+  .poster-advice b {
+    font-size: 0.95rem;
+  }
+
+  .poster-advice span {
+    color: var(--positive);
+    font-size: 0.875rem;
+    font-weight: 650;
   }
 
   figcaption,
-  .aside {
+  .note {
     max-width: 42rem;
-    margin: 0.7rem 0 0;
+    margin: 0.85rem 0 0;
     color: var(--on-surface-variant);
     font-size: 0.9375rem;
   }
 
+  figcaption a,
+  .note a {
+    display: inline;
+  }
+
+  .band {
+    background: var(--surface-container-lowest);
+    border-block: 1px solid var(--outline-variant);
+  }
+
+  .band-inner {
+    padding-top: clamp(2.5rem, 6vw, 4.5rem);
+    padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
   .said {
-    margin: 0;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--outline-variant);
-    font-size: clamp(1.25rem, 2vw, 1.7rem);
-    font-weight: 750;
-    letter-spacing: -0.03em;
-    line-height: 1.25;
+    margin: 1.25rem 0 0;
+    max-width: 18ch;
+    font-family: 'Plus Jakarta Sans', var(--font-sans);
+    font-size: clamp(1.85rem, 3.5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.12;
   }
 
   .sentence ol {
     list-style: none;
-    margin: 0;
+    max-width: 36rem;
+    margin: 1.25rem 0 0;
     padding: 0;
+    font-family: 'Plus Jakarta Sans', var(--font-sans);
   }
 
   .sentence li {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.55rem 0;
-    border-bottom: 1px solid var(--outline-variant);
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    gap: 0.85rem;
+    align-items: center;
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--outline-variant);
+    font-size: 1.15rem;
     font-weight: 700;
   }
 
   .sentence li b {
     font-variant-numeric: tabular-nums;
+    font-size: 1.25rem;
   }
 
-  .where {
+  .swatch {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.8rem;
+  }
+
+  .swatch.food {
+    background: var(--category-coral-tile);
+  }
+
+  .swatch.groceries {
+    background: var(--category-green-tile);
+  }
+
+  .swatch.travel {
+    background: var(--category-sky-tile);
+  }
+
+  .block {
+    padding-top: clamp(2.75rem, 6vw, 4.75rem);
+  }
+
+  .pair {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 0.85rem 1.25rem;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    margin-top: 1.5rem;
   }
 
-  .where-main,
-  .where-opt {
-    padding-top: 0.15rem;
+  .pair-main,
+  .pair-opt {
+    padding-top: 0.85rem;
   }
 
-  .where-main {
-    border-top: 4px solid var(--mark-blue);
+  .pair-main {
+    border-top: 8px solid var(--mark-blue);
   }
 
-  .where-opt {
-    border-top: 4px dashed var(--mark-sky);
+  .pair-opt {
+    border-top: 8px dashed var(--mark-sky);
   }
 
-  .where p {
-    margin: 0.65rem 0 0;
-    font-size: 1.2rem;
+  .pair p {
+    margin: 0;
+    font-size: clamp(1.5rem, 2vw, 2rem);
     font-weight: 800;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
   }
 
-  .where ul,
-  .leaves {
-    margin: 0.4rem 0 0;
+  .pair ul {
+    margin: 0.85rem 0 0;
     padding: 0;
     list-style: none;
   }
 
-  .where li,
-  .leaves li {
-    padding: 0.35rem 0;
+  .pair li {
+    padding: 0.55rem 0;
     border-top: 1px solid var(--outline-variant);
-  }
-
-  .where figcaption {
-    grid-column: 1 / -1;
+    font-size: 1.125rem;
+    font-weight: 650;
   }
 
   .facts {
     display: grid;
-    gap: 0;
-    margin-top: 0.4rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem 1.75rem;
+    margin-top: 1.35rem;
   }
 
   .facts article {
-    padding: 0.85rem 0;
-    border-top: 1px solid var(--outline-variant);
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--on-surface);
   }
 
   .eq {
-    margin: 0.2rem 0 0;
-    font-size: clamp(1.15rem, 1.5vw, 1.45rem);
-    font-weight: 750;
-    letter-spacing: -0.03em;
-    line-height: 1.25;
+    margin: 0.45rem 0 0;
+    font-size: clamp(1.2rem, 1.4vw, 1.45rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
   }
 
   .facts article p:last-child {
-    margin: 0.25rem 0 0;
-    max-width: 40rem;
+    margin: 0.45rem 0 0;
     color: var(--on-surface-variant);
+    font-size: 0.9375rem;
   }
 
-  .rules {
-    margin: 0.35rem 0 0;
+  .trust {
+    padding-bottom: 0.5rem;
   }
 
-  .rules div {
+  .trust-grid {
     display: grid;
-    grid-template-columns: minmax(9rem, 16rem) minmax(0, 1fr);
-    gap: 0.15rem 1.25rem;
-    padding: 0.55rem 0;
+    grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
+    gap: 2rem 3rem;
+    margin-top: 1.25rem;
+  }
+
+  .trust h3 {
+    font-size: 1.35rem;
+    letter-spacing: -0.03em;
+  }
+
+  .trust dl,
+  .limits {
+    margin: 0.75rem 0 0;
+  }
+
+  .trust dl div,
+  .limits div {
+    padding: 0.65rem 0;
     border-top: 1px solid var(--outline-variant);
   }
 
-  .rules dt {
+  .trust dt,
+  .limits dt {
     margin: 0;
-    font-weight: 750;
+    font-weight: 800;
   }
 
-  .rules dd {
-    margin: 0;
+  .trust dd,
+  .limits dd,
+  .leaves {
+    margin: 0.15rem 0 0;
     color: var(--on-surface-variant);
   }
 
   .leaves {
-    max-width: 36rem;
-    margin-top: 0.6rem;
+    margin-top: 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .leaves li {
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--outline-variant);
   }
 
   .leaves b {
-    font-weight: 800;
+    color: var(--on-surface);
   }
 
   .text-link {
-    margin-top: 0.55rem;
+    margin-top: 0.75rem;
   }
 
   .split {
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: 0 var(--page-gutter) clamp(1.25rem, 3vw, 2rem);
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
-    gap: 0 2.5rem;
-    align-items: start;
-  }
-
-  .split .block {
-    max-width: none;
-    margin: 0;
-    padding-left: 0;
-    padding-right: 0;
+    gap: 1.5rem 3rem;
+    padding-top: clamp(2rem, 4vw, 3rem);
+    padding-bottom: clamp(2rem, 4vw, 3.5rem);
   }
 
   .faq {
-    margin-top: 0.35rem;
+    margin-top: 0.75rem;
     border-top: 1px solid var(--outline-variant);
   }
 
@@ -509,9 +682,9 @@ const guideIds = guides.map((guide) => guide.id);
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    min-height: 2.75rem;
-    padding: 0.45rem 0;
-    font-weight: 700;
+    min-height: 2.85rem;
+    padding: 0.55rem 0;
+    font-weight: 750;
     cursor: pointer;
     list-style: none;
   }
@@ -540,36 +713,64 @@ const guideIds = guides.map((guide) => guide.id);
   }
 
   details p {
-    margin: 0 0 0.75rem;
+    margin: 0 0 0.85rem;
     color: var(--on-surface-variant);
   }
 
   .close {
-    margin-top: clamp(1.25rem, 3vw, 2rem);
     background: var(--highlight);
     color: var(--on-highlight);
   }
 
   .close-inner {
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: clamp(1.35rem, 3vw, 2.25rem) var(--page-gutter);
+    padding-top: clamp(2rem, 4vw, 3rem);
+    padding-bottom: clamp(2rem, 4vw, 3rem);
   }
 
   .close p {
-    max-width: 36rem;
-    margin: 0.4rem 0 0;
+    max-width: 28rem;
+    margin: 0.55rem 0 0;
+    font-size: 1.125rem;
   }
 
   .close .btn {
+    margin-top: 1.1rem;
     background: var(--on-highlight);
     color: var(--highlight);
   }
 
-  @media (max-width: 800px) {
-    .where,
-    .split,
-    .rules div {
+  .close .btn:hover {
+    background: color-mix(in srgb, var(--on-highlight) 88%, var(--midnight-navy));
+  }
+
+  @media (max-width: 980px) {
+    .open {
+      grid-template-columns: 1fr;
+      min-height: 0;
+      align-items: start;
+    }
+
+    h1 {
+      max-width: 12ch;
+    }
+
+    .poster {
+      max-width: 28rem;
+    }
+
+    .pair,
+    .trust-grid,
+    .split {
+      grid-template-columns: 1fr;
+    }
+
+    .facts {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .facts {
       grid-template-columns: 1fr;
     }
   }

@@ -132,21 +132,22 @@ section[id] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: var(--min-touch);
-  padding: 0 1.15rem;
+  min-height: 3rem;
+  padding: 0 1.25rem;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: var(--primary);
   color: var(--on-primary);
   font: inherit;
-  font-weight: 700;
+  font-weight: 750;
+  letter-spacing: -0.01em;
   text-decoration: none;
   cursor: pointer;
 }
 
 .btn:hover {
-  text-decoration: underline;
-  text-underline-offset: 0.18em;
+  background: color-mix(in srgb, var(--primary) 86%, var(--midnight-navy));
+  text-decoration: none;
 }
 
 .text-link {

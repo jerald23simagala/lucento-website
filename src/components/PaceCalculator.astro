@@ -6,10 +6,10 @@
 import Mascot from './Mascot.astro';
 ---
 
-<section class="calc" id="pace" aria-labelledby="calc-title">
+<section class="calc" id="your-numbers" aria-labelledby="calc-title">
   <div class="calc-text">
-    <h2 id="calc-title">Are you spending faster than the month?</h2>
-    <p>Type your own numbers. Dollars here; the app never converts. The character is concept art, and the pose follows the pace.</p>
+    <h2 id="calc-title">Use your own numbers</h2>
+    <p>Same comparison as the card above. Dollars here; the app never converts. The character is concept art, and the pose follows the pace.</p>
   </div>
 
   <form class="calc-card" id="calc-form" novalidate>
@@ -122,6 +122,9 @@ import Mascot from './Mascot.astro';
     $('calc-month-bar').style.width = `${month}%`;
     const ahead = used > month + 10;
     const behind = used < month - 10;
+    const result = form.querySelector('.result');
+    result?.classList.toggle('is-ahead', ahead || remaining <= 0);
+    result?.classList.toggle('is-behind', behind && remaining > 0);
     $('calc-used-bar').classList.toggle('is-ahead', ahead || remaining <= 0);
     $('calc-verdict').textContent =
       remaining <= 0 ? `Over budget by ${money(-remaining)}`
@@ -148,11 +151,11 @@ import Mascot from './Mascot.astro';
 
   h2 {
     margin: 0;
-    max-width: 24ch;
-    font-size: clamp(1.35rem, 1vw + 1rem, 1.75rem);
-    line-height: 1.15;
+    max-width: 16ch;
+    font-size: clamp(2rem, 3vw, 2.75rem);
+    line-height: 1.02;
     font-weight: 800;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
   }
 
   .calc-text p {
@@ -206,6 +209,17 @@ import Mascot from './Mascot.astro';
 
   .result {
     margin-top: 1.5rem;
+    padding: 1.15rem 1.15rem 1rem;
+    border-radius: var(--radius-xl);
+    background: color-mix(in srgb, var(--positive-container) 90%, var(--surface));
+  }
+
+  .result.is-ahead {
+    background: color-mix(in srgb, var(--negative-container) 90%, var(--surface));
+  }
+
+  .result.is-behind {
+    background: color-mix(in srgb, var(--info-container) 90%, var(--surface));
   }
 
   .bars {
@@ -227,7 +241,8 @@ import Mascot from './Mascot.astro';
 
   .track {
     display: block;
-    height: 0.7rem;
+    height: 0.9rem;
+    border-radius: 999px;
     background: var(--track);
     overflow: hidden;
   }
@@ -235,6 +250,7 @@ import Mascot from './Mascot.astro';
   .fill {
     display: block;
     height: 100%;
+    border-radius: inherit;
   }
 
   .fill.used {
