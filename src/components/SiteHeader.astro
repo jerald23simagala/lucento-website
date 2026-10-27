@@ -8,19 +8,18 @@ import Logo from './Logo.astro';
       <Logo />
     </a>
     <nav aria-label="Site">
-      <details class="menu">
-        <summary>
-          <span class="when-closed">Menu</span>
-          <span class="when-open">Close</span>
-        </summary>
-        <ul>
-          <li><a href="/#how-it-works">How it works</a></li>
-          <li><a href="/#pace">The month</a></li>
-          <li><a href="/how-to">Guides</a></li>
-          <li><a href="/#faq">FAQ</a></li>
-          <li><a class="btn" href="/#try">Try the demo</a></li>
-        </ul>
-      </details>
+      <input id="site-menu" class="nav-toggle" type="checkbox" />
+      <label class="menu-button" for="site-menu">
+        <span class="when-closed">Menu</span>
+        <span class="when-open">Close</span>
+      </label>
+      <ul class="nav-links">
+        <li><a href="/#how-it-works">How it works</a></li>
+        <li><a href="/#pace">The month</a></li>
+        <li><a href="/how-to">Guides</a></li>
+        <li><a href="/#faq">FAQ</a></li>
+        <li><a class="btn" href="/#try">Try the demo</a></li>
+      </ul>
     </nav>
   </div>
 </header>
@@ -41,17 +40,38 @@ import Logo from './Logo.astro';
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem 1.5rem;
+    gap: 0.75rem 1.25rem;
   }
 
   .home {
     display: inline-flex;
     align-items: center;
+    flex: none;
     min-height: var(--min-touch);
     text-decoration: none;
   }
 
-  .menu > ul {
+  .nav-toggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .menu-button {
+    display: none;
+  }
+
+  .when-open {
+    display: none;
+  }
+
+  .nav-links {
     display: flex;
     align-items: center;
     gap: 0.15rem;
@@ -60,23 +80,17 @@ import Logo from './Logo.astro';
     list-style: none;
   }
 
-  summary {
-    display: none;
-  }
-
-  .when-open {
-    display: none;
-  }
-
   nav a:not(.btn) {
     display: inline-flex;
     align-items: center;
+    flex: none;
     min-height: var(--min-touch);
     padding: 0 0.7rem;
     border-radius: var(--radius-sm);
     color: var(--on-surface);
     font-weight: 650;
     text-decoration: none;
+    white-space: nowrap;
   }
 
   nav a:not(.btn):hover {
@@ -84,24 +98,36 @@ import Logo from './Logo.astro';
     text-underline-offset: 0.22em;
   }
 
-  @media (min-width: 880px) {
-    .menu:not([open]) > ul {
-      display: flex !important;
+  nav .btn {
+    flex: none;
+    margin-left: 0.35rem;
+    white-space: nowrap;
+  }
+
+  .nav-toggle:focus-visible + .menu-button {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
+
+  @media (min-width: 960px) {
+    .nav-toggle {
+      display: none;
     }
   }
 
-  @media (max-width: 879px) {
+  @media (max-width: 959px) {
     .bar {
       flex-wrap: wrap;
     }
 
     nav {
-      margin-left: auto;
+      display: contents;
     }
 
-    summary {
+    .menu-button {
       display: inline-flex;
       align-items: center;
+      margin-left: auto;
       min-height: var(--min-touch);
       padding: 0 0.85rem;
       border: 1px solid var(--border-default);
@@ -110,40 +136,31 @@ import Logo from './Logo.astro';
       color: var(--on-surface);
       font-weight: 700;
       cursor: pointer;
-      list-style: none;
     }
 
-    summary::-webkit-details-marker {
+    .nav-links {
       display: none;
-    }
-
-    .menu[open] .when-closed {
-      display: none;
-    }
-
-    .menu[open] .when-open {
-      display: inline;
-    }
-
-    .menu[open] {
-      width: 100%;
-    }
-
-    .menu:not([open]) > ul {
-      display: none;
-    }
-
-    .menu[open] > ul {
-      display: flex;
       flex-direction: column;
       align-items: stretch;
       width: 100%;
-      padding: 0.35rem 0 0.5rem;
+      padding: 0.25rem 0 0.4rem;
     }
 
-    .menu[open] .btn {
+    .nav-toggle:checked ~ .nav-links {
+      display: flex;
+    }
+
+    .nav-toggle:checked ~ .menu-button .when-closed {
+      display: none;
+    }
+
+    .nav-toggle:checked ~ .menu-button .when-open {
+      display: inline;
+    }
+
+    .nav-toggle:checked ~ .nav-links .btn {
       width: 100%;
-      margin-top: 0.25rem;
+      margin: 0.35rem 0 0;
     }
   }
 </style>
