@@ -1185,6 +1185,40 @@ export interface PosterSlide {
   html: string;
 }
 
+export interface ExampleMonth {
+  month: string;
+  used: number;
+  elapsed: number;
+  daysLeft: number;
+  spent: string;
+  allowance: string | null;
+  verdict: string;
+  pose: 'caution' | 'steady' | 'greeting';
+}
+
+/** The fictional October used by the demo screens. Figures come from the same seed and maths. */
+export function exampleMonth(): ExampleMonth {
+  symbol = SYMBOLS.USD ?? '$';
+  const p = plan(fresh('budget'));
+  const verdict =
+    p.pace === 'ahead'
+      ? 'Spending faster than the month'
+      : p.pace === 'behind'
+        ? 'Spending slower than the month'
+        : 'Spending in step with the month';
+  const pose = p.pace === 'ahead' ? 'caution' : p.pace === 'behind' ? 'steady' : 'greeting';
+  return {
+    month: TODAY.label,
+    used: p.used,
+    elapsed: p.elapsed,
+    daysLeft: p.daysLeft,
+    spent: fmt(p.spent),
+    allowance: p.allowance !== null ? fmt(p.allowance) : null,
+    verdict,
+    pose,
+  };
+}
+
 /** Static screens for the homepage reel. Same markup and example records as the interactive demo. */
 export function posterSlides(): PosterSlide[] {
   const s = fresh('budget');

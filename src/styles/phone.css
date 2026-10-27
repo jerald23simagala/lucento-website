@@ -3,12 +3,12 @@
   @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_semibold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
   @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
-  .ld { margin: 0; padding: 0 0 clamp(2rem, 4vw, 3rem); scroll-margin-top: 5.5rem; }
-  .ld-show { background: var(--primary-container); color: var(--on-surface); padding: clamp(1.35rem, 3vw, 2.25rem) var(--page-gutter) clamp(1.75rem, 4vw, 3rem); }
+  .ld { margin: 0; padding: 0 0 clamp(2rem, 4vw, 3rem); scroll-margin-top: 5.5rem; color: var(--ink, #17233f); }
+  .ld-show { background: transparent; color: var(--ink, #17233f); padding: clamp(1.35rem, 3vw, 2.25rem) var(--page-gutter) clamp(1.25rem, 3vw, 2rem); }
   .ld-head, .ld-pick, .ld-reopen-row, .ld-note { width: min(22.5rem, 100%); margin-left: auto; margin-right: auto; }
-  .ld-head { display: grid; gap: 0.2rem; }
-  .ld h1 { margin: 0; font-size: clamp(1.85rem, 2vw, 2.35rem); line-height: 1.05; font-weight: 800; letter-spacing: -0.04em; }
-  .ld-fine { margin: 0; color: var(--on-primary-container); font-size: 0.9375rem; }
+  .ld-head { display: grid; gap: 0.35rem; }
+  .ld h1 { margin: 0; font-size: clamp(2.4rem, 4vw, 3.6rem); line-height: 0.94; font-weight: 700; letter-spacing: -0.045em; }
+  .ld-fine { margin: 0; color: var(--quiet, #4e596e); font-size: 0.9375rem; }
   .ld-pick { display: grid; gap: 0.3rem; margin: 0.85rem auto 0; }
   .ld-pick span { font-size: 0.8125rem; font-weight: 750; }
   .ld-pick select { width: 100%; min-height: 3rem; padding: 0 2.4rem 0 0.85rem; border: 1px solid var(--border-default); border-radius: var(--radius-md); background-color: var(--surface-container-lowest); color: var(--on-surface); font: inherit; font-weight: 700; appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--on-surface) 50%), linear-gradient(135deg, var(--on-surface) 50%, transparent 50%); background-position: calc(100% - 1.15rem) 50%, calc(100% - 0.75rem) 50%; background-size: 0.4rem 0.4rem, 0.4rem 0.4rem; background-repeat: no-repeat; }
@@ -17,7 +17,7 @@
   .ld-reopen { min-height: var(--min-touch); padding: 0; border: 0; background: transparent; color: var(--primary); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 0.18em; cursor: pointer; }
   .ld-reopen[hidden] { display: none; }
   .ld-stage { position: relative; width: min(360px, 100%); margin: 0.35rem auto 0; }
-  .ld-note { margin: 0.7rem auto 0; font-size: 0.8125rem; color: var(--on-primary-container); text-align: center; }
+  .ld-note { margin: 0.7rem auto 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--quiet, #4e596e); }
   .ld-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 
   .ld-bubble { position: absolute; z-index: 7; right: 0.5rem; bottom: 5.5rem; left: 0.5rem; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); gap: 0.1rem 0.55rem; width: auto; padding: 0.65rem 0.7rem 0.6rem; border: 1px solid var(--outline-variant); border-radius: 1.15rem 1.15rem 1.15rem 0.4rem; background: var(--surface-container-lowest); color: var(--on-surface); box-shadow: var(--shadow-lg); }
@@ -284,4 +284,23 @@
   @media (max-width: 400px) {
     .ld-phone { width: 100%; height: 700px; padding: 8px; border-radius: 36px; }
     .ld-screen { border-radius: 30px; }
+  }
+
+  @media (min-width: 960px) {
+    .ld-show {
+      display: grid;
+      grid-template-columns: minmax(16rem, 22rem) auto;
+      justify-content: center;
+      column-gap: clamp(1.5rem, 4vw, 4rem);
+      align-items: start;
+      max-width: 76rem;
+      margin: 0 auto;
+    }
+    .ld-head, .ld-pick, .ld-reopen-row, .ld-note {
+      width: auto;
+      margin-left: 0;
+      margin-right: 0;
+    }
+    .ld-stage { grid-column: 2; grid-row: 1 / span 5; margin-top: 0; }
+    .ld-note { grid-column: 1; }
   }

@@ -1,19 +1,66 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Crest from '../components/Crest.astro';
+import { mascotArt } from '../data/mascot';
 ---
 
 <BaseLayout title="Page not found · Lucento" description="This page doesn’t exist." noindex>
-  <section class="prose-page" aria-labelledby="nf-title">
-    <Crest size="md" />
-    <h1 id="nf-title">This page doesn’t exist</h1>
-    <p class="lede">The link may be out of date. The home page still has the demo, the guides, and how Lucento handles your data.</p>
-    <p class="actions"><a class="btn" href="/">Go to the Lucento home page</a></p>
+  <section class="miss" aria-labelledby="nf-title">
+    <img
+      src={mascotArt.thinking.still}
+      alt="Lucento, thinking, crystal torch lowered."
+      width="512"
+      height="512"
+    />
+    <div>
+      <p class="kicker">404</p>
+      <h1 id="nf-title">This page isn’t in the record.</h1>
+      <p class="lede">The link may be out of date. The home page still has the demo, the guides, and how Lucento handles your data.</p>
+      <p class="actions"><a class="btn" href="/">Go to the Lucento home page</a></p>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
+  .miss {
+    display: grid;
+    grid-template-columns: minmax(8rem, 16rem) minmax(0, 36rem);
+    gap: 1rem 2rem;
+    align-items: end;
+    max-width: 76rem;
+    margin: 0 auto;
+    padding: clamp(2rem, 6vw, 4.5rem) var(--page-gutter) var(--page-pad);
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  h1 {
+    margin: 0.4rem 0 0;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+  }
+
+  .lede {
+    margin: 1rem 0 0;
+    color: var(--quiet);
+    font-size: 1.125rem;
+  }
+
   .actions {
-    margin: 1.5rem 0 0;
+    margin: 1.2rem 0 0;
+  }
+
+  @media (max-width: 700px) {
+    .miss {
+      grid-template-columns: 1fr;
+    }
+
+    img {
+      width: 8rem;
+    }
   }
 </style>

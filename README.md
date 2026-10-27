@@ -9,7 +9,7 @@ repository (`lucento-android`); nothing here changes it.
 - [Astro](https://astro.build) 5 (static output, no client-side framework)
 - TypeScript (strict) with `astro check`
 - ESLint with `eslint-plugin-astro` and its strict accessibility rules
-- Manrope (self-hosted via `@fontsource-variable/manrope`), the brand's marketing face
+- Plus Jakarta Sans (the app face, self-hosted) and IBM Plex Mono for the marketing site
 - All versions are pinned exactly (`.npmrc` sets `save-exact`)
 
 ## Getting started
@@ -67,6 +67,7 @@ public/                   Static files (favicon, demo art, explainer video)
 public/lottie/            Mascot loops authored here from the existing WebP art. The repo had no Lottie source.
 ```
 
-The marketing site keeps Manrope and the Sunrise Energy tokens. The Rising Crest
-artwork colours live in `global.css` as `--mark-*` and are only used for the
-crest mark, not for text or status.
+The phone simulation uses the Sunrise Energy tokens. The marketing pages use
+their own paper-and-ink colours in `global.css`, so the site does not follow
+the day/night token swap. The Rising Crest artwork colours live there as
+`--mark-*` and are only used for the crest mark, not for text or status.

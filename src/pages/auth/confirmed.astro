@@ -11,6 +11,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 <BaseLayout title="Email confirmed · Lucento" description="Your Lucento sync account is confirmed." noindex>
   <section class="prose-page" aria-labelledby="confirm-title">
     <div data-state="ok">
+      <img src="/demo/art/mascot_thriving_success.webp" alt="" width="96" height="96" />
       <h1 id="confirm-title">Your email is confirmed</h1>
       <p>Go back to Lucento on your phone and sign in with the same email and password to turn on sync.</p>
       <p class="muted">You can close this page. Nothing else is needed here.</p>
@@ -45,8 +46,14 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 </script>
 
 <style>
+  img {
+    width: 5.5rem;
+    height: 5.5rem;
+    object-fit: contain;
+  }
+
   h1 {
-    margin: 0 0 0.75rem;
+    margin: 0.4rem 0 0.75rem;
   }
 
   p {
