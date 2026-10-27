@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<!--
+  Where Supabase sends people after they open the "confirm your email" link for a Lucento sync account (the project's
+  Site URL). The account is confirmed by Supabase before this page loads; the page only says so and points back to the
+  app. Supabase appends tokens to the URL fragment: they are never read, sent or stored here, and the fragment is
+  cleared from the address bar. Only an error code is read, to explain an expired or reused link.
+-->
+<BaseLayout title="Email confirmed · Lucento" description="Your Lucento sync account is confirmed." noindex>
+  <section class="confirm" aria-labelledby="confirm-title">
+    <div data-state="ok">
+      <h1 id="confirm-title">Your email is confirmed</h1>
+      <p>Go back to Lucento on your phone and sign in with the same email and password to turn on sync.</p>
+      <p class="muted">You can close this page. Nothing else is needed here.</p>
+    </div>
+    <div data-state="error" hidden>
+      <h1>This link didn’t work</h1>
+      <p data-error-text>The link has expired or was already used.</p>
+      <p class="muted">
+        In Lucento, try signing in — if your email is already confirmed it will just work. Otherwise create the account
+        again to get a new link.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  (function () {
+    var hash = window.location.hash.replace(/^#/, '');
+    var params = new URLSearchParams(hash || window.location.search.replace(/^\?/, ''));
+    var error = params.get('error_description') || params.get('error');
+    if (error) {
+      document.querySelector('[data-state="ok"]').hidden = true;
+      document.querySelector('[data-state="error"]').hidden = false;
+      var text = document.querySelector('[data-error-text]');
+      if (text) text.textContent = error.replace(/\+/g, ' ');
+    }
+    // Never leave session tokens in the address bar or browser history.
+    if (window.location.hash || window.location.search) {
+      history.replaceState(null, '', window.location.pathname);
+    }
+  })();
+</script>
+
+<style>
+  .confirm {
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding: var(--space-xxxl) var(--page-gutter);
+  }
+
+  h1 {
+    margin: 0 0 var(--space-md);
+    font-size: 2rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0 0 var(--space-sm);
+  }
+
+  .muted {
+    opacity: 0.75;
+  }
+</style>
