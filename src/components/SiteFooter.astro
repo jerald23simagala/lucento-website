@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import Crest from './Crest.astro';
 
 const year = new Date().getFullYear();
 const columns = [
@@ -31,11 +32,11 @@ const columns = [
 ---
 
 <footer class="site-footer">
-  <div class="crest-rule" aria-hidden="true"><span></span><span></span><span></span></div>
   <div class="inner">
     <div class="brand">
       <a href="/" aria-label="Lucento home"><Logo size="footer" /></a>
       <p>Financial clarity without the complexity. A budget tracker for Android, in development.</p>
+      <Crest size="sm" />
     </div>
     {
       columns.map((c) => (
@@ -59,40 +60,45 @@ const columns = [
 
 <style>
   .site-footer {
-    margin-top: var(--space-xxl);
-    background: var(--surface-container-low);
-    color: var(--on-surface-variant);
+    margin-top: 0;
+    background: var(--night);
+    color: #d5deef;
     font-size: 0.9375rem;
   }
 
   .inner {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: var(--space-xxl) var(--page-gutter) var(--space-xl);
+    padding: 2.4rem var(--page-gutter) 1.5rem;
     display: grid;
-    grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(8rem, 1fr));
-    gap: var(--space-xl) var(--space-lg);
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(8rem, 1fr));
+    gap: 1.5rem 1.75rem;
   }
 
   .brand p {
     max-width: 22rem;
-    margin: var(--space-md) 0 0;
+    margin: 0.8rem 0 0.9rem;
   }
 
   .brand a {
     display: inline-flex;
-    min-height: var(--min-touch);
+    min-height: 3rem;
     align-items: center;
+    color: #f4f7ff;
   }
 
   .col-title {
     margin: 0;
-    color: var(--on-surface);
-    font-weight: 700;
+    color: #f4f7ff;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
 
   ul {
-    margin: var(--space-xs) 0 0;
+    margin: 0.35rem 0 0;
     padding: 0;
     list-style: none;
   }
@@ -101,21 +107,23 @@ const columns = [
     display: inline-flex;
     align-items: center;
     min-height: 2.75rem;
-    color: var(--on-surface-variant);
+    color: #d5deef;
     text-decoration: none;
   }
 
   li a:hover {
-    color: var(--primary);
+    color: var(--spot);
     text-decoration: underline;
   }
 
   .base {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: var(--space-lg) var(--page-gutter) var(--space-xl);
-    border-top: 1px solid var(--outline-variant);
-    font-size: 0.8125rem;
+    padding: 0.9rem var(--page-gutter) 1.4rem;
+    border-top: 1px solid rgba(244, 247, 255, 0.18);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
   }
 
   .base p {

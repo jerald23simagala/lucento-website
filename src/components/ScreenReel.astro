@@ -2,28 +2,44 @@
 import { posterSlides } from '../demo/simulator';
 import '../styles/phone.css';
 
+interface Props {
+  /** Crop the app to the column. No bezel, no floating phone. */
+  bleed?: boolean;
+}
+
+const { bleed = false } = Astro.props;
 const slides = posterSlides();
 const first = slides[0];
 if (!first) throw new Error('The screen reel has no slides');
 ---
 
-<div class="reel" data-reel aria-roledescription="carousel" aria-label="Lucento app screens">
+<div class:list={['reel', bleed && 'is-bleed']} data-reel aria-roledescription="carousel" aria-label="Lucento app screens">
   <p class="reel-note">Example records. Not your money.</p>
   <div class="reel-stage" data-reel-stage>
     <div class="reel-slide">
-      <div class="ld-phone" inert>
-        <div class="ld-notch" aria-hidden="true"></div>
-        <div class="ld-screen" set:html={first.html} />
-      </div>
+      {
+        bleed ? (
+          <div class="ld-screen" inert set:html={first.html} />
+        ) : (
+          <div class="ld-phone" inert>
+            <div class="ld-notch" aria-hidden="true" />
+            <div class="ld-screen" set:html={first.html} />
+          </div>
+        )
+      }
     </div>
   </div>
   {
     slides.map((slide) => (
       <template data-reel-template data-label={slide.label}>
-        <div class="ld-phone" inert>
-          <div class="ld-notch" aria-hidden="true" />
-          <div class="ld-screen" set:html={slide.html} />
-        </div>
+        {bleed ? (
+          <div class="ld-screen" inert set:html={slide.html} />
+        ) : (
+          <div class="ld-phone" inert>
+            <div class="ld-notch" aria-hidden="true" />
+            <div class="ld-screen" set:html={slide.html} />
+          </div>
+        )}
       </template>
     ))
   }
@@ -49,16 +65,24 @@ if (!first) throw new Error('The screen reel has no slides');
     min-width: 0;
   }
 
+  .reel:focus-visible {
+    outline: 3px solid var(--link);
+    outline-offset: -3px;
+  }
+
   .reel-note,
   .reel-count {
-    color: var(--on-surface-variant);
+    color: var(--quiet);
   }
 
   .reel-note {
     width: min(360px, 100%);
     margin: 0 auto 0.55rem;
-    font-size: 0.875rem;
-    font-weight: 650;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .reel-stage {
@@ -113,29 +137,32 @@ if (!first) throw new Error('The screen reel has no slides');
     margin: 0;
     display: grid;
     justify-items: center;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: -0.02em;
   }
 
   .reel-count {
-    font-size: 0.8125rem;
-    font-weight: 650;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
   }
 
   .reel-controls button {
     min-height: 3rem;
     padding: 0 0.85rem;
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-md);
-    background: var(--surface-container-lowest);
-    color: var(--on-surface);
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    background: var(--paper);
+    color: var(--ink);
     font: inherit;
-    font-weight: 750;
+    font-weight: 700;
     cursor: pointer;
   }
 
   .reel-controls button:hover {
-    border-color: var(--primary);
+    background: var(--ink);
+    color: var(--paper);
   }
 
   .reel-live {
@@ -144,6 +171,72 @@ if (!first) throw new Error('The screen reel has no slides');
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
+  }
+
+  .reel.is-bleed {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    background: var(--paper);
+  }
+
+  .reel.is-bleed .reel-note {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .reel.is-bleed .reel-stage {
+    flex: 1;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+    perspective: 1200px;
+    container-type: size;
+  }
+
+  .reel.is-bleed .reel-slide :global(.ld-screen) {
+    width: 390px;
+    height: 844px;
+    border-radius: 0;
+    transform: scale(2.2);
+    transform: scale(calc(100cqw / 390px));
+    transform-origin: top left;
+    pointer-events: none;
+  }
+
+  .reel.is-bleed .reel-controls {
+    width: 100%;
+    margin: 0;
+    padding: 0.35rem 0.7rem;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .reel.is-bleed .reel-controls p,
+  .reel.is-bleed .reel-count {
+    color: var(--paper);
+  }
+
+  .reel.is-bleed .reel-controls button {
+    border-color: transparent;
+    background: transparent;
+    color: var(--spot);
+    padding: 0 0.4rem;
+  }
+
+  .reel.is-bleed .reel-controls button:hover {
+    background: transparent;
+    color: var(--paper);
   }
 
   @keyframes reel-in-next {
