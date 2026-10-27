@@ -1,0 +1,202 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { guides } from '../data/guides';
+---
+
+<BaseLayout
+  title="How to use Lucento"
+  description="Step-by-step guides for Lucento: setting up, adding transactions, budgets, wallets, bills, debts, goals, moving to a new phone and sync."
+>
+  <div class="page">
+    <header class="intro">
+      <p class="eyebrow">How to</p>
+      <h1>Using Lucento, step by step</h1>
+      <p class="lede">
+        Short guides for the things you’ll do most. Where you see <em>Try it</em>, the same task runs as an
+        interactive simulation on the home page.
+      </p>
+    </header>
+
+    <div class="layout">
+      <nav class="toc" aria-label="Guides">
+        <ol>
+          {
+            guides.map((g) => (
+              <li>
+                <a href={`#${g.id}`}>{g.title}</a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <div class="guides">
+        {
+          guides.map((g, index) => (
+            <section class="guide" id={g.id} aria-labelledby={`${g.id}-title`}>
+              <p class="num">{String(index + 1).padStart(2, '0')}</p>
+              <h2 id={`${g.id}-title`}>{g.title}</h2>
+              <p class="summary">{g.summary}</p>
+              <ol class="steps">
+                {g.steps.map((step) => (
+                  <li>{step}</li>
+                ))}
+              </ol>
+              {g.tip && <p class="tip">{g.tip}</p>}
+              {g.demo && (
+                <a class="try" href={`/#try-${g.demo}`}>
+                  Try it in the simulation
+                </a>
+              )}
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding: clamp(var(--space-xxl), 6vw, 5rem) var(--page-gutter) var(--space-xxl);
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: var(--space-xs) 0 0;
+    font-size: clamp(2rem, 4vw + 1rem, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .lede {
+    max-width: var(--measure);
+    margin: var(--space-lg) 0 0;
+    font-size: 1.125rem;
+    color: var(--on-surface-variant);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 14rem minmax(0, 1fr);
+    gap: var(--space-xxl);
+    margin-top: var(--space-xxl);
+    align-items: start;
+  }
+
+  .toc {
+    position: sticky;
+    top: var(--space-lg);
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-xxs);
+  }
+
+  .toc a {
+    display: flex;
+    align-items: center;
+    min-height: 2.5rem;
+    padding: 0 var(--space-sm);
+    border-radius: var(--radius-sm);
+    color: var(--on-surface-variant);
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    background: var(--surface-container);
+    color: var(--on-surface);
+  }
+
+  .guides {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .guide {
+    padding: var(--space-xl);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--surface-container-lowest);
+    scroll-margin-top: var(--space-lg);
+  }
+
+  .num {
+    margin: 0;
+    font-weight: 800;
+    color: var(--primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  h2 {
+    margin: var(--space-xxs) 0 0;
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  .summary {
+    margin: var(--space-xs) 0 0;
+    color: var(--on-surface-variant);
+  }
+
+  .steps {
+    margin: var(--space-lg) 0 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .steps li::marker {
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .tip {
+    margin: var(--space-lg) 0 0;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    background: var(--highlight);
+    color: var(--on-highlight);
+  }
+
+  .try {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--min-touch);
+    margin-top: var(--space-lg);
+    padding: 0 var(--space-lg);
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: var(--on-primary);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  @media (max-width: 860px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+
+    .toc {
+      position: static;
+    }
+
+    .toc ol {
+      grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    }
+  }
+</style>

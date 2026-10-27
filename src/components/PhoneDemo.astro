@@ -1,0 +1,919 @@
+---
+// The interactive Lucento simulation: pick a story, follow the numbered steps, and use the app on the phone.
+// Everything runs in the browser with fictional data; nothing is saved or sent. Figures follow the app's own rules
+// (whole cents, Spent = every expense, budget = sum of category amounts, days left include today).
+---
+
+<section class="ld" id="try" aria-labelledby="ld-title">
+  <div class="ld-head">
+    <p class="eyebrow">Try it here</p>
+    <h2 id="ld-title">Use Lucento right in your browser</h2>
+    <p class="ld-sub">
+      Pick a story, then follow the steps on the phone. It is a simulation with fictional money: nothing is saved
+      or sent anywhere.
+    </p>
+  </div>
+
+  <div class="ld-body">
+    <div class="ld-guide">
+      <div class="ld-stories" role="group" aria-label="Choose a story">
+        <button type="button" class="ld-story" data-story="log">Log a day’s spending</button>
+        <button type="button" class="ld-story" data-story="bill">Pay a bill on time</button>
+        <button type="button" class="ld-story" data-story="budget">Read your budget</button>
+        <button type="button" class="ld-story" data-story="restore">Move to a new phone</button>
+      </div>
+      <div class="ld-card">
+        <p class="ld-kicker" id="ld-kicker">Story 1 · the composer</p>
+        <h3 class="ld-story-title" id="ld-story-title">Log a whole day in one message</h3>
+        <p class="ld-story-text" id="ld-story-text">
+          You bought lunch, did the groceries and paid for parking. Instead of three forms, write it the way you would
+          tell a friend.
+        </p>
+        <ol class="ld-steps" id="ld-steps"></ol>
+        <div class="ld-actions">
+          <button type="button" class="ld-reset" id="ld-reset">Start this story again</button>
+        </div>
+      </div>
+      <p class="ld-live" id="ld-live" aria-live="polite"></p>
+    </div>
+
+    <div class="ld-phone-wrap">
+      <div class="ld-phone">
+        <div class="ld-notch" aria-hidden="true"></div>
+        <div class="ld-screen" id="ld-screen" role="region" aria-label="Lucento app simulation"></div>
+      </div>
+      <p class="ld-note">Fictional data · simulation of the Android app</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ------------------------------------------------------------------ money (whole cents, like the app)
+  const fmt = (minor: number): string => {
+    const abs = Math.abs(minor);
+    const whole = Math.floor(abs / 100).toLocaleString('en-US');
+    return `$${whole}.${String(abs % 100).padStart(2, '0')}`;
+  };
+  /** Signed like MoneyFormatter.formatSigned: a real minus sign, an optional plus. */
+  const signed = (minor: number, plus = false): string =>
+    minor < 0 ? `−${fmt(minor)}` : `${plus && minor > 0 ? '+' : ''}${fmt(minor)}`;
+  const percentOf = (part: number, whole: number): number => Math.floor((part * 100 * 2 + whole) / (whole * 2)); // half-up
+  const ENTITIES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  const esc = (s: string): string => s.replace(/[&<>"']/g, (c) => ENTITIES[c] ?? c);
+
+  // ------------------------------------------------------------------ icons (Material, filled)
+  const P = {
+    cart: 'M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z',
+    dining: 'M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z',
+    car: 'M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z',
+    receipt: 'M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z',
+    bag: 'M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z',
+    bell: 'M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z',
+    home: 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
+    pie: 'M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z',
+    wallet: 'M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z',
+    add: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z',
+    send: 'M2.01 21L23 12 2.01 3 2 10l15 2-15 2z',
+    back: 'M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z',
+    person: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z',
+    check: 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
+    warn: 'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z',
+    device: 'M16 1H8C6.34 1 5 2.34 5 4v16c0 1.66 1.34 3 3 3h8c1.66 0 3-1.34 3-3V4c0-1.66-1.34-3-3-3zm-2 20h-4v-1h4v1zm3.25-3H6.75V4h10.5v14z',
+    gym: 'M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z',
+    list: 'M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z',
+    trend: 'M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z',
+    savings: 'M15 10c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zM8 9h5V7H8v2zm14-1.5v6.97l-2.82.94L17.5 21H12v-2h-2v2H4.5S2 12.54 2 9.5 4.46 4 7.5 4h5c.91-1.21 2.36-2 4-2 .83 0 1.5.67 1.5 1.5 0 .21-.04.4-.12.58-.14.34-.26.73-.32 1.15l2.27 2.27H22z',
+    card: 'M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z',
+    google: 'M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 4.9 1.97 4.9 1.97L19 4.72S16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12c0 5.05 4.13 10 10.22 10 5.35 0 9.25-3.67 9.25-9.09 0-1.15-.15-1.81-.15-1.81z',
+  };
+  const icon = (d: string, size = 22): string =>
+    `<svg viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true" focusable="false"><path fill="currentColor" d="${d}"/></svg>`;
+  const SYMBOL = `<svg viewBox="15 50 600 560" width="26" height="26" aria-hidden="true"><path d="M35 576V470C35 406.6 98.0 360.2 194 351Q210 346 210 362V570C210 582.1 200.1 592 188 592H51Q35 592 35 576Z" fill="#154DFD"/><path d="M240 586V345C240 282.6 299.4 237.0 389 228Q405 223 405 239V465C405 539.5 342.3 600 265 600H254Q240 600 240 586Z" fill="#61AEFD"/><path d="M430 571V262C430 194.9 489.4 145.9 579 136Q595 131 595 147V425C595 513.3 532.3 585 455 585H444Q430 585 430 571Z" fill="#FECA45"/><circle cx="548" cy="75" r="38" fill="#FDA81B"/></svg>`;
+  const ART = '/demo/art/';
+
+  // ------------------------------------------------------------------ fictional data
+  interface Cat { id: string; name: string; tone: string; icon: string; limit: number; keywords: RegExp }
+  const CATS: Cat[] = [
+    { id: 'groceries', name: 'Groceries', tone: 'green', icon: P.cart, limit: 400_00, keywords: /grocer|market|supermarket|veg|fruit/i },
+    { id: 'dining', name: 'Dining', tone: 'coral', icon: P.dining, limit: 200_00, keywords: /lunch|dinner|breakfast|coffee|cafe|snack|restaurant|pizza|burger/i },
+    { id: 'transport', name: 'Transport', tone: 'sky', icon: P.car, limit: 150_00, keywords: /grab|taxi|uber|bus|train|fuel|gas|fare|jeep/i },
+    { id: 'bills', name: 'Bills', tone: 'amber', icon: P.receipt, limit: 600_00, keywords: /bill|electric|water|phone|internet|rent/i },
+    { id: 'shopping', name: 'Shopping', tone: 'violet', icon: P.bag, limit: 250_00, keywords: /shirt|shoes|clothes|gift|book|shop/i },
+  ];
+  const catById = (id: string | null): Cat | undefined => CATS.find((c) => c.id === id);
+  const TOTAL = CATS.reduce((sum, c) => sum + c.limit, 0); // the budget is always the sum of the category amounts
+  const TODAY = { day: 20, monthDays: 31, label: 'October 2026', month: 'October' };
+
+  interface Tx { id: number; desc: string; amount: number; cat: string | null; date: string; income?: boolean }
+  interface Row { desc: string; amount: number | null; cat: string | null }
+  interface Bill { id: string; name: string; amount: number; due: string; days: number; icon: string; cat: string }
+
+  type Screen = 'welcome' | 'warn' | 'signin' | 'restoring' | 'home' | 'composer' | 'budget' | 'transactions' | 'wallets';
+  interface State {
+    story: string;
+    screen: Screen;
+    txs: Tx[];
+    bills: Bill[];
+    bellOpen: boolean;
+    sheet: string | null;
+    draft: string;
+    sent: string | null;
+    rows: Row[];
+    saved: number;
+    paid: string[];
+    openLine: string | null;
+    budgetSeen: boolean;
+    restored: boolean;
+    toast: string | null;
+  }
+
+  const seedTxs = (): Tx[] => [
+    { id: 1, desc: 'Salary', amount: 2_400_00, cat: null, date: 'Oct 15', income: true },
+    { id: 2, desc: 'Weekly groceries', amount: 260_00, cat: 'groceries', date: 'Oct 18' },
+    { id: 3, desc: 'Dinner out', amount: 150_00, cat: 'dining', date: 'Oct 17' },
+    { id: 4, desc: 'Fuel', amount: 90_00, cat: 'transport', date: 'Oct 14' },
+    { id: 5, desc: 'Electricity', amount: 380_00, cat: 'bills', date: 'Oct 10' },
+    { id: 6, desc: 'Birthday gift', amount: 80_00, cat: 'shopping', date: 'Oct 8' },
+    { id: 7, desc: 'Market stall', amount: 40_00, cat: null, date: 'Oct 6' },
+  ];
+  const seedBills = (): Bill[] => [
+    { id: 'gym', name: 'Gym membership', amount: 29_99, due: 'Oct 18', days: -2, icon: P.gym, cat: 'shopping' },
+    { id: 'phone', name: 'Phone plan', amount: 35_00, due: 'Oct 24', days: 4, icon: P.device, cat: 'bills' },
+    { id: 'net', name: 'Internet', amount: 60_00, due: 'Nov 2', days: 13, icon: P.receipt, cat: 'bills' },
+  ];
+  const WALLETS = [
+    { name: 'Everyday bank', kind: 'Bank', amount: 3_120_00, tone: 'bank' },
+    { name: 'Cash', kind: 'Cash', amount: 180_00, tone: 'cash' },
+    { name: 'Savings', kind: 'Savings', amount: 5_000_00, tone: 'savings' },
+    { name: 'Visa card', kind: 'Credit card', amount: -640_00, tone: 'credit' },
+  ];
+
+  const fresh = (story: string): State => ({
+    story,
+    screen: story === 'restore' ? 'welcome' : 'home',
+    txs: seedTxs(),
+    bills: seedBills(),
+    bellOpen: false,
+    sheet: null,
+    draft: '',
+    sent: null,
+    rows: [],
+    saved: 0,
+    paid: [],
+    openLine: null,
+    budgetSeen: false,
+    restored: false,
+    toast: null,
+  });
+
+  // ------------------------------------------------------------------ the app's calculations
+  const expenses = (s: State) => s.txs.filter((t) => !t.income);
+  const spentIn = (s: State, cat: string) => expenses(s).filter((t) => t.cat === cat).reduce((a, t) => a + t.amount, 0);
+  function plan(s: State) {
+    const spent = expenses(s).reduce((a, t) => a + t.amount, 0); // every expense: the actual money out
+    const budgeted = CATS.reduce((a, c) => a + spentIn(s, c.id), 0);
+    const remaining = TOTAL - spent;
+    const used = percentOf(spent, TOTAL);
+    const elapsed = Math.floor((TODAY.day * 100) / TODAY.monthDays);
+    const daysLeft = TODAY.monthDays - TODAY.day + 1; // today included
+    const allowance = remaining > 0 ? Math.floor(remaining / daysLeft) : null;
+    const pace = used > elapsed + 10 ? 'ahead' : used < elapsed - 10 ? 'behind' : 'aligned';
+    const income = s.txs.filter((t) => t.income).reduce((a, t) => a + t.amount, 0);
+    return { spent, budgeted, outside: spent - budgeted, remaining, used, elapsed, daysLeft, allowance, pace, net: income - spent };
+  }
+  const bankBalance = (s: State) => WALLETS[0].amount - (expenses(s).filter((t) => t.id > 100).reduce((a, t) => a + t.amount, 0));
+  const netWorth = (s: State) => WALLETS.reduce((a, w) => a + w.amount, 0) - (WALLETS[0].amount - bankBalance(s));
+  const dueSoon = (s: State) => s.bills.filter((b) => b.days <= 7 && !s.paid.includes(b.id));
+
+  /** The composer's local reading: "Lunch 45, groceries 120" → rows. Doubtful parts stay for the user to fix. */
+  function interpret(text: string): Row[] {
+    return text
+      .split(/,|;|\n|\band\b/i)
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .slice(0, 6)
+      .map((part) => {
+        const m = /(\d{1,6}(?:\.\d{1,2})?)/.exec(part.replace(/,/g, ''));
+        const amount = m ? Math.round(parseFloat(m[1]) * 100) : null;
+        const words = part.replace(m?.[0] ?? '', '').replace(/\b(for|on|at|paid|the|spent|my|php|usd)\b|\$/gi, '').replace(/\s+/g, ' ').trim();
+        const cat = CATS.find((c) => c.keywords.test(part))?.id ?? null;
+        const desc = words ? words.charAt(0).toUpperCase() + words.slice(1) : catById(cat)?.name ?? 'Transaction';
+        return { desc: desc.slice(0, 40), amount: amount && amount > 0 ? amount : null, cat };
+      });
+  }
+
+  // ------------------------------------------------------------------ stories and their steps
+  interface Step { title: string; body: string; target?: string; done: (s: State) => boolean }
+  interface Story { kicker: string; title: string; text: string; steps: Step[]; finale: string }
+  const EXAMPLE = 'Lunch 45, groceries 120, parking 15';
+  const STORIES: Record<string, Story> = {
+    log: {
+      kicker: 'Story 1 · the composer',
+      title: 'Log a whole day in one message',
+      text: 'You bought lunch, did the groceries and paid for parking. Instead of three forms, write it the way you would tell a friend.',
+      steps: [
+        { title: 'Tap + to open the composer', body: 'The blue + in the middle of the dock is the one place new transactions start.', target: 'open-composer', done: (s) => s.screen === 'composer' || s.saved > 0 },
+        { title: 'Write what happened', body: `Type your own, or tap the example: “${EXAMPLE}”.`, target: 'example', done: (s) => s.draft.trim() !== '' || s.sent !== null || s.saved > 0 },
+        { title: 'Send it', body: 'Lucento reads it on the phone and turns it into rows. Nothing is saved yet.', target: 'send', done: (s) => s.sent !== null || s.saved > 0 },
+        { title: 'Check the rows', body: 'Every row is yours to correct. Give “Parking” a category: pick Transport.', target: 'row-cat', done: (s) => s.saved > 0 || (s.sent !== null && s.rows.every((r) => r.cat !== null)) },
+        { title: 'Save them together', body: 'All rows are written in one go, so a retry can never save them twice.', target: 'save-rows', done: (s) => s.saved > 0 },
+      ],
+      finale: 'Home updated at once: Spent, the % used, Remaining and the daily allowance all include what you just added.',
+    },
+    bill: {
+      kicker: 'Story 2 · the bell',
+      title: 'Catch a bill before it’s late',
+      text: 'Your phone plan is due in four days and the gym fee is already overdue. The bell on Home keeps both in sight.',
+      steps: [
+        { title: 'Tap the bell', body: 'The badge counts what is overdue or due this week. Red means something is overdue.', target: 'bell', done: (s) => s.bellOpen || s.sheet !== null || s.paid.length > 0 },
+        { title: 'Open “Phone plan”', body: 'Each item opens its review sheet.', target: 'bill-phone', done: (s) => s.sheet === 'phone' || s.paid.includes('phone') },
+        { title: 'Mark it paid', body: 'Nothing is recorded until you confirm, so a plan never becomes spending by itself.', target: 'mark-paid', done: (s) => s.paid.includes('phone') },
+      ],
+      finale: 'The payment is recorded under Bills, the bell count dropped, and Spent on the budget card includes it.',
+    },
+    budget: {
+      kicker: 'Story 3 · the budget',
+      title: 'Know where the month stands',
+      text: 'It is the 20th. Are you spending faster than the month is passing? The budget card answers in one look.',
+      steps: [
+        { title: 'Read the two bars', body: '“% used” is your budget spent; “% of month” is the calendar. Close together means you are on pace.', target: 'budget-card', done: (s) => s.screen === 'budget' || s.budgetSeen },
+        { title: 'Open a category', body: 'On the Budget tab, tap Groceries to see what is left in it.', target: 'line-groceries', done: (s) => s.openLine === 'groceries' },
+        { title: 'Spot spending outside your categories', body: 'The note says how much has no budget category. It still counts in Spent, so nothing hides.', target: 'outside-note', done: (s) => s.budgetSeen && s.openLine === 'groceries' },
+      ],
+      finale: 'Your budget is simply the sum of your category amounts, and Spent is every expense, so the numbers always agree.',
+    },
+    restore: {
+      kicker: 'Story 4 · a new phone',
+      title: 'Move to a new phone in a minute',
+      text: 'You got a new phone. Your Lucento account already has your wallets, budget and history from the old one.',
+      steps: [
+        { title: 'Tap “I already have an account”', body: 'It skips the setup story for people who already use Lucento.', target: 'restore-start', done: (s) => s.screen !== 'welcome' },
+        { title: 'Read the reminder, then continue', body: 'Sync the old phone first: anything not yet synced stays on that phone.', target: 'restore-continue', done: (s) => ['signin', 'restoring', 'home'].includes(s.screen) },
+        { title: 'Sign in', body: 'Use the same Google or email account as on the old phone.', target: 'restore-signin', done: (s) => s.screen === 'restoring' || s.restored },
+        { title: 'Wait for the download', body: 'Lucento brings everything across, then goes straight to Home.', done: (s) => s.restored },
+      ],
+      finale: 'Welcome back: no setup story, no guided tour — your budget, wallets and scheduled payments are already here.',
+    },
+  };
+
+  // ------------------------------------------------------------------ rendering
+  const screenEl = document.getElementById('ld-screen') as HTMLElement;
+  const stepsEl = document.getElementById('ld-steps') as HTMLOListElement;
+  const live = document.getElementById('ld-live') as HTMLElement;
+  let state = fresh('log');
+  let lastStep = -1;
+
+  const statusBar = `<div class="ls-status" aria-hidden="true"><span>9:41</span><span class="ls-status-icons">▾ ▮</span></div>`;
+
+  function header(s: State): string {
+    const due = dueSoon(s);
+    const overdue = due.some((b) => b.days < 0);
+    const badge = due.length ? `<span class="ls-badge ${overdue ? 'is-overdue' : ''}">${due.length}</span>` : '';
+    return `<div class="ls-header">
+      <span class="ls-brand">${SYMBOL}<span class="ls-word">lucento</span></span>
+      <span class="ls-chip">${icon(P.device, 15)}On device</span>
+      <button type="button" class="ls-icon-btn" data-action="bell" aria-label="Upcoming payments: ${due.length} due${overdue ? ', one overdue' : ''}">${icon(P.bell)}${badge}</button>
+      <span class="ls-avatar" aria-hidden="true">${icon(P.person, 20)}</span>
+    </div>`;
+  }
+
+  function mascotFor(pace: string): string {
+    return pace === 'ahead' ? 'mascot_getting_tight_caution' : pace === 'behind' ? 'mascot_steady_hero_neutral' : 'mascot_thriving_greeting_happy';
+  }
+
+  function bar(fraction: number, label: string, cls: string): string {
+    const pct = Math.max(0, Math.min(100, fraction));
+    const inside = pct >= 34;
+    return `<div class="ls-bar"><div class="ls-bar-fill ${cls}" style="width:${pct}%">${inside ? `<span>${label}</span>` : ''}</div>${inside ? '' : `<span class="ls-bar-out" style="left:calc(${pct}% + 6px)">${label}</span>`}</div>`;
+  }
+
+  function home(s: State): string {
+    const p = plan(s);
+    const verdict = p.pace === 'ahead' ? 'Spending faster than the month' : p.pace === 'behind' ? 'Spending slower than the month' : 'Spending in step with the month';
+    const due = dueSoon(s);
+    const upcoming = s.bills.filter((b) => !s.paid.includes(b.id));
+    return `${header(s)}
+    <div class="ls-scroll">
+      <div class="ls-budget-wrap">
+        <span class="ls-pill">${icon(P.list, 16)}${TODAY.label} ▾</span>
+        <img class="ls-mascot" src="${ART}${mascotFor(p.pace)}.webp" alt="Lucento, ${p.pace === 'ahead' ? 'gently concerned' : 'cheering you on'}" width="96" height="96" />
+        <button type="button" class="ls-budget ls-pace-${p.pace}" data-action="budget-card" aria-label="Monthly budget: ${p.used}% used of ${fmt(TOTAL)}. Open budget">
+          <span class="ls-torch" aria-hidden="true"></span>
+          <span class="ls-budget-title">Monthly budget ›</span>
+          <span class="ls-budget-figure"><b>${p.used}%</b> of ${fmt(TOTAL)} used</span>
+          ${bar(p.used, `${p.used}% used`, 'is-used')}
+          ${bar(p.elapsed, `${p.elapsed}% of month`, 'is-month')}
+          <span class="ls-stats">
+            <span><b>${fmt(p.spent)}</b><small>Spent</small></span>
+            <span><b>${fmt(Math.abs(p.remaining))}</b><small>${p.remaining < 0 ? 'Over budget' : 'Remaining'}</small></span>
+            <span><b>${p.daysLeft}</b><small>days left</small></span>
+          </span>
+          <span class="ls-advice">${icon(P.check, 18)}<span><b>${verdict}</b>${p.allowance !== null ? `<small>About ${fmt(p.allowance)} a day keeps you within budget</small>` : ''}</span></span>
+        </button>
+      </div>
+      <div class="ls-two">
+        <div class="ls-card">
+          <span class="ls-card-title">Net flow ›</span>
+          <b class="ls-amount ${p.net >= 0 ? 'is-pos' : 'is-neg'}">${signed(p.net, true)}</b>
+          <small>${TODAY.month} · money in minus money out</small>
+          <hr />
+          <span class="ls-card-title">Net worth ›</span>
+          <b class="ls-amount is-primary">${fmt(netWorth(s))}</b>
+          <small>Today · assets minus debts</small>
+        </div>
+        <div class="ls-card">
+          <span class="ls-card-title">Quick links</span>
+          <div class="ls-links">
+            <button type="button" data-action="soon" data-label="Savings goals">${icon(P.savings)}Goals</button>
+            <button type="button" data-action="bell">${icon(P.list)}Scheduled</button>
+            <button type="button" data-action="soon" data-label="Debts">${icon(P.card)}Debts</button>
+            <button type="button" data-action="soon" data-label="Insights">${icon(P.trend)}Insights</button>
+          </div>
+        </div>
+      </div>
+      <div class="ls-card ls-wide">
+        <span class="ls-card-title">Scheduled transactions ›</span>
+        ${upcoming.map((b) => `<div class="ls-sched"><span class="ls-tile">${icon(b.icon, 20)}</span><span class="ls-grow"><b>${b.name}</b><small>Recurring expense</small></span><span class="ls-due">${b.days < 0 ? '<em class="is-red">Overdue</em>' : b.days <= 6 ? `In ${b.days} days` : ''}<small>${b.due}, 2026</small></span><b>${signed(-b.amount)}</b></div>`).join('') || '<small>Nothing due in the next 30 days.</small>'}
+      </div>
+    </div>
+    ${s.bellOpen ? bellMenu(s, due) : ''}
+    ${s.sheet ? billSheet(s) : ''}`;
+  }
+
+  function bellMenu(s: State, due: Bill[]): string {
+    return `<div class="ls-menu" role="dialog" aria-label="Upcoming payments">
+      <b class="ls-menu-title">Upcoming payments</b>
+      ${due.map((b) => `<button type="button" class="ls-menu-item" data-action="bill-${b.id}"><span class="ls-grow"><b>${b.name}</b><small class="${b.days < 0 ? 'is-red' : ''}">${b.days < 0 ? `Overdue · ${b.due}, 2026` : `Due in ${b.days} days · ${b.due}, 2026`}</small></span><b>${signed(-b.amount)}</b></button>`).join('') || '<small class="ls-menu-empty">Nothing due in the next 7 days.</small>'}
+      <button type="button" class="ls-menu-all" data-action="close-bell">See all scheduled</button>
+    </div>`;
+  }
+
+  function billSheet(s: State): string {
+    const b = s.bills.find((x) => x.id === s.sheet);
+    if (!b) return '';
+    return `<div class="ls-scrim" data-action="close-sheet"></div>
+    <div class="ls-sheet" role="dialog" aria-label="${b.name}">
+      <span class="ls-handle" aria-hidden="true"></span>
+      <b class="ls-sheet-title">${b.name}</b>
+      <span class="ls-sheet-amount">${signed(-b.amount)}</span>
+      <small>Due ${b.due}, 2026 · from Everyday bank · ${catById(b.cat)?.name}</small>
+      <button type="button" class="ls-primary" data-action="mark-paid">Mark paid</button>
+      <button type="button" class="ls-text" data-action="close-sheet">Not now</button>
+    </div>`;
+  }
+
+  function composer(s: State): string {
+    const rows = s.rows;
+    const ready = rows.length > 0 && rows.every((r) => r.amount !== null);
+    const total = rows.reduce((a, r) => a + (r.amount ?? 0), 0);
+    const convo = s.sent
+      ? `<div class="ls-bubble is-user">${esc(s.sent)}</div>
+         <div class="ls-reply"><img src="${ART}mascot_thriving_pointing.webp" alt="" width="34" height="34" /><span>${rows.length ? `Found ${rows.length} ${rows.length === 1 ? 'transaction' : 'transactions'}. Check them, then save.` : 'I couldn’t find an amount in that. Try “Lunch 45”.'}</span></div>
+         ${rows.map((r, i) => rowCard(r, i)).join('')}`
+      : `<div class="ls-empty"><img src="${ART}mascot_thriving_thinking.webp" alt="" width="64" height="64" /><b>Describe what happened</b><small>Write several at once — each becomes a row to check before saving.</small>
+         <button type="button" class="ls-example" data-action="example">${EXAMPLE}</button></div>`;
+    return `<div class="ls-topbar"><button type="button" class="ls-back" data-action="home" aria-label="Back">${icon(P.back)}</button><b>Add transactions</b></div>
+    <div class="ls-walletbar"><small>INTO</small><span class="ls-wpill is-on">${icon(P.check, 14)}Everyday bank</span><span class="ls-wpill">Cash</span></div>
+    <div class="ls-scroll ls-convo">${convo}</div>
+    ${s.sent && rows.length ? `<div class="ls-savebar"><small>${rows.length} expenses · ${signed(-total)}</small><button type="button" class="ls-primary" data-action="save-rows" ${ready ? '' : 'disabled'}>${ready ? `Save ${rows.length}` : 'Fix highlighted to save'}</button></div>` : ''}
+    <form class="ls-input" data-form="composer">
+      <label class="ls-sr" for="ls-text">Describe what happened</label>
+      <input id="ls-text" data-input="draft" autocomplete="off" placeholder="e.g. Lunch 45, parking 15" value="${esc(s.draft)}" />
+      <button type="submit" class="ls-send" data-action="send" aria-label="Send" ${s.draft.trim() ? '' : 'disabled'}>${icon(P.send, 20)}</button>
+    </form>`;
+  }
+
+  function rowCard(r: Row, i: number): string {
+    const cat = catById(r.cat);
+    return `<div class="ls-row ${r.amount === null ? 'is-bad' : ''}">
+      <span class="ls-tile ls-tone-${cat?.tone ?? 'slate'}">${icon(cat?.icon ?? P.receipt, 18)}</span>
+      <span class="ls-grow"><b>${esc(r.desc)}</b>
+        <label class="ls-sr" for="ls-cat-${i}">Category for ${esc(r.desc)}</label>
+        <select id="ls-cat-${i}" data-row="${i}" data-action-select="row-cat" class="${r.cat ? '' : 'is-soft'}">
+          <option value="" ${r.cat ? '' : 'selected'}>Choose category</option>
+          ${CATS.map((c) => `<option value="${c.id}" ${c.id === r.cat ? 'selected' : ''}>${c.name}</option>`).join('')}
+        </select>
+        ${r.amount === null ? '<small class="is-red">Add an amount to save this row</small>' : r.cat ? '' : '<small>No category — it would be saved as uncategorised</small>'}
+      </span>
+      <b>${r.amount === null ? '—' : signed(-r.amount)}</b>
+    </div>`;
+  }
+
+  function budget(s: State): string {
+    const p = plan(s);
+    return `<div class="ls-topbar"><b class="ls-big">Budget</b></div>
+    <div class="ls-scroll">
+      <div class="ls-hero">
+        <div><small class="ls-tag">Left · ${TODAY.month}</small><b class="ls-hero-big">${fmt(Math.max(0, p.remaining))}</b><small>left of ${fmt(TOTAL)}</small></div>
+        <div class="ls-hero-side"><small class="ls-tag is-sun">Spent · ${p.used}%</small><b>${fmt(p.spent)}</b><small class="ls-tag is-sun">Per day</small><b>${p.allowance !== null ? fmt(p.allowance) : '—'}</b></div>
+        <div class="ls-hero-bar"><span style="width:${Math.min(100, p.used)}%"></span><i style="left:${p.elapsed}%"></i></div>
+        <small>The line marks today: ${p.elapsed}% of the month has gone.</small>
+      </div>
+      ${p.outside > 0 ? `<button type="button" class="ls-note" data-action="outside-note">${fmt(p.outside)} spent outside your budget categories this month. It still counts in Spent.</button>` : ''}
+      <div class="ls-section"><b>Budgeted</b><small>${fmt(p.budgeted)} of ${fmt(TOTAL)}</small></div>
+      <div class="ls-card ls-wide ls-lines">
+        ${CATS.map((c) => {
+          const spent = spentIn(s, c.id);
+          const left = c.limit - spent;
+          const pct = percentOf(spent, c.limit);
+          const open = s.openLine === c.id;
+          return `<button type="button" class="ls-line" data-action="line-${c.id}" aria-expanded="${open}">
+            <span class="ls-tile ls-tone-${c.tone}">${icon(c.icon, 18)}</span>
+            <span class="ls-grow"><b>${c.name}</b><small>${fmt(spent)} of ${fmt(c.limit)}</small>
+              <span class="ls-minibar"><span class="${pct >= 100 ? 'is-full' : pct >= 80 ? 'is-near' : ''}" style="width:${Math.min(100, pct)}%"></span></span>
+              ${open ? `<small class="ls-detail">${pct}% used · ${left >= 0 ? `${fmt(left)} left` : `${fmt(-left)} over`} for the rest of ${TODAY.month}</small>` : ''}
+            </span>
+            <b>${left >= 0 ? `${fmt(left)} left` : `${fmt(-left)} over`}</b>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  function transactions(s: State): string {
+    const list = [...s.txs].sort((a, b) => b.id - a.id);
+    return `<div class="ls-topbar"><b class="ls-big">Transactions</b></div>
+    <div class="ls-scroll"><div class="ls-card ls-wide">
+      ${list.map((t) => {
+        const cat = catById(t.cat);
+        return `<div class="ls-sched"><span class="ls-tile ls-tone-${t.income ? 'green' : cat?.tone ?? 'slate'}">${icon(t.income ? P.trend : cat?.icon ?? P.receipt, 18)}</span><span class="ls-grow"><b>${esc(t.desc)}</b><small>${t.income ? 'Income' : cat?.name ?? 'Uncategorised'} · ${t.date}</small></span><b class="${t.income ? 'is-pos' : ''}">${signed(t.income ? t.amount : -t.amount, true)}</b></div>`;
+      }).join('')}
+    </div></div>`;
+  }
+
+  function wallets(s: State): string {
+    return `<div class="ls-topbar"><b class="ls-big">Wallets</b></div>
+    <div class="ls-scroll">
+      <div class="ls-hero"><small class="ls-tag">Net worth</small><b class="ls-hero-big">${fmt(netWorth(s))}</b><small>Assets minus debts · never converted between currencies</small></div>
+      <div class="ls-card ls-wide">
+        ${WALLETS.map((w, i) => `<div class="ls-sched"><span class="ls-tile ls-wallet-${w.tone}">${icon(w.amount < 0 ? P.card : w.tone === 'savings' ? P.savings : P.wallet, 18)}</span><span class="ls-grow"><b>${w.name}</b><small>${w.kind}</small></span><b>${signed(i === 0 ? bankBalance(s) : w.amount)}</b></div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  function onboarding(s: State): string {
+    if (s.screen === 'welcome') {
+      return `<div class="ls-onb">
+        <div class="ls-onb-mid">${SYMBOL.replace('width="26" height="26"', 'width="64" height="64"')}<b class="ls-onb-word">lucento</b><small>Financial clarity without the complexity.</small>
+        <img class="ls-onb-art" src="${ART}illustration_sunrise_landscape.webp" alt="" /></div>
+        <button type="button" class="ls-primary" data-action="soon" data-label="The full setup story">Get started</button>
+        <button type="button" class="ls-text" data-action="restore-start">I already have an account</button>
+      </div>`;
+    }
+    if (s.screen === 'warn') {
+      return `<div class="ls-onb ls-left">
+        <img src="${ART}mascot_thriving_thinking.webp" alt="" width="80" height="80" />
+        <b class="ls-onb-title">Moving to a new phone?</b>
+        <small>Sign in with your Lucento account and everything it has synced comes across: wallets, transactions, budgets, goals and scheduled payments.</small>
+        <div class="ls-warnbox">${icon(P.warn, 18)}<span>Sync your old phone first (recommended). Anything added there since its last sync stays on that phone and won’t show up here.</span></div>
+        <span class="ls-grow"></span>
+        <button type="button" class="ls-primary" data-action="restore-continue">Continue</button>
+        <button type="button" class="ls-text" data-action="restore-back">Back</button>
+      </div>`;
+    }
+    if (s.screen === 'signin') {
+      return `<div class="ls-onb ls-left">
+        <b class="ls-onb-title">Sign in to your account</b>
+        <small>Use the same Google or email account as on your old phone.</small>
+        <button type="button" class="ls-primary ls-google" data-action="restore-signin">${icon(P.google, 18)}Continue with Google</button>
+        <button type="button" class="ls-outline" data-action="restore-signin">Use email instead</button>
+        <span class="ls-grow"></span>
+        <button type="button" class="ls-text" data-action="restore-back">Back</button>
+      </div>`;
+    }
+    return `<div class="ls-onb ls-left">
+      <b class="ls-onb-title">Bringing your money across</b>
+      <small>Downloading ada@example.com. Keep Lucento open — this can take a moment on a slow connection.</small>
+      <div class="ls-dots" role="status" aria-label="Restoring your account"><i></i><i></i><i></i></div>
+    </div>`;
+  }
+
+  function dock(s: State): string {
+    if (['welcome', 'warn', 'signin', 'restoring', 'composer'].includes(s.screen)) return '';
+    const tab = (key: Screen, label: string, d: string) =>
+      `<button type="button" class="ls-tab ${s.screen === key ? 'is-on' : ''}" data-action="tab-${key}" aria-label="${label}" ${s.screen === key ? 'aria-current="page"' : ''}>${icon(d)}<small>${label}</small></button>`;
+    return `<nav class="ls-dock" aria-label="App navigation">${tab('home', 'Home', P.home)}${tab('transactions', 'Transactions', P.list)}
+      <button type="button" class="ls-plus" data-action="open-composer" aria-label="Add transaction">${icon(P.add, 30)}</button>
+      ${tab('budget', 'Budget', P.pie)}${tab('wallets', 'Wallets', P.wallet)}</nav>`;
+  }
+
+  function currentStep(): number {
+    const steps = STORIES[state.story].steps;
+    const i = steps.findIndex((st) => !st.done(state));
+    return i === -1 ? steps.length : i;
+  }
+
+  function renderGuide(): void {
+    const story = STORIES[state.story];
+    (document.getElementById('ld-kicker') as HTMLElement).textContent = story.kicker;
+    (document.getElementById('ld-story-title') as HTMLElement).textContent = story.title;
+    (document.getElementById('ld-story-text') as HTMLElement).textContent = story.text;
+    document.querySelectorAll<HTMLButtonElement>('.ld-story').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.story === state.story)));
+    const current = currentStep();
+    stepsEl.innerHTML =
+      story.steps
+        .map((st, i) => {
+          const status = i < current ? 'done' : i === current ? 'now' : 'later';
+          return `<li class="ld-step is-${status}" ${status === 'now' ? 'aria-current="step"' : ''}><span class="ld-num">${status === 'done' ? '✓' : i + 1}</span><span><b>${st.title}</b>${status === 'now' ? `<span class="ld-step-body">${st.body}</span>` : ''}</span></li>`;
+        })
+        .join('') +
+      (current >= story.steps.length
+        ? `<li class="ld-step is-finale"><span class="ld-num">★</span><span><b>Done</b><span class="ld-step-body">${story.finale}</span><button type="button" class="ld-next" data-next="1">Try the next story</button></span></li>`
+        : '');
+    if (current !== lastStep) {
+      live.textContent = current >= story.steps.length ? `Done. ${story.finale}` : `Step ${current + 1}: ${story.steps[current].title}`;
+      lastStep = current;
+    }
+  }
+
+  function render(keepFocus?: string): void {
+    const s = state;
+    const body =
+      s.screen === 'home' ? home(s)
+      : s.screen === 'composer' ? composer(s)
+      : s.screen === 'budget' ? budget(s)
+      : s.screen === 'transactions' ? transactions(s)
+      : s.screen === 'wallets' ? wallets(s)
+      : onboarding(s);
+    screenEl.innerHTML = `${statusBar}<div class="ls-body">${body}</div>${dock(s)}${s.toast ? `<div class="ls-toast" role="status">${esc(s.toast)}</div>` : ''}`;
+    // Point at what the current step needs (the reference demo's guiding pulse).
+    const step = STORIES[s.story].steps[currentStep()];
+    if (step?.target) {
+      const hit = step.target === 'row-cat'
+        ? screenEl.querySelector('select.is-soft')
+        : screenEl.querySelector(`[data-action="${step.target}"]`);
+      hit?.classList.add('ls-hint');
+    }
+    renderGuide();
+    if (keepFocus) {
+      const el = screenEl.querySelector<HTMLElement>(keepFocus);
+      if (el) {
+        el.focus();
+        if (el instanceof HTMLInputElement) el.setSelectionRange(el.value.length, el.value.length);
+      }
+    }
+  }
+
+  let toastTimer = 0;
+  function toast(message: string): void {
+    state.toast = message;
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => {
+      state.toast = null;
+      render();
+    }, 2600);
+  }
+
+  function send(): void {
+    const text = state.draft.trim();
+    if (!text) return;
+    state.sent = text;
+    state.rows = interpret(text);
+    state.draft = '';
+  }
+
+  function act(action: string, el: HTMLElement): void {
+    const s = state;
+    if (action === 'bell') {
+      s.bellOpen = !s.bellOpen;
+      if (s.screen !== 'home') { s.screen = 'home'; s.bellOpen = true; }
+    } else if (action === 'close-bell') {
+      s.bellOpen = false;
+    } else if (action.startsWith('bill-')) {
+      s.bellOpen = false;
+      s.sheet = action.slice(5);
+    } else if (action === 'close-sheet') {
+      s.sheet = null;
+    } else if (action === 'mark-paid') {
+      const b = s.bills.find((x) => x.id === s.sheet);
+      if (b && !s.paid.includes(b.id)) {
+        s.paid.push(b.id);
+        s.txs.push({ id: 200 + s.paid.length, desc: b.name, amount: b.amount, cat: b.cat, date: 'Oct 20' });
+        toast(`${b.name} recorded · ${signed(-b.amount)}`);
+      }
+      s.sheet = null;
+    } else if (action === 'open-composer') {
+      s.screen = 'composer';
+      s.bellOpen = false;
+    } else if (action === 'home') {
+      s.screen = 'home';
+    } else if (action === 'example') {
+      s.draft = EXAMPLE;
+    } else if (action === 'save-rows') {
+      if (s.rows.length && s.rows.every((r) => r.amount !== null)) {
+        s.rows.forEach((r, i) => s.txs.push({ id: 101 + s.saved * 10 + i, desc: r.desc, amount: r.amount as number, cat: r.cat, date: 'Oct 20' }));
+        s.saved += s.rows.length;
+        toast(`${s.rows.length} ${s.rows.length === 1 ? 'transaction' : 'transactions'} saved`);
+        s.rows = [];
+        s.sent = null;
+        s.screen = 'home';
+      }
+    } else if (action === 'budget-card') {
+      s.screen = 'budget';
+    } else if (action.startsWith('line-')) {
+      const id = action.slice(5);
+      s.openLine = s.openLine === id ? null : id;
+    } else if (action === 'outside-note') {
+      s.budgetSeen = true;
+    } else if (action.startsWith('tab-')) {
+      s.screen = action.slice(4) as Screen;
+      s.bellOpen = false;
+    } else if (action === 'restore-start') {
+      s.screen = 'warn';
+    } else if (action === 'restore-continue') {
+      s.screen = 'signin';
+    } else if (action === 'restore-back') {
+      s.screen = s.screen === 'signin' ? 'warn' : 'welcome';
+    } else if (action === 'restore-signin') {
+      s.screen = 'restoring';
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.setTimeout(() => {
+        if (state !== s || s.screen !== 'restoring') return;
+        s.restored = true;
+        s.screen = 'home';
+        toast('Welcome back — your account is on this phone');
+        render();
+      }, reduce ? 600 : 1800);
+    } else if (action === 'soon') {
+      toast(`${el.dataset.label ?? 'That'} isn’t part of this demo — it’s in the app`);
+    }
+    render();
+  }
+
+  screenEl.addEventListener('click', (e) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>('[data-action]');
+    if (!el || el.tagName === 'SELECT') return;
+    if (el.getAttribute('type') === 'submit') return; // handled by the form
+    e.preventDefault();
+    act(el.dataset.action as string, el);
+  });
+  screenEl.addEventListener('submit', (e) => {
+    e.preventDefault();
+    send();
+    render();
+  });
+  screenEl.addEventListener('input', (e) => {
+    const el = e.target as HTMLInputElement;
+    if (el.dataset.input === 'draft') {
+      const had = state.draft.trim() !== '';
+      state.draft = el.value;
+      // Re-render only when the step or Send's enabled state changes, keeping the caret in place.
+      if (had !== (state.draft.trim() !== '')) render('#ls-text');
+    }
+  });
+  screenEl.addEventListener('change', (e) => {
+    const el = e.target as HTMLSelectElement;
+    if (el.dataset.actionSelect === 'row-cat') {
+      const row = state.rows[Number(el.dataset.row)];
+      if (row) row.cat = el.value || null;
+      render(`#${el.id}`);
+    }
+  });
+
+  function choose(story: string): void {
+    state = fresh(story);
+    lastStep = -1;
+    render();
+  }
+  document.querySelectorAll<HTMLButtonElement>('.ld-story').forEach((b) => b.addEventListener('click', () => choose(b.dataset.story as string)));
+  (document.getElementById('ld-reset') as HTMLButtonElement).addEventListener('click', () => choose(state.story));
+  stepsEl.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('[data-next]')) {
+      const order = Object.keys(STORIES);
+      choose(order[(order.indexOf(state.story) + 1) % order.length]);
+    }
+  });
+
+  // A how-to guide can open a story directly: /#try?story=bill → #try-bill
+  const fromHash = /^#try-(log|bill|budget|restore)$/.exec(window.location.hash)?.[1];
+  choose(fromHash ?? 'log');
+  window.addEventListener('hashchange', () => {
+    const story = /^#try-(log|bill|budget|restore)$/.exec(window.location.hash)?.[1];
+    if (story) {
+      choose(story);
+      document.getElementById('try')?.scrollIntoView();
+    }
+  });
+</script>
+
+<style is:global>
+  @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+  @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_semibold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+  @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+
+  /* ---------------------------------------------------------------- the section and the guide */
+  .ld { max-width: var(--page-max); margin: 0 auto; padding: var(--space-xxl) var(--page-gutter); scroll-margin-top: var(--space-lg); }
+  .ld-head { max-width: var(--measure); }
+  .eyebrow { margin: 0; color: var(--primary); font-weight: 700; font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .ld-head h2 { margin: var(--space-xs) 0 0; font-size: clamp(1.75rem, 2.5vw + 1rem, 2.75rem); line-height: 1.1; letter-spacing: -0.02em; }
+  .ld-sub { color: var(--on-surface-variant); margin: var(--space-md) 0 0; }
+  .ld-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-xxl); align-items: start; margin-top: var(--space-xl); }
+  .ld-stories { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .ld-story { min-height: var(--min-touch); padding: 0 var(--space-md); border-radius: var(--radius-full); border: 1px solid var(--border-default); background: var(--surface-container-lowest); color: var(--on-surface); font: inherit; font-weight: 600; cursor: pointer; }
+  .ld-story[aria-pressed='true'] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+  .ld-story:focus-visible, .ld-reset:focus-visible, .ld-next:focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
+  .ld-card { margin-top: var(--space-md); padding: var(--space-lg); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--surface-container-lowest); }
+  .ld-kicker { margin: 0; color: var(--primary); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .ld-story-title { margin: var(--space-xs) 0 0; font-size: 1.375rem; line-height: 1.25; }
+  .ld-story-text { margin: var(--space-sm) 0 0; color: var(--on-surface-variant); }
+  .ld-steps { list-style: none; margin: var(--space-lg) 0 0; padding: 0; display: grid; gap: var(--space-sm); }
+  .ld-step { display: grid; grid-template-columns: 2rem 1fr; gap: var(--space-sm); align-items: start; color: var(--on-surface-variant); }
+  .ld-step b { display: block; font-weight: 600; }
+  .ld-step.is-now { color: var(--on-surface); padding: var(--space-sm); margin: 0 calc(-1 * var(--space-sm)); border-radius: var(--radius-md); background: var(--highlight); }
+  .ld-step.is-now b { color: var(--on-highlight); }
+  .ld-step-body { display: block; margin-top: var(--space-xxs); color: var(--on-surface-variant); }
+  .ld-step.is-now .ld-step-body { color: var(--on-highlight); }
+  .ld-num { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; border: 1px solid var(--border-default); font-weight: 700; font-size: 0.875rem; background: var(--surface); }
+  .ld-step.is-now .ld-num { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+  .ld-step.is-done .ld-num { background: var(--positive-container); color: var(--positive); border-color: transparent; }
+  .ld-step.is-finale { color: var(--on-surface); }
+  .ld-step.is-finale .ld-num { background: var(--accent); color: var(--midnight-navy); border-color: transparent; }
+  .ld-next, .ld-reset { margin-top: var(--space-sm); min-height: var(--min-touch); padding: 0 var(--space-md); border-radius: var(--radius-md); font: inherit; font-weight: 600; cursor: pointer; }
+  .ld-next { border: 0; background: var(--primary); color: var(--on-primary); }
+  .ld-reset { border: 1px solid var(--border-default); background: transparent; color: var(--on-surface); }
+  .ld-actions { margin-top: var(--space-md); }
+  .ld-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ld-phone-wrap { display: grid; justify-items: center; gap: var(--space-sm); }
+  .ld-note { margin: 0; font-size: 0.8125rem; color: var(--on-surface-variant); }
+
+  /* ---------------------------------------------------------------- the phone */
+  .ld-phone { position: relative; width: 360px; height: 740px; padding: 12px; border-radius: 48px; background: #0b1222; box-shadow: 0 30px 60px -20px rgba(16, 24, 43, 0.45), inset 0 0 0 2px #2a3550; }
+  .ld-notch { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 18px; height: 18px; border-radius: 50%; background: #0b1222; z-index: 5; }
+  .ld-screen { position: relative; width: 100%; height: 100%; border-radius: 38px; overflow: hidden; display: flex; flex-direction: column; background: var(--background); color: var(--on-surface); font-family: 'Plus Jakarta Sans', var(--font-sans, sans-serif); font-size: 13px; line-height: 1.35; }
+  .ld-screen button, .ld-screen input, .ld-screen select { font: inherit; color: inherit; }
+  .ld-screen b { font-weight: 700; }
+  .ld-screen small { display: block; color: var(--on-surface-variant); font-size: 11.5px; }
+  .ls-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .ls-status { display: flex; justify-content: space-between; padding: 12px 26px 4px; font-size: 12px; font-weight: 600; }
+  .ls-body { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .ls-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 0 14px 14px; scrollbar-width: none; }
+  .ls-scroll::-webkit-scrollbar { display: none; }
+  .ls-header { display: flex; align-items: center; gap: 6px; padding: 6px 14px 8px; }
+  .ls-brand { flex: 1; display: inline-flex; align-items: center; gap: 6px; }
+  .ls-word { font-weight: 700; font-size: 20px; letter-spacing: -0.02em; }
+  .ls-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 9px; border-radius: 999px; background: var(--surface-container); font-size: 11.5px; font-weight: 600; }
+  .ls-icon-btn { position: relative; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+  .ls-badge { position: absolute; top: 3px; right: 2px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--primary); color: var(--on-primary); font-size: 10.5px; font-weight: 700; display: grid; place-items: center; }
+  .ls-badge.is-overdue { background: var(--negative); color: var(--surface); }
+  .ls-avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--primary-container); color: var(--on-primary-container); }
+  .ls-pill { display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px; border-radius: 14px; border: 1px solid var(--border-default); background: var(--surface-container-lowest); font-weight: 600; }
+  .ls-budget-wrap { position: relative; padding-top: 0; }
+  .ls-mascot { position: absolute; right: 2px; top: -8px; width: 96px; height: 96px; z-index: 2; pointer-events: none; }
+  .ls-budget { position: relative; display: block; width: 100%; margin-top: 10px; padding: 14px 16px; text-align: left; border: 1px solid var(--border-default); border-radius: 20px; overflow: hidden; cursor: pointer; background: var(--surface-container-lowest); }
+  .ls-pace-aligned { background: color-mix(in srgb, var(--positive-container) 92%, var(--surface)); }
+  .ls-pace-ahead { background: color-mix(in srgb, var(--negative-container) 92%, var(--surface)); }
+  .ls-pace-behind { background: color-mix(in srgb, var(--info-container) 92%, var(--surface)); }
+  .ls-torch { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at calc(100% - 34px) 6px, color-mix(in srgb, var(--accent) 62%, transparent) 0%, color-mix(in srgb, var(--warm-accent) 34%, transparent) 14%, color-mix(in srgb, var(--accent) 10%, transparent) 45%, transparent 75%); animation: ls-breathe 2.4s ease-in-out infinite alternate; }
+  @keyframes ls-breathe { from { opacity: 0.82; } to { opacity: 1; } }
+  .ls-budget > span:not(.ls-torch) { position: relative; }
+  .ls-budget-title { display: block; font-weight: 700; font-size: 17px; }
+  .ls-budget-figure { display: block; margin: 2px 74px 10px 0; font-weight: 600; }
+  .ls-budget-figure b { font-size: 24px; letter-spacing: -0.02em; margin-right: 2px; font-variant-numeric: tabular-nums; }
+  .ls-bar { position: relative; height: 15px; border-radius: 999px; background: var(--track); margin-bottom: 5px; }
+  .ls-bar-fill { height: 100%; border-radius: 999px; display: flex; justify-content: flex-end; align-items: center; }
+  .ls-bar-fill span { padding-right: 6px; font-size: 10.5px; font-weight: 700; color: #fff; }
+  .ls-bar-fill.is-used { background: var(--success); }
+  .ls-pace-ahead .ls-bar-fill.is-used { background: var(--negative-indicator); }
+  .ls-bar-fill.is-month { background: color-mix(in srgb, var(--primary) 55%, transparent); }
+  .ls-bar-fill.is-month span { color: var(--midnight-navy); }
+  .ls-bar-out { position: absolute; top: 0; font-size: 10.5px; font-weight: 700; }
+  .ls-stats { display: grid; grid-template-columns: 1.2fr 1.2fr 0.8fr; margin: 10px 0; }
+  .ls-stats > span { padding: 0 4px; border-left: 1px solid var(--outline-variant); }
+  .ls-stats > span:first-child { border-left: 0; padding-left: 0; }
+  .ls-stats b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .ls-advice { display: flex; gap: 8px; align-items: center; padding: 9px 10px; border-radius: 14px; background: color-mix(in srgb, var(--surface-container-lowest) 82%, transparent); color: var(--positive); }
+  .ls-advice b { display: block; color: var(--on-surface); font-size: 12.5px; }
+  .ls-two { display: grid; grid-template-columns: 1.1fr 1fr; gap: 8px; margin-top: 12px; }
+  .ls-card { padding: 12px; border: 1px solid var(--border-default); border-radius: 18px; background: var(--surface-container-lowest); }
+  .ls-card hr { border: 0; border-top: 1px solid var(--outline-variant); margin: 8px -12px; }
+  .ls-wide { margin-top: 12px; }
+  .ls-card-title { display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
+  .ls-amount { display: block; font-size: 19px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .is-pos { color: var(--positive); }
+  .is-neg, .is-red { color: var(--negative) !important; font-style: normal; }
+  .is-primary { color: var(--primary); }
+  .ls-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
+  .ls-links button { display: grid; justify-items: center; gap: 4px; padding: 8px 2px; border-radius: 14px; border: 1px solid var(--primary-container); background: color-mix(in srgb, var(--primary-container) 55%, var(--surface-container-lowest)); color: var(--primary); font-size: 11px; font-weight: 600; cursor: pointer; }
+  .ls-sched { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--outline-variant); }
+  .ls-card-title + .ls-sched { border-top: 0; }
+  .ls-grow { flex: 1; min-width: 0; }
+  .ls-due { text-align: right; font-size: 11.5px; }
+  .ls-due em { font-style: normal; font-weight: 600; }
+  .ls-tile { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 12px; background: var(--surface-container); color: var(--on-surface-variant); }
+  .ls-tone-green { background: var(--category-green-tile); color: var(--category-green-glyph); }
+  .ls-tone-coral { background: var(--category-coral-tile); color: var(--category-coral-glyph); }
+  .ls-tone-sky { background: var(--category-sky-tile); color: var(--category-sky-glyph); }
+  .ls-tone-amber { background: var(--category-amber-tile); color: var(--category-amber-glyph); }
+  .ls-tone-violet { background: var(--category-violet-tile); color: var(--category-violet-glyph); }
+  .ls-tone-slate { background: var(--category-slate-tile); color: var(--category-slate-glyph); }
+  .ls-wallet-bank { background: var(--wallet-bank-container); color: var(--wallet-bank-content); }
+  .ls-wallet-cash { background: var(--wallet-cash-container); color: var(--wallet-cash-content); }
+  .ls-wallet-savings { background: var(--wallet-savings-container); color: var(--wallet-savings-content); }
+  .ls-wallet-credit { background: var(--wallet-credit-container); color: var(--wallet-credit-content); }
+
+  /* dock */
+  .ls-dock { position: relative; display: grid; grid-template-columns: 1fr 1fr 64px 1fr 1fr; align-items: end; margin: 0 10px 12px; padding: 6px 4px; border: 1px solid var(--border-default); border-radius: 24px; background: var(--surface-container-lowest); }
+  .ls-tab { display: grid; justify-items: center; gap: 2px; padding: 4px 0; border: 0; background: transparent; color: var(--on-surface-variant); cursor: pointer; min-height: 48px; }
+  .ls-tab small { font-size: 10.5px; }
+  .ls-tab.is-on { color: var(--primary); }
+  .ls-tab.is-on svg { background: var(--primary-container); border-radius: 12px; padding: 2px 10px; box-sizing: content-box; }
+  .ls-plus { justify-self: center; margin-top: -30px; width: 58px; height: 58px; border: 0; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; cursor: pointer; box-shadow: 0 8px 18px -6px color-mix(in srgb, var(--primary) 70%, transparent); }
+
+  /* bell menu and sheet */
+  .ls-menu { position: absolute; top: 48px; right: 12px; left: 46px; z-index: 6; padding: 8px 0; border-radius: 16px; background: var(--surface-container-high); box-shadow: 0 16px 30px -10px rgba(16, 24, 43, 0.35); }
+  .ls-menu-title { display: block; padding: 6px 14px 8px; font-size: 14px; }
+  .ls-menu-item { display: flex; gap: 10px; width: 100%; padding: 9px 14px; border: 0; background: transparent; text-align: left; cursor: pointer; align-items: center; }
+  .ls-menu-all { width: 100%; padding: 12px 14px; border: 0; border-top: 1px solid var(--outline-variant); background: transparent; color: var(--primary); text-align: left; font-weight: 600; cursor: pointer; }
+  .ls-menu-empty { padding: 0 14px 8px; }
+  .ls-scrim { position: absolute; inset: 0; z-index: 7; background: rgba(11, 18, 34, 0.42); }
+  .ls-sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 8; display: grid; gap: 6px; padding: 10px 18px 22px; border-radius: 24px 24px 0 0; background: var(--surface-container-low); }
+  .ls-handle { justify-self: center; width: 36px; height: 4px; border-radius: 2px; background: var(--outline); margin-bottom: 6px; }
+  .ls-sheet-title { font-size: 18px; }
+  .ls-sheet-amount { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ls-primary, .ls-outline, .ls-text { min-height: 48px; border-radius: 14px; font-weight: 700 !important; cursor: pointer; }
+  .ls-primary { border: 0; background: var(--primary); color: var(--on-primary) !important; margin-top: 8px; }
+  .ls-primary:disabled { background: var(--surface-container-high); color: var(--on-surface-variant) !important; cursor: not-allowed; }
+  .ls-outline { border: 1px solid var(--border-default); background: transparent; margin-top: 8px; }
+  .ls-text { border: 0; background: transparent; color: var(--primary) !important; }
+  .ls-google { display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+  /* composer */
+  .ls-topbar { display: flex; align-items: center; gap: 8px; padding: 4px 14px 8px; font-size: 18px; }
+  .ls-big { font-size: 26px; letter-spacing: -0.02em; padding: 4px 0; }
+  .ls-back { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--primary-container); color: var(--primary); cursor: pointer; }
+  .ls-walletbar { display: flex; align-items: center; gap: 6px; padding: 0 14px 8px; border-bottom: 1px solid var(--outline-variant); }
+  .ls-wpill { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border-default); font-weight: 600; font-size: 12px; }
+  .ls-wpill.is-on { background: var(--midnight-navy); color: #fff; border-color: transparent; }
+  .ls-convo { padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .ls-empty { display: grid; justify-items: center; text-align: center; gap: 6px; padding: 30px 12px; }
+  .ls-example { margin-top: 10px; padding: 10px 12px; border-radius: 14px; border: 1px dashed var(--primary); background: var(--primary-container); color: var(--on-primary-container); font-weight: 600; cursor: pointer; }
+  .ls-bubble.is-user { align-self: flex-end; max-width: 80%; padding: 9px 12px; border-radius: 16px 16px 4px 16px; background: var(--pale-sky); color: var(--midnight-navy); }
+  .ls-reply { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+  .ls-row { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--border-default); border-radius: 14px; background: var(--surface-container-lowest); }
+  .ls-row.is-bad { border: 1.5px solid var(--negative); }
+  .ls-row select { margin-top: 4px; max-width: 100%; padding: 4px 8px; border-radius: 10px; border: 1px solid var(--border-default); background: var(--surface); font-size: 12px; min-height: 32px; }
+  .ls-row select.is-soft { border-color: var(--warning); }
+  .ls-savebar { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-top: 1px solid var(--outline-variant); }
+  .ls-savebar small { flex: 1; }
+  .ls-savebar .ls-primary { margin: 0; padding: 0 16px; }
+  .ls-input { display: flex; gap: 8px; padding: 8px 14px 14px; }
+  .ls-input input { flex: 1; min-width: 0; min-height: 46px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border-default); background: var(--surface-container-lowest); }
+  .ls-input input:focus-visible { outline: 2px solid var(--border-focus); }
+  .ls-send { width: 46px; height: 46px; border: 0; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; cursor: pointer; }
+  .ls-send:disabled { background: var(--surface-container-high); color: var(--on-surface-variant); cursor: not-allowed; }
+
+  /* budget, wallets */
+  .ls-hero { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding: 16px; border-radius: 20px; background: var(--hero); color: var(--on-hero); }
+  .ls-hero small { color: var(--on-hero-muted); grid-column: 1 / -1; }
+  .ls-hero > div > small { grid-column: auto; }
+  .ls-hero-big { display: block; font-size: 30px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .ls-hero-side { display: grid; gap: 2px; justify-items: start; padding-left: 12px; border-left: 1px solid var(--hero-rule); }
+  .ls-tag { display: inline-block !important; width: fit-content; padding: 2px 8px; border-radius: 999px; background: var(--on-hero); color: var(--hero) !important; font-weight: 600; }
+  .ls-tag.is-sun { background: var(--accent); color: var(--midnight-navy) !important; }
+  .ls-hero-bar { grid-column: 1 / -1; position: relative; height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--on-hero) 25%, transparent); margin-top: 6px; }
+  .ls-hero-bar span { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
+  .ls-hero-bar i { position: absolute; top: -4px; width: 3px; height: 18px; background: var(--on-hero); border-radius: 2px; }
+  .ls-note { display: block; width: 100%; margin-top: 10px; padding: 10px 12px; border-radius: 14px; border: 0; background: var(--info-container); color: var(--on-surface); text-align: left; cursor: pointer; }
+  .ls-section { display: flex; justify-content: space-between; align-items: baseline; margin-top: 14px; font-size: 15px; }
+  .ls-lines { padding: 4px 12px; }
+  .ls-line { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 0; border: 0; border-top: 1px solid var(--outline-variant); background: transparent; text-align: left; cursor: pointer; }
+  .ls-line:first-child { border-top: 0; }
+  .ls-minibar { display: block; height: 5px; margin-top: 5px; border-radius: 3px; background: var(--track); }
+  .ls-minibar span { display: block; height: 100%; border-radius: 3px; background: var(--success); }
+  .ls-minibar span.is-near { background: var(--warning-indicator); }
+  .ls-minibar span.is-full { background: var(--negative-indicator); }
+  .ls-detail { margin-top: 4px; color: var(--on-surface) !important; }
+
+  /* onboarding */
+  .ls-onb { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 10px 20px 22px; text-align: center; }
+  .ls-onb.ls-left { text-align: left; }
+  .ls-onb-mid { flex: 1; display: grid; justify-items: center; align-content: center; gap: 6px; }
+  .ls-onb-word { font-size: 34px; letter-spacing: -0.03em; }
+  .ls-onb-art { width: 100%; border-radius: 18px; margin-top: 14px; aspect-ratio: 16 / 9; object-fit: cover; }
+  .ls-onb-title { font-size: 26px; line-height: 1.15; letter-spacing: -0.02em; margin-top: 10px; }
+  .ls-warnbox { display: flex; gap: 8px; margin-top: 10px; padding: 12px; border-radius: 14px; background: var(--warning-container); color: var(--warning); font-weight: 500; }
+  .ls-dots { display: flex; gap: 6px; margin: 40px auto; }
+  .ls-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); animation: ls-dot 1s ease-in-out infinite alternate; }
+  .ls-dots i:nth-child(2) { animation-delay: 0.2s; }
+  .ls-dots i:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes ls-dot { from { opacity: 0.25; transform: translateY(0); } to { opacity: 1; transform: translateY(-6px); } }
+
+  /* feedback */
+  .ls-toast { position: absolute; left: 14px; right: 14px; bottom: 96px; z-index: 9; padding: 12px 14px; border-radius: 14px; background: var(--inverse-surface); color: var(--inverse-on-surface); font-weight: 600; }
+  .ls-hint { outline: 3px solid var(--warm-accent) !important; outline-offset: 2px; animation: ls-pulse 1.4s ease-in-out infinite; }
+  @keyframes ls-pulse { 0%, 100% { outline-color: var(--warm-accent); } 50% { outline-color: color-mix(in srgb, var(--warm-accent) 25%, transparent); } }
+  .ld-screen :focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ls-torch, .ls-hint, .ls-dots i { animation: none; }
+  }
+  @media (max-width: 860px) {
+    .ld-body { grid-template-columns: 1fr; }
+    .ld-phone-wrap { order: -1; }
+  }
+  @media (max-width: 400px) {
+    .ld-phone { width: 100%; height: 700px; padding: 8px; border-radius: 36px; }
+    .ld-screen { border-radius: 30px; }
+  }
+</style>

@@ -7,6 +7,14 @@ import Logo from './Logo.astro';
     <a class="home" href="/" aria-label="Lucento home">
       <Logo />
     </a>
+    <nav aria-label="Site">
+      <ul>
+        <li><a href="/#try">Try it</a></li>
+        <li><a href="/#features">Features</a></li>
+        <li><a href="/how-to">How-to</a></li>
+        <li><a href="/#privacy">Privacy</a></li>
+      </ul>
+    </nav>
   </div>
 </header>
 
@@ -21,7 +29,34 @@ import Logo from './Logo.astro';
     padding: var(--space-lg) var(--page-gutter);
     min-height: var(--top-bar);
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm) var(--space-lg);
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xxs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--min-touch);
+    padding: 0 var(--space-sm);
+    border-radius: var(--radius-sm);
+    color: var(--on-surface);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    background: var(--surface-container);
   }
 
   .home {

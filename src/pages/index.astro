@@ -1,29 +1,123 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PhoneDemo from '../components/PhoneDemo.astro';
+import { guides } from '../data/guides';
+
+const features = [
+  {
+    title: 'A budget that keeps pace',
+    body: 'Give each category an amount; the month’s budget is their sum. One card compares what you’ve used with how much of the month has passed, and says what you can still spend each day.',
+  },
+  {
+    title: 'Write it like a message',
+    body: '“Lunch 45, groceries 120, parking 15” becomes three rows to check and save together. Scan a receipt or speak instead — all read on your phone.',
+  },
+  {
+    title: 'Every wallet, honestly',
+    body: 'Cash, bank, e-wallets, savings, cards and loans, with net worth as assets minus debts. Transfers are never counted as spending, and currencies are never converted behind your back.',
+  },
+  {
+    title: 'Bills you won’t miss',
+    body: 'Schedule rent, subscriptions and salary. The bell on Home shows what’s overdue or due this week; nothing is recorded until you mark it paid.',
+  },
+  {
+    title: 'Goals and debts in view',
+    body: 'Save toward a goal with its own picture, and split each loan payment into principal and interest so what you owe goes down correctly.',
+  },
+  {
+    title: 'Insights from your own records',
+    body: 'Income and spending trends, and what your net worth is made of. Every chart has its exact figures beside it.',
+  },
+];
 ---
 
 <BaseLayout
   title="Lucento: financial clarity without the complexity"
-  description="Lucento is a budget tracker for Android, in development. Your money stays on your phone: no bank login, no account, and it works offline."
+  description="Lucento is a budget tracker for Android, in development. Your money stays on your phone, works offline and needs no bank login. Try the app in your browser."
 >
-  <section class="intro" aria-labelledby="intro-title">
-    <h1 id="intro-title">Financial clarity without the complexity.</h1>
-    <p class="lede">
-      Lucento is a budget tracker for Android. It keeps your money on your phone: no bank login,
-      no account, and it works offline.
-    </p>
-    <p class="status">
-      The app is still in development and isn’t on Google Play yet. This site will grow as it gets
-      closer to release.
-    </p>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-text">
+      <h1 id="hero-title">Financial clarity without the complexity.</h1>
+      <p class="lede">
+        Lucento is a budget tracker for Android. It keeps your money on your phone, works offline and never asks for
+        a bank login. Sync between your phones only if you want to.
+      </p>
+      <div class="cta">
+        <a class="button" href="#try">Try it in your browser</a>
+        <a class="button is-quiet" href="/how-to">Read the how-to guides</a>
+      </div>
+      <p class="status">In development · not on Google Play yet.</p>
+    </div>
+    <img
+      class="hero-art"
+      src="/demo/art/mascot_thriving_greeting_happy.webp"
+      alt="Lucento, the app’s golden mascot, waving with a crystal torch"
+      width="320"
+      height="320"
+    />
+  </section>
+
+  <PhoneDemo />
+
+  <section class="block" id="features" aria-labelledby="features-title">
+    <p class="eyebrow">What it does today</p>
+    <h2 id="features-title">Everything you need to see where your money goes</h2>
+    <ul class="features">
+      {
+        features.map((f) => (
+          <li>
+            <h3>{f.title}</h3>
+            <p>{f.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="howto-title">
+    <p class="eyebrow">How to</p>
+    <h2 id="howto-title">Short guides for everyday tasks</h2>
+    <ul class="guides">
+      {
+        guides.map((g) => (
+          <li>
+            <a href={`/how-to#${g.id}`}>
+              <span class="guide-title">{g.title}</span>
+              <span class="guide-sum">{g.summary}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="block privacy" id="privacy" aria-labelledby="privacy-title">
+    <p class="eyebrow">Privacy</p>
+    <h2 id="privacy-title">Your money stays yours</h2>
+    <ul class="facts">
+      <li><strong>On your phone first.</strong> Everything is stored on the device and works without a connection.</li>
+      <li><strong>No bank login, no ads.</strong> You record what you choose to record.</li>
+      <li>
+        <strong>Sync only if you sign in.</strong> Nothing leaves the phone until you connect a Google or email account
+        and keep sync on. Signing out never deletes your data.
+      </li>
+      <li>
+        <strong>Smarter reading is opt-in.</strong> With it on, the message you type goes to Gemini to be read — never
+        your balances or history. Receipts are always read on the phone.
+      </li>
+    </ul>
   </section>
 </BaseLayout>
 
 <style>
-  .intro {
+  .hero {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: clamp(var(--space-xxl), 10vw, 7rem) var(--page-gutter);
+    padding: clamp(var(--space-xxl), 8vw, 6rem) var(--page-gutter) var(--space-xl);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-xl);
+    align-items: center;
   }
 
   h1 {
@@ -42,9 +136,141 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     line-height: 1.5;
   }
 
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-xl);
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--min-touch);
+    padding: 0 var(--space-lg);
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: var(--on-primary);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .button.is-quiet {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--border-default);
+  }
+
   .status {
     margin: var(--space-lg) 0 0;
-    max-width: var(--measure);
     color: var(--on-surface-variant);
+  }
+
+  .hero-art {
+    width: clamp(10rem, 22vw, 20rem);
+    height: auto;
+  }
+
+  .block {
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding: var(--space-xxl) var(--page-gutter);
+    scroll-margin-top: var(--space-lg);
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: var(--space-xs) 0 0;
+    max-width: 24ch;
+    font-size: clamp(1.75rem, 2.5vw + 1rem, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .features {
+    list-style: none;
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-lg) var(--space-xl);
+  }
+
+  .features h3 {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  .features p {
+    margin: var(--space-xs) 0 0;
+    color: var(--on-surface-variant);
+  }
+
+  .guides {
+    list-style: none;
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-sm);
+  }
+
+  .guides a {
+    display: block;
+    height: 100%;
+    padding: var(--space-md) var(--space-lg);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--surface-container-lowest);
+    color: var(--on-surface);
+    text-decoration: none;
+  }
+
+  .guides a:hover {
+    border-color: var(--primary);
+  }
+
+  .guide-title {
+    display: block;
+    font-weight: 700;
+  }
+
+  .guide-sum {
+    display: block;
+    margin-top: var(--space-xxs);
+    color: var(--on-surface-variant);
+    font-size: 0.9375rem;
+  }
+
+  .facts {
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-md);
+    max-width: var(--measure);
+  }
+
+  .facts strong {
+    display: block;
+  }
+
+  @media (max-width: 720px) {
+    .hero {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-art {
+      grid-row: 1;
+      width: 9rem;
+    }
   }
 </style>
