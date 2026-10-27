@@ -1,62 +1,89 @@
 ---
-// The interactive Lucento simulation (src/demo/simulator.ts): pick a story, follow the numbered steps, and use the
-// app on the phone. Everything runs in the browser with fictional data; nothing is saved or sent.
+// The interactive Lucento simulation (src/demo/simulator.ts) and the written guides,
+// in one section. Pick a story and do it on the phone, or open the same steps below.
+// Fictional money; nothing is saved or sent.
+import Mascot from './Mascot.astro';
+import { guides } from '../data/guides';
 import { STORIES } from '../demo/simulator';
 
 interface Props {
-  /** Section id and the prefix of story links: #<id>-<story> opens a story here. */
+  /** Section id. Story links use hashPrefix, which stays `guide-` so existing hashes keep working. */
   id?: string;
+  hashPrefix?: string;
+  /** 1 when this block is the page title. */
+  level?: 1 | 2;
   eyebrow?: string;
-  heading?: string;
-  intro?: string;
-  /** Which stories this instance offers, in order; the first is shown first. */
+  heading: string;
+  intro: string;
+  /** Which stories this instance offers, in order. */
   stories: string[];
-  /** "chips" (a few stories, home page) or "list" (every guide, how-to page). */
-  picker?: 'chips' | 'list';
+  /** Story shown first. Defaults to the first in `stories`. A hash still wins. */
+  initial?: string;
 }
 
 const {
   id = 'try',
-  eyebrow = 'Try it here',
-  heading = 'Use Lucento right in your browser',
-  intro = 'Pick a story, then follow the steps on the phone. It is a simulation with fictional money: nothing is saved or sent anywhere.',
+  hashPrefix = 'guide-',
+  level = 1,
+  eyebrow = 'On the phone',
+  heading,
+  intro,
   stories,
-  picker = 'chips',
+  initial,
 } = Astro.props;
-const first = STORIES[stories[0]];
+
+const initialKey = initial && stories.includes(initial) && STORIES[initial] ? initial : stories[0];
+
+const guideById = new Map(guides.map((guide) => [guide.id, guide]));
+const notes = stories.flatMap((key) => {
+  const guide = guideById.get(key);
+  return guide ? [guide] : [];
+});
+const first = STORIES[initialKey];
+if (!first) throw new Error(`Unknown story: ${initialKey}`);
+
+const shortLabel: Record<string, string> = {
+  'get-started': 'Set up',
+  'add-transactions': 'Transactions',
+  budget: 'Budget',
+  wallets: 'Wallets',
+  scheduled: 'Bills',
+  debts: 'Debts',
+  goals: 'Goals',
+  'new-phone': 'New phone',
+  sync: 'Sync',
+  'smarter-reading': 'Reading',
+  export: 'Export',
+};
 ---
 
-<section class={`ld ld-${picker}`} id={id} aria-labelledby={`${id}-title`} data-simulator data-stories={stories.join(',')} data-prefix={`${id}-`}>
-  <div class="ld-head">
-    <p class="kicker">{eyebrow}</p>
-    <h2 id={`${id}-title`}>{heading}</h2>
-    <p class="ld-sub">{intro}</p>
-  </div>
-
-  <div class="ld-body">
-    <div class="ld-guide">
-      <div class="ld-stories" role="group" aria-label="Choose a story">
-        {
-          stories.map((key, index) => (
-            <button type="button" class="ld-story" data-story={key} aria-pressed={index === 0 ? 'true' : 'false'}>
-              {picker === 'list' && <span class="ld-story-num">{String(index + 1).padStart(2, '0')}</span>}
-              {STORIES[key].title}
-            </button>
-          ))
-        }
+<section
+  class="ld ld-hero"
+  id={id}
+  aria-labelledby={`${id}-title`}
+  data-simulator
+  data-stories={stories.join(',')}
+  data-prefix={hashPrefix}
+  data-initial={initialKey}
+>
+  <div class="ld-layout">
+    <div class="ld-copy">
+      <div class="ld-identity">
+        <Mascot
+          pose="greeting"
+          size="4.75rem"
+          eager
+          alt="Lucento mascot concept: a golden orb with a hair crest and a bright crystal torch."
+        />
+        <p class="kicker ruled">{eyebrow}</p>
       </div>
-      <div class="ld-card">
-        <p class="ld-kicker" data-sim="kicker">{first.kicker}</p>
-        <h3 class="ld-story-title" data-sim="title">{first.title}</h3>
-        <p class="ld-story-text" data-sim="text">{first.text}</p>
-        <ol class="ld-steps" data-sim="steps">
-          {first.steps.map((step) => <li class="ld-step is-later"><span class="ld-num">·</span><span><b>{step.title}</b></span></li>)}
-        </ol>
-        <div class="ld-actions">
-          <button type="button" class="ld-reset" data-sim="reset">Start this guide again</button>
-        </div>
-      </div>
-      <p class="ld-live" data-sim="live" aria-live="polite"></p>
+      {level === 1 ? (
+        <h1 id={`${id}-title`} class="ld-title">{heading}</h1>
+      ) : (
+        <h2 id={`${id}-title`} class="ld-title">{heading}</h2>
+      )}
+      <p class="ld-sub">{intro}</p>
+      <p class="ld-fine">Not on Google Play yet. Pricing has not been announced.</p>
     </div>
 
     <div class="ld-phone-wrap">
@@ -66,6 +93,74 @@ const first = STORIES[stories[0]];
       </div>
       <p class="ld-note">Fictional data · simulation of the Android app</p>
     </div>
+
+    <div class="ld-controls">
+      <div class="ld-stories" role="group" aria-label="Choose a story">
+        {
+          stories.map((key) => {
+            const story = STORIES[key];
+            if (!story) return null;
+            return (
+              <button
+                type="button"
+                class="ld-story"
+                id={`${hashPrefix}${key}`}
+                data-story={key}
+                aria-pressed={key === initialKey ? 'true' : 'false'}
+                aria-label={story.title}
+              >
+                {shortLabel[key] ?? story.title}
+              </button>
+            );
+          })
+        }
+      </div>
+      <div class="ld-card">
+        <p class="ld-kicker" data-sim="kicker">{first.kicker}</p>
+        <h2 class="ld-story-title" data-sim="title">{first.title}</h2>
+        <p class="ld-story-text" data-sim="text">{first.text}</p>
+        <ol class="ld-steps" data-sim="steps">
+          {
+            first.steps.map((step) => (
+              <li class="ld-step is-later">
+                <span class="ld-num">·</span>
+                <span>
+                  <b>{step.title}</b>
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="ld-actions">
+          <button type="button" class="ld-reset" data-sim="reset">Start this guide again</button>
+        </div>
+      </div>
+      <p class="ld-live" data-sim="live" aria-live="polite"></p>
+    </div>
+
+    {
+      notes.length > 0 && (
+        <div class="ld-notes">
+          <h2 id="guides" class="ld-notes-title">
+            The same steps, written out
+          </h2>
+          {notes.map((guide) => (
+            <details id={guide.id}>
+              <summary>
+                <span class="ld-note-title">{guide.title}</span>
+                <span class="ld-note-sum">{guide.summary}</span>
+              </summary>
+              <ol>
+                {guide.steps.map((step) => (
+                  <li>{step}</li>
+                ))}
+              </ol>
+              {guide.tip && <p class="ld-tip">{guide.tip}</p>}
+            </details>
+          ))}
+        </div>
+      )
+    }
   </div>
 </section>
 
@@ -76,7 +171,17 @@ const first = STORIES[stories[0]];
     if (root.dataset.mounted) return;
     root.dataset.mounted = 'true';
     const stories = (root.dataset.stories ?? '').split(',').filter(Boolean);
-    mountSimulator(root, { stories, initial: stories[0], hashPrefix: root.dataset.prefix ?? 'try-' });
+    mountSimulator(root, {
+      stories,
+      initial: root.dataset.initial || stories[0],
+      hashPrefix: root.dataset.prefix ?? 'guide-',
+    });
+    const hash = window.location.hash.slice(1);
+    const prefix = root.dataset.prefix ?? '';
+    const noteId = hash.startsWith(prefix) ? hash.slice(prefix.length) : hash;
+    if (!noteId) return;
+    const note = root.querySelector(`details#${CSS.escape(noteId)}`);
+    if (note instanceof HTMLDetailsElement) note.open = true;
   });
 </script>
 
@@ -86,39 +191,61 @@ const first = STORIES[stories[0]];
   @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_semibold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
   @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
-  /* ---------------------------------------------------------------- the section and the guide */
-  .ld { max-width: var(--page-max); margin: 0 auto; padding: var(--page-pad) var(--page-gutter); scroll-margin-top: 5.5rem; }
-  .ld-head { max-width: 36rem; }
-  .ld-head h2 { margin: 0.35rem 0 0; max-width: 14ch; font-size: clamp(2rem, 2.4vw + 1rem, 3.15rem); line-height: 1.05; font-weight: 800; letter-spacing: -0.035em; }
-  .ld-sub { color: var(--on-surface-variant); margin: 0.9rem 0 0; font-size: 1.0625rem; }
-  .ld-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-xxl); align-items: start; margin-top: var(--space-xl); }
-  .ld-stories { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; border-bottom: 1px solid var(--outline-variant); }
-  .ld-story { min-height: var(--min-touch); padding: 0 0.15rem; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--on-surface-variant); font: inherit; font-weight: 700; cursor: pointer; }
+  .ld { max-width: var(--page-max); margin: 0 auto; padding: clamp(1rem, 2.5vw, 1.75rem) var(--page-gutter) clamp(1.25rem, 3vw, 2.25rem); scroll-margin-top: 5.5rem; }
+  .ld-layout { display: grid; grid-template-columns: minmax(0, 1fr) 384px; grid-template-areas: "copy phone" "controls phone" "notes phone"; gap: 0.85rem 1.75rem; align-items: start; }
+  .ld-copy { grid-area: copy; min-width: 0; }
+  .ld-phone-wrap { grid-area: phone; display: grid; justify-items: center; gap: var(--space-sm); }
+  .ld-controls { grid-area: controls; min-width: 0; }
+  .ld-notes { grid-area: notes; min-width: 0; }
+  .ld-identity { display: flex; align-items: center; gap: 0.75rem; }
+  .ld-identity .kicker { margin: 0; }
+  .ld-title { margin: 0.45rem 0 0; max-width: 18ch; font-size: clamp(1.85rem, 1.6vw + 1.1rem, 2.65rem); line-height: 1.08; font-weight: 800; letter-spacing: -0.035em; }
+  .ld-sub { color: var(--on-surface-variant); margin: 0.65rem 0 0; max-width: 38rem; font-size: 1rem; }
+  .ld-fine { margin: 0.45rem 0 0; color: var(--on-surface-variant); font-size: 0.875rem; }
+  .ld-stories { display: flex; flex-wrap: wrap; gap: 0; border-bottom: 1px solid var(--outline-variant); }
+  .ld-story { min-height: 2.75rem; padding: 0.35rem 0.7rem; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--on-surface-variant); font: inherit; font-size: 0.875rem; font-weight: 700; cursor: pointer; scroll-margin-top: 5.5rem; }
   .ld-story[aria-pressed='true'] { background: transparent; border-bottom-color: var(--primary); color: var(--on-surface); }
-  .ld-story:focus-visible, .ld-reset:focus-visible, .ld-next:focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
-  .ld-card { margin-top: var(--space-lg); padding: 0 0 var(--space-md); border: 0; border-bottom: 1px solid var(--outline-variant); border-radius: 0; background: transparent; }
+  .ld-story:focus-visible, .ld-reset:focus-visible, .ld-next:focus-visible, .ld-notes summary:focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
+  .ld-card { margin-top: 0.85rem; padding: 0 0 0.85rem; border: 0; border-bottom: 1px solid var(--outline-variant); border-radius: 0; background: transparent; }
   .ld-kicker { margin: 0; color: var(--primary); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.01em; }
-  .ld-story-title { margin: var(--space-xs) 0 0; font-size: 1.375rem; line-height: 1.25; }
-  .ld-story-text { margin: var(--space-sm) 0 0; color: var(--on-surface-variant); }
-  .ld-steps { list-style: none; margin: var(--space-lg) 0 0; padding: 0; display: grid; gap: var(--space-sm); }
-  .ld-step { display: grid; grid-template-columns: 2rem 1fr; gap: var(--space-sm); align-items: start; color: var(--on-surface-variant); }
-  .ld-step b { display: block; font-weight: 600; }
-  .ld-step.is-now { color: var(--on-surface); padding: var(--space-sm); margin: 0 calc(-1 * var(--space-sm)); border-radius: var(--radius-md); background: var(--highlight); }
+  .ld-story-title { margin: 0.2rem 0 0; font-size: 1.15rem; line-height: 1.25; letter-spacing: -0.02em; }
+  .ld-story-text { margin: 0.35rem 0 0; color: var(--on-surface-variant); font-size: 0.9375rem; }
+  .ld-steps { list-style: none; margin: 0.75rem 0 0; padding: 0; display: grid; gap: 0.35rem; }
+  .ld-step { display: grid; grid-template-columns: 1.75rem 1fr; gap: 0.45rem; align-items: start; color: var(--on-surface-variant); font-size: 0.9375rem; }
+  .ld-step b { display: block; font-weight: 650; }
+  .ld-step.is-now { color: var(--on-surface); padding: 0.45rem; margin: 0 -0.45rem; border-radius: var(--radius-md); background: var(--highlight); }
   .ld-step.is-now b { color: var(--on-highlight); }
-  .ld-step-body { display: block; margin-top: var(--space-xxs); color: var(--on-surface-variant); }
+  .ld-step-body { display: block; margin-top: 0.15rem; color: var(--on-surface-variant); }
   .ld-step.is-now .ld-step-body { color: var(--on-highlight); }
-  .ld-num { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; border: 1px solid var(--border-default); font-weight: 700; font-size: 0.875rem; background: var(--surface); }
+  .ld-num { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; border: 1px solid var(--border-default); font-weight: 700; font-size: 0.8125rem; background: var(--surface); }
   .ld-step.is-now .ld-num { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
   .ld-step.is-done .ld-num { background: var(--positive-container); color: var(--positive); border-color: transparent; }
   .ld-step.is-finale { color: var(--on-surface); }
   .ld-step.is-finale .ld-num { background: var(--accent); color: var(--midnight-navy); border-color: transparent; }
-  .ld-next, .ld-reset { margin-top: var(--space-sm); min-height: var(--min-touch); padding: 0 var(--space-md); border-radius: var(--radius-md); font: inherit; font-weight: 600; cursor: pointer; }
+  .ld-next, .ld-reset { margin-top: 0.35rem; min-height: var(--min-touch); padding: 0 0.85rem; border-radius: var(--radius-md); font: inherit; font-weight: 650; cursor: pointer; }
   .ld-next { border: 0; background: var(--primary); color: var(--on-primary); }
   .ld-reset { border: 1px solid var(--border-default); background: transparent; color: var(--on-surface); }
-  .ld-actions { margin-top: var(--space-md); }
+  .ld-actions { margin-top: 0.65rem; }
   .ld-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .ld-phone-wrap { display: grid; justify-items: center; gap: var(--space-sm); }
-  .ld-note { margin: 0; font-size: 0.8125rem; color: var(--on-surface-variant); }
+  .ld-note { margin: 0; font-size: 0.8125rem; color: var(--on-surface-variant); text-align: center; }
+
+  .ld-notes { border-top: 1px solid var(--outline-variant); }
+  .ld-notes-title { margin: 0.85rem 0 0.15rem; font-size: 1.05rem; letter-spacing: -0.02em; }
+  .ld-notes details { border-bottom: 1px solid var(--outline-variant); scroll-margin-top: 5.5rem; }
+  .ld-notes summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.1rem 0.75rem; align-items: center; min-height: 2.75rem; padding: 0.55rem 0; font-weight: 650; cursor: pointer; list-style: none; }
+  .ld-notes summary::-webkit-details-marker { display: none; }
+  .ld-note-title { font-weight: 750; }
+  .ld-note-sum { grid-column: 1; color: var(--on-surface-variant); font-size: 0.875rem; font-weight: 500; }
+  .ld-notes summary::after { content: ''; grid-column: 2; grid-row: 1 / span 2; width: 0.7rem; height: 2px; background: var(--primary); box-shadow: 0 -5px 0 var(--primary); }
+  .ld-notes details[open] summary::after { box-shadow: none; }
+  .ld-notes ol { margin: 0.15rem 0 0.75rem; padding-left: 1.15rem; color: var(--on-surface-variant); font-size: 0.9375rem; }
+  .ld-notes li + li { margin-top: 0.3rem; }
+  .ld-tip { margin: 0 0 0.85rem; color: var(--on-surface-variant); font-size: 0.875rem; }
+
+  @media (max-width: 959px) {
+    .ld-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "phone" "copy" "controls" "notes"; }
+    .ld-title { max-width: none; }
+  }
 
   /* ---------------------------------------------------------------- the phone */
   .ld-phone { position: relative; width: 360px; max-width: 100%; height: 740px; padding: 12px; border-radius: 48px; background: #0b1222; box-shadow: var(--shadow-lg), inset 0 0 0 2px #2a3550; }
@@ -289,16 +416,6 @@ const first = STORIES[stories[0]];
   .ld-screen :focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
 
 
-  /* ---------------------------------------------------------------- list picker (how-to page) */
-  .ld-list .ld-body { grid-template-columns: 15rem minmax(0, 1fr) auto; gap: var(--space-xl); }
-  .ld-list .ld-guide { display: contents; }
-  .ld-list .ld-stories { flex-direction: column; flex-wrap: nowrap; gap: 0; position: sticky; top: 5.5rem; align-self: start; border-bottom: 0; }
-  .ld-list .ld-story { justify-content: flex-start; text-align: left; border: 0; border-bottom: 1px solid var(--outline-variant); border-radius: 0; background: transparent; color: var(--on-surface-variant); font-weight: 650; padding: 0.65rem 0.35rem; display: flex; gap: var(--space-sm); align-items: center; box-shadow: inset 3px 0 0 transparent; }
-  .ld-list .ld-story[aria-pressed='true'] { background: transparent; color: var(--on-surface); border-bottom-color: var(--outline-variant); box-shadow: inset 3px 0 0 var(--primary); }
-  .ld-story-num { font-variant-numeric: tabular-nums; color: var(--primary); font-weight: 800; font-size: 0.8125rem; }
-  .ld-list .ld-story[aria-pressed='true'] .ld-story-num { color: inherit; }
-  .ld-list .ld-card { margin-top: 0; align-self: start; }
-
   /* ---------------------------------------------------------------- extra phone pieces */
   .ls-avatar { border: 0; cursor: pointer; }
   .ls-card-link { display: block; width: 100%; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
@@ -342,21 +459,8 @@ const first = STORIES[stories[0]];
   .ls-dialog-actions { display: flex; justify-content: flex-end; gap: 4px; }
   .ls-dialog-actions .ls-text { padding: 0 14px; }
 
-  @media (max-width: 1100px) {
-    .ld-list .ld-body { grid-template-columns: minmax(0, 1fr) auto; }
-    .ld-list .ld-guide { display: block; }
-    .ld-list .ld-stories { position: static; flex-direction: row; flex-wrap: wrap; gap: 0.35rem 0.85rem; margin-bottom: var(--space-md); border-bottom: 1px solid var(--outline-variant); }
-    .ld-list .ld-story { border: 0; border-bottom: 2px solid transparent; box-shadow: none; padding: 0 0.1rem; }
-    .ld-list .ld-story[aria-pressed='true'] { border-bottom-color: var(--primary); box-shadow: none; }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .ls-torch, .ls-hint, .ls-dots i { animation: none; }
-  }
-  @media (max-width: 860px) {
-    .ld-body, .ld-list .ld-body { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
-    .ld-guide { min-width: 0; }
-    .ld-list .ld-stories { flex-wrap: wrap; overflow: visible; }
   }
   @media (max-width: 400px) {
     .ld-phone { width: 100%; height: 700px; padding: 8px; border-radius: 36px; }

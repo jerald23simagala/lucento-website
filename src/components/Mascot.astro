@@ -1,0 +1,78 @@
+---
+// Concept-art mascot. The WebP is always in the page. A small Lottie loop
+// replaces it visually only after the figure is near the screen, and never
+// when the visitor prefers reduced motion.
+import { mascotArt, type MascotPose } from '../data/mascot';
+
+interface Props {
+  pose: MascotPose;
+  alt: string;
+  size?: string;
+  id?: string;
+  eager?: boolean;
+}
+
+const { pose, alt, size = '6.5rem', id, eager = false } = Astro.props;
+const art = mascotArt[pose];
+---
+
+<figure
+  class="mascot"
+  id={id}
+  data-mascot
+  data-lottie={art.lottie}
+  data-still={art.still}
+  style={`--mascot-size:${size}`}
+>
+  <img
+    src={art.still}
+    alt={alt}
+    width="512"
+    height="512"
+    decoding="async"
+    loading={eager ? 'eager' : 'lazy'}
+  />
+  <span data-stage aria-hidden="true"></span>
+</figure>
+
+<script>
+  import { bootMascots } from '../scripts/mascot-player';
+
+  bootMascots();
+</script>
+
+<style>
+  .mascot {
+    position: relative;
+    width: var(--mascot-size, 6.5rem);
+    height: var(--mascot-size, 6.5rem);
+    margin: 0;
+    flex: none;
+  }
+
+  .mascot img,
+  .mascot [data-stage] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mascot img {
+    object-fit: contain;
+  }
+
+  .mascot [data-stage] {
+    pointer-events: none;
+  }
+
+  .mascot.is-playing img {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mascot.is-playing img {
+      opacity: 1;
+    }
+  }
+</style>

@@ -59,11 +59,12 @@ design/tokens.json        Design-system export (source of truth for UI tokens)
 scripts/build-tokens.mjs  tokens.json -> src/styles/tokens.css
 src/styles/               tokens.css (generated) and global.css
 src/layouts/              BaseLayout: metadata, skip link, header, footer
-src/components/           Header, footer, Rising Crest mark, demo, pace calculator
+src/components/           Header, footer, Rising Crest mark, mascot, demo, pace calculator
 src/pages/                index, how-to, privacy, 404, auth confirm, robots.txt
 brand/logo/               Rising Crest logo: symbol, wordmark, lockups, Android
 brand/logo-concepts/      Earlier logo explorations
 public/                   Static files (favicon, demo art)
+public/lottie/            Mascot loops authored here from the existing WebP art. The repo had no Lottie source.
 ```
 
 The marketing site keeps Manrope and the Sunrise Energy tokens. The Rising Crest

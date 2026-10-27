@@ -3,20 +3,15 @@
 // % used rounds half-up, % of month rounds down, pace allows 10 points either way, days left include today, and the
 // daily allowance is what's left divided by those days, rounded down to the cent.
 // The mascot pose follows the same mapping as the browser demo (src/demo/simulator.ts).
-import Crest from './Crest.astro';
+import Mascot from './Mascot.astro';
 ---
 
 <section class="calc" id="pace" aria-labelledby="calc-title">
   <div class="calc-text">
-    <p class="kicker"><Crest size="sm" /> Your month</p>
     <h2 id="calc-title">Are you spending faster than the month?</h2>
     <p>
-      Lucento compares how much of your budget you’ve used with how much of the month has passed, and says what you
-      can still spend each day. Try it with your own numbers. This illustration uses US dollars; the app keeps each
-      currency as itself and never converts.
-    </p>
-    <p class="concept">
-      The character is concept art. In the demo, the pose on the budget card follows the pace.
+      Same comparison as the app. This illustration uses US dollars; the app keeps each currency as itself and never
+      converts. The character is concept art, and the pose follows the pace.
     </p>
   </div>
 
@@ -49,11 +44,10 @@ import Crest from './Crest.astro';
         </div>
       </div>
       <div class="verdict-row">
-        <img
+        <Mascot
           id="calc-mascot"
-          src="/demo/art/mascot_thriving_greeting_happy.webp"
-          width="112"
-          height="112"
+          pose="greeting"
+          size="5.5rem"
           alt="Lucento mascot concept with a bright torch, used in the demo when spending is in step with the month."
         />
         <div>
@@ -68,8 +62,10 @@ import Crest from './Crest.astro';
 </section>
 
 <script>
+  import { mascotArt } from '../data/mascot';
+
   const form = document.getElementById('calc-form') as HTMLFormElement;
-  const mascot = document.getElementById('calc-mascot') as HTMLImageElement;
+  const mascot = document.getElementById('calc-mascot') as HTMLElement;
   const $ = (id: string) => document.getElementById(id) as HTMLElement;
   const cents = (v: FormDataEntryValue | null): number | null => {
     const m = /^\s*(\d{1,9})(?:\.(\d{1,2}))?\s*$/.exec(String(v ?? '').replace(/,/g, ''));
@@ -79,17 +75,17 @@ import Crest from './Crest.astro';
 
   const poses = {
     ahead: {
-      src: '/demo/art/mascot_getting_tight_caution.webp',
+      ...mascotArt.caution,
       alt: 'Lucento mascot concept with a dim torch, used in the demo when spending is ahead of the month.',
       cap: 'In the demo, the torch dims when spending runs ahead of the month.',
     },
     behind: {
-      src: '/demo/art/mascot_steady_hero_neutral.webp',
+      ...mascotArt.steady,
       alt: 'Lucento mascot concept standing steady with a torch, used in the demo when spending is slower than the month.',
       cap: 'In the demo, this steadier pose means spending is slower than the month.',
     },
     step: {
-      src: '/demo/art/mascot_thriving_greeting_happy.webp',
+      ...mascotArt.greeting,
       alt: 'Lucento mascot concept with a bright torch, used in the demo when spending is in step with the month.',
       cap: 'In the demo, this pose means spending is in step with the month.',
     },
@@ -97,8 +93,13 @@ import Crest from './Crest.astro';
 
   function setPose(key: keyof typeof poses): void {
     const pose = poses[key];
-    if (mascot.getAttribute('src') !== pose.src) mascot.src = pose.src;
-    mascot.alt = pose.alt;
+    mascot.dataset.still = pose.still;
+    mascot.dataset.lottie = pose.lottie;
+    const img = mascot.querySelector('img');
+    if (img) {
+      if (img.getAttribute('src') !== pose.still) img.src = pose.still;
+      img.alt = pose.alt;
+    }
     $('calc-pose').textContent = pose.cap;
   }
 
@@ -145,37 +146,22 @@ import Crest from './Crest.astro';
   .calc {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: var(--page-pad) var(--page-gutter);
-    display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    gap: clamp(1.5rem, 4vw, 4rem);
-    align-items: start;
-  }
-
-  .kicker :global(.crest) {
-    margin-right: 0.45rem;
-    vertical-align: -0.35rem;
+    padding: clamp(1.25rem, 2.5vw, 2rem) var(--page-gutter);
   }
 
   h2 {
-    margin: 0.45rem 0 0;
-    max-width: 12ch;
-    font-size: clamp(2rem, 2.4vw + 1rem, 3.15rem);
-    line-height: 1.05;
+    margin: 0;
+    max-width: 24ch;
+    font-size: clamp(1.35rem, 1vw + 1rem, 1.75rem);
+    line-height: 1.15;
     font-weight: 800;
-    letter-spacing: -0.035em;
+    letter-spacing: -0.03em;
   }
 
-  .calc-text p:nth-of-type(2) {
-    max-width: 36rem;
+  .calc-text p {
+    max-width: 40rem;
+    margin: 0.45rem 0 0;
     color: var(--on-surface-variant);
-  }
-
-  .concept {
-    max-width: 32rem;
-    margin-top: 0.75rem;
-    color: var(--on-surface-variant);
-    font-size: 0.9375rem;
   }
 
   .calc-card {
@@ -268,17 +254,12 @@ import Crest from './Crest.astro';
 
   .verdict-row {
     display: grid;
-    grid-template-columns: 6.5rem minmax(0, 1fr);
+    grid-template-columns: 5.5rem minmax(0, 1fr);
     gap: 0.85rem;
     align-items: center;
     margin-top: 1.25rem;
     padding-top: 1.1rem;
     border-top: 1px solid var(--outline-variant);
-  }
-
-  .verdict-row img {
-    width: 6.5rem;
-    height: auto;
   }
 
   .verdict {
@@ -304,12 +285,6 @@ import Crest from './Crest.astro';
     margin-top: 1rem;
   }
 
-  @media (max-width: 900px) {
-    .calc {
-      grid-template-columns: 1fr;
-    }
-  }
-
   @media (max-width: 520px) {
     .fields {
       grid-template-columns: 1fr;
@@ -324,12 +299,5 @@ import Crest from './Crest.astro';
       grid-row: 2;
     }
 
-    .verdict-row {
-      grid-template-columns: 4.75rem minmax(0, 1fr);
-    }
-
-    .verdict-row img {
-      width: 4.75rem;
-    }
   }
 </style>

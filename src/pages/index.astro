@@ -1,52 +1,54 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Crest from '../components/Crest.astro';
 import PhoneDemo from '../components/PhoneDemo.astro';
 import PaceCalculator from '../components/PaceCalculator.astro';
 import { guides } from '../data/guides';
-import { faq, howItWorks, limitations, realLife } from '../data/site';
+import { faq, limitations, realLife } from '../data/site';
 
-const features = [
+const keeps = [
   {
-    title: 'A budget that keeps pace',
-    body: 'Give each category an amount; the month’s budget is their sum. One card compares what you’ve used with how much of the month has passed, and says what you can still spend each day.',
+    title: 'Budget pace',
+    body: 'Each category has a monthly amount. The month’s budget is their sum. Home sets how much you’ve used beside how much of the month has passed, and what a day can still be.',
   },
   {
-    title: 'Write it like a message',
-    body: '“Lunch 45, groceries 120, parking 15” becomes three rows to check and save together. Scan a receipt or speak instead — all read on your phone.',
+    title: 'A sentence, a receipt, or speech',
+    body: '“Lunch 45, groceries 120, parking 15” becomes rows to check and save together. Receipts and speech are read on the phone. English for now. Nothing is written until you tap Save.',
   },
   {
-    title: 'Every wallet, honestly',
-    body: 'Cash, bank, e-wallets, savings, cards and loans, with net worth as assets minus debts. Transfers are never counted as spending, and currencies are never converted behind your back.',
+    title: 'Wallets and net worth',
+    body: 'Cash, bank, e-wallets, savings, cards and loans. Net worth is assets minus debts. A transfer is never income or spending, and currencies are never converted.',
   },
   {
-    title: 'Bills you won’t miss',
-    body: 'Schedule rent, subscriptions and salary. The bell on Home shows what’s overdue or due this week; nothing is recorded until you mark it paid.',
+    title: 'Bills and income',
+    body: 'Schedule rent, subscriptions and salary. The bell shows what’s overdue or due within 7 days. Nothing is recorded until you mark it paid or received.',
   },
   {
-    title: 'Debts paid down correctly',
-    body: 'Add a card or loan with its terms. Each payment splits into principal, which lowers what you owe, and interest, which counts as spending.',
+    title: 'Cards and loans',
+    body: 'You enter the interest from your statement. That part counts as spending. The principal lowers what you owe.',
   },
   {
-    title: 'Goals with a picture',
-    body: 'Save toward a trip or a fund with its own image, target date and progress. The money stays in your wallets, so it’s never counted twice.',
+    title: 'Goals',
+    body: 'A target, an optional date and picture, and progress. The money stays in your wallets, so it isn’t counted twice.',
   },
   {
-    title: 'Insights from your own records',
-    body: 'Income and spending trends, and what your net worth is made of. Every chart has its exact figures beside it.',
+    title: 'Insights',
+    body: 'Income and spending trends, and what net worth is made of. Every chart has its figures beside it.',
   },
   {
-    title: 'Sync only if you want it',
-    body: 'Back up and keep phones in step with a Google or email account. On a new phone, sign in and your data comes across.',
+    title: 'Sync, if you want it',
+    body: 'The record stays on the phone. A Google or email account is only for backup and a new phone. Signing out does not delete what’s on the device.',
+  },
+  {
+    title: 'Smarter reading',
+    body: 'Off unless you turn it on. Then the message, today’s date, your main currency and your category and account names go to Gemini — never balances or history.',
   },
 ];
 
-const demoStories = ['add-transactions', 'scheduled', 'budget', 'new-phone'];
-
-const exampleRows = [
-  { what: 'Lunch', category: 'Dining', amount: '$45' },
-  { what: 'Groceries', category: 'Groceries', amount: '$120' },
-  { what: 'Parking', category: 'Transport', amount: '$15' },
+const privacy = [
+  ['On the phone', 'The record is stored on the device. Every core feature works offline.'],
+  ['No bank login', 'You record what you choose to record. There is no access to your accounts.'],
+  ['No ads', 'No ads, no analytics and no crash reporting.'],
+  ['Sync is optional', 'Nothing leaves the phone until you connect a Google or email account and keep sync on.'],
 ];
 ---
 
@@ -54,246 +56,86 @@ const exampleRows = [
   title="Lucento — a budget tracker for Android"
   description="Lucento is an Android budget tracker in development. Describe spending in a sentence, compare it with the month, and keep the record on your phone. Try the simulation in your browser."
 >
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="hero-top">
-      <div>
-        <p class="kicker ruled">Android budget tracker · in development</p>
-        <h1 id="hero-title">The month, set beside what you’ve spent.</h1>
-      </div>
-      <div class="hero-deck">
-        <p class="lede">
-          Lucento is a budget tracker for Android. Describe a purchase the way you’d say it, check the rows, and save
-          them together. Home then sets the budget you’ve used beside how much of the month has passed — on your
-          phone, offline, with no bank login.
-        </p>
-        <div class="actions">
-          <a class="btn" href="#try">Try the demo</a>
-          <a class="text-link" href="/how-to">Read the guides</a>
-        </div>
-        <p class="fine">
-          Not on Google Play yet. The demo is a simulation with fictional money. Nothing you type there is saved or
-          sent.
-        </p>
-      </div>
-    </div>
+  <PhoneDemo
+    id="try"
+    hashPrefix="guide-"
+    level={1}
+    eyebrow="Android budget tracker · in development"
+    heading="The month, beside what you’ve spent."
+    intro="Describe a purchase, check the rows, and Home compares the budget you’ve used with how far the month has gone. Offline, on your phone, with no bank login."
+    stories={guides.map((guide) => guide.id)}
+    initial="budget"
+  />
 
-    <figure class="statement">
-      <div class="rail">
-        <Crest size="lg" />
-      </div>
-      <div class="statement-body">
-        <div class="statement-head">
-          <p><span class="flag">Example</span> Day 20 of a 31-day month</p>
-          <p>Not your records</p>
-        </div>
-        <div class="pace">
-          <div class="pace-row">
-            <span>Budget used</span>
-            <span class="track" aria-hidden="true"><span class="fill is-used"></span></span>
-            <b class="num">63%</b>
-          </div>
-          <div class="pace-row">
-            <span>Month passed</span>
-            <span class="track" aria-hidden="true"><span class="fill is-month"></span></span>
-            <b class="num">64%</b>
-          </div>
-        </div>
-        <p class="verdict">In step with the month.</p>
-        <p class="statement-note">
-          About $50.00 a day for the next 12 days would keep this example inside a $1,600 budget after $1,000 spent.
-          The app uses the same comparison on your own records, in your own currency.
-        </p>
-      </div>
-    </figure>
-  </section>
-
-  <section class="block" id="how-it-works" aria-labelledby="how-title">
-    <div class="intro">
-      <p class="kicker">How it works</p>
-      <h2 id="how-title">From a sentence to a pace</h2>
-    </div>
-    <ol class="steps">
+  <section class="sheet" id="keeps" aria-labelledby="keeps-title">
+    <h2 id="keeps-title">What it keeps</h2>
+    <dl class="ledger">
       {
-        howItWorks.map((s, i) => (
-          <li>
-            <span class="step-num num">{String(i + 1).padStart(2, '0')}</span>
-            <div>
-              <h3>{s.title}</h3>
-              <p>{s.body}</p>
-            </div>
-          </li>
+        keeps.map((item) => (
+          <div>
+            <dt>{item.title}</dt>
+            <dd>{item.body}</dd>
+          </div>
         ))
       }
-    </ol>
-  </section>
-
-  <section class="band" id="write" aria-labelledby="write-title">
-    <div class="band-inner">
-      <div>
-        <p class="kicker ruled">Low-friction entry</p>
-        <h2 id="write-title">Say what happened. Then look at the rows.</h2>
-        <p class="band-copy">
-          “Lunch 45, groceries 120, parking 15” becomes one row each. You can scan a receipt or speak instead — both
-          are read on the phone, in English for now. A line with no amount stays marked and cannot be saved. Lucento
-          does not guess a number. Nothing is written until you tap Save.
-        </p>
-        <figure class="pose">
-          <img
-            src="/demo/art/mascot_thriving_thinking.webp"
-            width="128"
-            height="128"
-            alt="Lucento mascot concept, chin on hand, thinking, with a bright torch. Concept art for checking a purchase before it is saved."
-            loading="lazy"
-          />
-          <figcaption>
-            Concept art. In the demo, this pose sits with the composer while you check every row.
-          </figcaption>
-        </figure>
-      </div>
-      <div class="receipt">
-        <p class="flag">Example · not saved</p>
-        <p class="said">Lunch 45, groceries 120, parking 15</p>
-        <table>
-          <caption class="visually-hidden">Example rows that message would become</caption>
-          <thead>
-            <tr>
-              <th scope="col">What</th>
-              <th scope="col">Category</th>
-              <th scope="col">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              exampleRows.map((row) => (
-                <tr>
-                  <td>{row.what}</td>
-                  <td>{row.category}</td>
-                  <td class="num">{row.amount}</td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-        <p class="receipt-foot">Checked together, then saved in one tap.</p>
-      </div>
-    </div>
+    </dl>
   </section>
 
   <PaceCalculator />
 
-  <section class="block" id="real-life" aria-labelledby="real-title">
-    <div class="intro">
-      <p class="kicker">Careful with the awkward cases</p>
-      <h2 id="real-title">Built for real-life money</h2>
-      <p class="deck">Money is messy. Lucento flags what needs you, and never guesses on your behalf.</p>
-    </div>
-    <dl class="pairs">
+  <section class="sheet" id="careful" aria-labelledby="careful-title">
+    <h2 id="careful-title">It will not guess</h2>
+    <dl class="ledger">
       {
-        realLife.map((c) => (
+        realLife.map((item) => (
           <div>
-            <dt>{c.title}</dt>
-            <dd>{c.body}</dd>
+            <dt>{item.title}</dt>
+            <dd>{item.body}</dd>
           </div>
         ))
       }
     </dl>
-    <a class="text-link" href="/how-to#guide-add-transactions">Try a messy message in the guide</a>
+    <a class="text-link" href="#guide-add-transactions">Try a message on the phone</a>
   </section>
 
-  <PhoneDemo stories={demoStories} />
-
-  <section class="block" id="features" aria-labelledby="features-title">
-    <div class="intro">
-      <p class="kicker">What it keeps</p>
-      <h2 id="features-title">The household books, in one place</h2>
-    </div>
-    <dl class="index">
+  <section class="sheet" id="privacy" aria-labelledby="privacy-title">
+    <h2 id="privacy-title">Your money stays on your phone</h2>
+    <dl class="ledger">
       {
-        features.map((f) => (
+        privacy.map(([title, body]) => (
           <div>
-            <dt>{f.title}</dt>
-            <dd>{f.body}</dd>
+            <dt>{title}</dt>
+            <dd>{body}</dd>
           </div>
         ))
       }
     </dl>
-  </section>
-
-  <section class="block is-quiet" id="guides" aria-labelledby="guides-title">
-    <div class="intro">
-      <p class="kicker">Guides</p>
-      <h2 id="guides-title">Learn a task by doing it</h2>
-      <p class="deck">Each guide runs on a simulated phone. You tap, it responds, and the step completes.</p>
-    </div>
-    <ol class="contents">
-      {
-        guides.map((g, i) => (
-          <li>
-            <a href={`/how-to#guide-${g.id}`}>
-              <span class="step-num num">{String(i + 1).padStart(2, '0')}</span>
-              <span class="guide-copy">
-                <span class="guide-title">{g.title}</span>
-                <span class="guide-sum">{g.summary}</span>
-              </span>
-            </a>
-          </li>
-        ))
-      }
-    </ol>
-  </section>
-
-  <section class="block privacy" id="privacy" aria-labelledby="privacy-title">
-    <div class="intro">
-      <p class="kicker">Privacy</p>
-      <h2 id="privacy-title">Your money stays on your phone</h2>
-    </div>
-    <div>
-      <ul class="facts">
-        <li>
-          <strong>On the phone first.</strong> The record is stored on the device, and every core feature works without a connection.
-        </li>
-        <li><strong>No bank login, and no ads.</strong> You record what you choose to record.</li>
-        <li>
-          <strong>Sync only if you sign in.</strong> Nothing leaves the phone until you connect a Google or email account and keep sync on. Signing out does not delete what is on the phone.
-        </li>
-        <li>
-          <strong>Smarter reading is opt-in.</strong> With it on, the message you type goes to Gemini — never your balances or history. Receipts are always read on the phone.
-        </li>
-      </ul>
-      <a class="text-link" href="/privacy">How Lucento handles your data</a>
-    </div>
+    <a class="text-link" href="/privacy">How Lucento handles your data</a>
   </section>
 
   <div class="split">
-    <section class="block" id="faq" aria-labelledby="faq-title">
-      <div class="intro">
-        <p class="kicker">Questions</p>
-        <h2 id="faq-title">Before you try it</h2>
-      </div>
+    <section class="sheet" id="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Questions</h2>
       <div class="faq">
         {
-          faq.map((f) => (
+          faq.map((item) => (
             <details>
-              <summary>{f.q}</summary>
-              <p>{f.a}</p>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
             </details>
           ))
         }
       </div>
     </section>
 
-    <section class="block" id="good-to-know" aria-labelledby="limits-title">
-      <div class="intro">
-        <p class="kicker">Good to know</p>
-        <h2 id="limits-title">Current limitations</h2>
-        <p class="deck">Some are deliberate. Others are still ahead.</p>
-      </div>
-      <dl class="limits">
+    <section class="sheet" id="good-to-know" aria-labelledby="limits-title">
+      <h2 id="limits-title">Current limitations</h2>
+      <dl class="ledger">
         {
-          limitations.map((c) => (
+          limitations.map((item) => (
             <div>
-              <dt>{c.title}</dt>
-              <dd>{c.body}</dd>
+              <dt>{item.title}</dt>
+              <dd>{item.body}</dd>
             </div>
           ))
         }
@@ -303,424 +145,73 @@ const exampleRows = [
 
   <section class="close" id="get" aria-labelledby="get-title">
     <div class="close-inner">
-      <div class="intro">
-        <p class="kicker ruled">Availability</p>
-        <h2 id="get-title">Coming to Google Play</h2>
-        <p class="deck">
-          Lucento is in development and is not on Google Play yet. Pricing has not been announced. Until release, the
-          demo and the guides are the way to see how it works.
-        </p>
-      </div>
-      <div class="actions">
-        <a class="btn" href="#try">Try the demo</a>
-        <a class="text-link" href="/how-to">Open the guides</a>
-      </div>
+      <h2 id="get-title">Not on Google Play yet</h2>
+      <p>Lucento is in development. Pricing has not been announced. Until release, the phone above is how you see it work.</p>
+      <a class="text-link" href="#try">Back to the demo</a>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .hero {
+  .sheet {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: clamp(2.5rem, 6vw, 5.5rem) var(--page-gutter) var(--space-xl);
+    padding: clamp(1.25rem, 2.5vw, 2rem) var(--page-gutter);
   }
 
-  .hero-top {
-    display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    gap: clamp(1.5rem, 4vw, 4rem);
-    align-items: end;
-  }
-
-  h1 {
-    margin: 0.8rem 0 0;
-    max-width: 11ch;
-    font-size: clamp(2.7rem, 5.2vw, 4.6rem);
-    line-height: 0.96;
-    font-weight: 800;
-    letter-spacing: -0.045em;
-  }
-
-  .lede {
+  h2 {
     margin: 0;
-    font-size: clamp(1.05rem, 0.4vw + 1rem, 1.2rem);
-    line-height: 1.55;
-  }
-
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem 1.25rem;
-    margin-top: 1.35rem;
-  }
-
-  .fine,
-  .statement-note,
-  .deck {
-    color: var(--on-surface-variant);
-  }
-
-  .fine {
-    margin: 0.85rem 0 0;
-    max-width: 38rem;
-    font-size: 0.9375rem;
-  }
-
-  .statement {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: clamp(1rem, 3vw, 2.25rem);
-    align-items: end;
-    margin: clamp(2.5rem, 5vw, 4rem) 0 0;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--outline-variant);
-  }
-
-  .rail {
-    padding-bottom: 0.25rem;
-  }
-
-  .statement-head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.35rem 1rem;
-    margin: 0;
-    color: var(--on-surface-variant);
-    font-size: 0.875rem;
-    font-weight: 650;
-  }
-
-  .statement-head p {
-    margin: 0;
-  }
-
-  .flag {
-    margin-right: 0.55rem;
-    color: var(--accent-text);
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .pace {
-    display: grid;
-    gap: 0.7rem;
-    margin-top: 1.1rem;
-  }
-
-  .pace-row {
-    display: grid;
-    grid-template-columns: 7.5rem minmax(0, 1fr) 3rem;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.9375rem;
-  }
-
-  .pace-row b {
-    text-align: right;
-  }
-
-  .track {
-    display: block;
-    height: 0.7rem;
-    background: var(--track);
-  }
-
-  .fill {
-    display: block;
-    height: 100%;
-  }
-
-  .fill.is-used {
-    width: 63%;
-    background: var(--success);
-  }
-
-  .fill.is-month {
-    width: 64%;
-    background: color-mix(in srgb, var(--primary) 70%, var(--paper));
-  }
-
-  .verdict {
-    margin: 1.15rem 0 0;
-    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    font-size: clamp(1.35rem, 1vw + 1rem, 1.75rem);
+    line-height: 1.15;
     font-weight: 800;
     letter-spacing: -0.03em;
   }
 
-  .statement-note {
-    max-width: 42rem;
-    margin: 0.4rem 0 0;
-    font-size: 0.9375rem;
+  .ledger {
+    margin: 0.65rem 0 0;
   }
 
-  .block {
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: var(--page-pad) var(--page-gutter);
-  }
-
-  .block.is-quiet {
-    padding-top: 0;
-  }
-
-  .intro h2 {
-    margin: 0.35rem 0 0;
-    max-width: 14ch;
-    font-size: clamp(2rem, 2.4vw + 1rem, 3.15rem);
-    line-height: 1.05;
-    font-weight: 800;
-    letter-spacing: -0.035em;
-  }
-
-  .deck {
-    max-width: var(--measure);
-    margin: 0.9rem 0 0;
-    font-size: 1.0625rem;
-  }
-
-  .steps {
-    list-style: none;
-    max-width: 40rem;
-    margin: 1.75rem 0 0;
-    padding: 0;
-  }
-
-  .steps li {
+  .ledger div {
     display: grid;
-    grid-template-columns: 2.75rem minmax(0, 1fr);
-    gap: 0.85rem;
-    padding: 1.15rem 0;
+    grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr);
+    gap: 0.15rem 1.25rem;
+    align-items: baseline;
+    padding: 0.55rem 0;
     border-top: 1px solid var(--outline-variant);
   }
 
-  .step-num {
-    color: var(--primary);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-  }
-
-  .steps h3,
-  .index dt,
-  .pairs dt,
-  .limits dt {
+  .ledger dt {
     margin: 0;
-    font-size: 1.0625rem;
-    letter-spacing: -0.015em;
-  }
-
-  .steps p,
-  .index dd,
-  .pairs dd,
-  .limits dd {
-    margin: 0.3rem 0 0;
-    color: var(--on-surface-variant);
-  }
-
-  .band {
-    background: var(--ink);
-    color: #f8faff;
-  }
-
-  .band-inner {
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: var(--page-pad) var(--page-gutter);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.9fr);
-    gap: clamp(1.75rem, 4vw, 4rem);
-    align-items: center;
-  }
-
-  .band .kicker {
-    color: #d5ddec;
-  }
-
-  .band h2 {
-    margin: 0.45rem 0 0;
-    max-width: 14ch;
-    font-size: clamp(2rem, 2.4vw + 1rem, 3.15rem);
-    line-height: 1.05;
-    font-weight: 800;
-    letter-spacing: -0.035em;
-  }
-
-  .band-copy {
-    max-width: 38rem;
-    margin: 1rem 0 0;
-    color: #d5ddec;
-    font-size: 1.0625rem;
-  }
-
-  .pose {
-    display: grid;
-    grid-template-columns: 7rem minmax(0, 1fr);
-    gap: 0.9rem;
-    align-items: center;
-    margin: 1.5rem 0 0;
-  }
-
-  .pose img {
-    width: 7rem;
-    height: auto;
-  }
-
-  .pose figcaption {
-    margin: 0;
-    color: #b8c5dc;
-    font-size: 0.9375rem;
-  }
-
-  .receipt {
-    padding: 1.15rem 1.2rem 1.25rem;
-    border-top: 4px solid var(--mark-gold);
-    background: var(--paper);
-    color: var(--ink);
-  }
-
-  .said {
-    margin: 0.7rem 0 0.9rem;
-    font-size: clamp(1.25rem, 1.5vw + 0.8rem, 1.6rem);
-    font-weight: 800;
-    line-height: 1.25;
-    letter-spacing: -0.03em;
-  }
-
-  .receipt table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9375rem;
-  }
-
-  .receipt th {
-    padding: 0 0.75rem 0.4rem 0;
-    color: #5e687d;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-align: left;
-    text-transform: uppercase;
-  }
-
-  .receipt td {
-    padding: 0.65rem 0.75rem 0.65rem 0;
-    border-top: 1px solid #e8eaf0;
-  }
-
-  .receipt th:last-child,
-  .receipt td:last-child {
-    padding-right: 0;
-    text-align: right;
-  }
-
-  .receipt-foot {
-    margin: 0.85rem 0 0;
-    color: #5e687d;
-    font-size: 0.875rem;
-  }
-
-  .pairs,
-  .index {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 2.5rem;
-    margin: 1.75rem 0 0;
-  }
-
-  .pairs div,
-  .index div,
-  .limits div {
-    padding: 1.05rem 0;
-    border-top: 1px solid var(--outline-variant);
-  }
-
-  .contents {
-    list-style: none;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 2.5rem;
-    margin: 1.5rem 0 0;
-    padding: 0;
-  }
-
-  .contents a {
-    display: grid;
-    grid-template-columns: 2.5rem minmax(0, 1fr);
-    gap: 0.65rem;
-    align-items: start;
-    padding: 0.95rem 0;
-    border-top: 1px solid var(--outline-variant);
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .contents a:hover .guide-title {
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
-  }
-
-  .guide-copy {
-    display: grid;
-    gap: 0.15rem;
-    min-width: 0;
-  }
-
-  .guide-title {
     font-weight: 750;
   }
 
-  .guide-sum {
-    color: var(--on-surface-variant);
-    font-size: 0.9375rem;
-  }
-
-  .privacy {
-    display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    gap: 1.5rem 3rem;
-    align-items: start;
-  }
-
-  .facts {
-    list-style: none;
+  .ledger dd {
     margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0;
+    color: var(--on-surface-variant);
   }
 
-  .facts li {
-    padding: 0.9rem 0;
-    border-top: 1px solid var(--outline-variant);
-  }
-
-  .facts strong {
-    display: block;
+  .text-link {
+    margin-top: 0.35rem;
   }
 
   .split {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: 0 var(--page-gutter);
+    padding: 0 var(--page-gutter) clamp(1.25rem, 2.5vw, 2rem);
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.8fr);
-    gap: 1rem 3rem;
+    grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
+    gap: 1.25rem 2.5rem;
     align-items: start;
   }
 
-  .split .block {
+  .split .sheet {
     max-width: none;
     margin: 0;
-    padding-left: 0;
-    padding-right: 0;
+    padding: clamp(1.25rem, 2.5vw, 2rem) 0 0;
   }
 
   .faq {
-    margin-top: 1.25rem;
+    margin-top: 0.35rem;
     border-top: 1px solid var(--outline-variant);
   }
 
@@ -731,9 +222,9 @@ const exampleRows = [
   summary {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    min-height: 3.35rem;
-    padding: 0.7rem 0;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    padding: 0.45rem 0;
     font-weight: 700;
     cursor: pointer;
     list-style: none;
@@ -741,6 +232,11 @@ const exampleRows = [
 
   summary::-webkit-details-marker {
     display: none;
+  }
+
+  summary:focus-visible {
+    outline: 3px solid var(--border-focus);
+    outline-offset: 2px;
   }
 
   summary::after {
@@ -758,13 +254,8 @@ const exampleRows = [
   }
 
   details p {
-    margin: 0 0 1rem;
-    max-width: 40rem;
+    margin: 0 0 0.75rem;
     color: var(--on-surface-variant);
-  }
-
-  .limits {
-    margin: 1.25rem 0 0;
   }
 
   .close {
@@ -775,81 +266,22 @@ const exampleRows = [
   .close-inner {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: var(--page-pad) var(--page-gutter);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 1.5rem 2.5rem;
-    align-items: end;
+    padding: clamp(1.25rem, 2.5vw, 2rem) var(--page-gutter);
   }
 
-  .close .kicker,
-  .close .deck,
+  .close p {
+    max-width: 40rem;
+    margin: 0.4rem 0 0;
+  }
+
   .close .text-link {
     color: var(--on-highlight);
   }
 
-  .close .kicker.ruled::before {
-    background: var(--on-highlight);
-  }
-
-  .receipt .flag {
-    color: #9a5806;
-  }
-
-  .close .intro h2 {
-    max-width: 12ch;
-  }
-
-  @media (max-width: 980px) {
-    .hero-top,
-    .band-inner,
-    .privacy,
+  @media (max-width: 800px) {
     .split,
-    .close-inner {
+    .ledger div {
       grid-template-columns: 1fr;
-    }
-
-    .close .actions {
-      margin-top: 0;
-    }
-  }
-
-  @media (max-width: 760px) {
-    .pairs,
-    .index,
-    .contents {
-      grid-template-columns: 1fr;
-    }
-
-    h1 {
-      max-width: none;
-    }
-  }
-
-  @media (max-width: 520px) {
-    .statement {
-      grid-template-columns: 1fr;
-    }
-
-    .rail {
-      padding-bottom: 0;
-    }
-
-    .pace-row {
-      grid-template-columns: 1fr auto;
-    }
-
-    .pace-row .track {
-      grid-column: 1 / -1;
-      grid-row: 2;
-    }
-
-    .pose {
-      grid-template-columns: 5.25rem minmax(0, 1fr);
-    }
-
-    .pose img {
-      width: 5.25rem;
     }
   }
 </style>
