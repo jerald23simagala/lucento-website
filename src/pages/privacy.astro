@@ -49,8 +49,8 @@ const sections = [
   title="How Lucento handles your data"
   description="What stays on your phone, what cloud sync and Smarter reading send, and what the Lucento website does with your data."
 >
-  <article class="page">
-    <p class="eyebrow">Privacy</p>
+  <article class="prose-page">
+    <p class="kicker ruled">Privacy</p>
     <h1>How Lucento handles your data</h1>
     <p class="lede">
       A plain description of how the app works today. Lucento is in development; a formal privacy policy will be
@@ -68,47 +68,12 @@ const sections = [
         </section>
       ))
     }
+    <p class="back"><a class="text-link" href="/#privacy">Back to privacy at a glance</a></p>
   </article>
 </BaseLayout>
 
 <style>
-  .page {
-    max-width: 46rem;
-    margin: 0 auto;
-    padding: clamp(var(--space-xxl), 6vw, 5rem) var(--page-gutter) var(--space-xxl);
-  }
-
-  .eyebrow {
-    margin: 0;
-    color: var(--primary);
-    font-weight: 700;
-    font-size: 0.875rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  h1 {
-    margin: var(--space-xs) 0 0;
-    font-size: clamp(2rem, 3vw + 1rem, 3rem);
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-  }
-
-  .lede {
-    margin: var(--space-lg) 0 0;
-    color: var(--on-surface-variant);
-    font-size: 1.125rem;
-  }
-
-  h2 {
-    margin: var(--space-xxl) 0 0;
-    font-size: 1.375rem;
-  }
-
-  ul {
-    margin: var(--space-md) 0 0;
-    padding-left: 1.25rem;
-    display: grid;
-    gap: var(--space-sm);
+  .back {
+    margin: 2rem 0 0;
   }
 </style>

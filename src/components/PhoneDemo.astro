@@ -28,7 +28,7 @@ const first = STORIES[stories[0]];
 
 <section class={`ld ld-${picker}`} id={id} aria-labelledby={`${id}-title`} data-simulator data-stories={stories.join(',')} data-prefix={`${id}-`}>
   <div class="ld-head">
-    <p class="eyebrow">{eyebrow}</p>
+    <p class="kicker">{eyebrow}</p>
     <h2 id={`${id}-title`}>{heading}</h2>
     <p class="ld-sub">{intro}</p>
   </div>
@@ -87,18 +87,17 @@ const first = STORIES[stories[0]];
   @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
   /* ---------------------------------------------------------------- the section and the guide */
-  .ld { max-width: var(--page-max); margin: 0 auto; padding: var(--space-xxl) var(--page-gutter); scroll-margin-top: var(--space-lg); }
-  .ld-head { max-width: var(--measure); }
-  .eyebrow { margin: 0; color: var(--primary); font-weight: 700; font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; }
-  .ld-head h2 { margin: var(--space-xs) 0 0; font-size: clamp(1.75rem, 2.5vw + 1rem, 2.75rem); line-height: 1.1; letter-spacing: -0.02em; }
-  .ld-sub { color: var(--on-surface-variant); margin: var(--space-md) 0 0; }
+  .ld { max-width: var(--page-max); margin: 0 auto; padding: var(--page-pad) var(--page-gutter); scroll-margin-top: 5.5rem; }
+  .ld-head { max-width: 36rem; }
+  .ld-head h2 { margin: 0.35rem 0 0; max-width: 14ch; font-size: clamp(2rem, 2.4vw + 1rem, 3.15rem); line-height: 1.05; font-weight: 800; letter-spacing: -0.035em; }
+  .ld-sub { color: var(--on-surface-variant); margin: 0.9rem 0 0; font-size: 1.0625rem; }
   .ld-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-xxl); align-items: start; margin-top: var(--space-xl); }
-  .ld-stories { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
-  .ld-story { min-height: var(--min-touch); padding: 0 var(--space-md); border-radius: var(--radius-full); border: 1px solid var(--border-default); background: var(--surface-container-lowest); color: var(--on-surface); font: inherit; font-weight: 600; cursor: pointer; }
-  .ld-story[aria-pressed='true'] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+  .ld-stories { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; border-bottom: 1px solid var(--outline-variant); }
+  .ld-story { min-height: var(--min-touch); padding: 0 0.15rem; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: var(--on-surface-variant); font: inherit; font-weight: 700; cursor: pointer; }
+  .ld-story[aria-pressed='true'] { background: transparent; border-bottom-color: var(--primary); color: var(--on-surface); }
   .ld-story:focus-visible, .ld-reset:focus-visible, .ld-next:focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
-  .ld-card { margin-top: var(--space-md); padding: var(--space-lg); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--surface-container-lowest); }
-  .ld-kicker { margin: 0; color: var(--primary); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .ld-card { margin-top: var(--space-lg); padding: 0 0 var(--space-md); border: 0; border-bottom: 1px solid var(--outline-variant); border-radius: 0; background: transparent; }
+  .ld-kicker { margin: 0; color: var(--primary); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.01em; }
   .ld-story-title { margin: var(--space-xs) 0 0; font-size: 1.375rem; line-height: 1.25; }
   .ld-story-text { margin: var(--space-sm) 0 0; color: var(--on-surface-variant); }
   .ld-steps { list-style: none; margin: var(--space-lg) 0 0; padding: 0; display: grid; gap: var(--space-sm); }
@@ -122,7 +121,7 @@ const first = STORIES[stories[0]];
   .ld-note { margin: 0; font-size: 0.8125rem; color: var(--on-surface-variant); }
 
   /* ---------------------------------------------------------------- the phone */
-  .ld-phone { position: relative; width: 360px; height: 740px; padding: 12px; border-radius: 48px; background: #0b1222; box-shadow: 0 30px 60px -20px rgba(16, 24, 43, 0.45), inset 0 0 0 2px #2a3550; }
+  .ld-phone { position: relative; width: 360px; max-width: 100%; height: 740px; padding: 12px; border-radius: 48px; background: #0b1222; box-shadow: var(--shadow-lg), inset 0 0 0 2px #2a3550; }
   .ld-notch { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 18px; height: 18px; border-radius: 50%; background: #0b1222; z-index: 5; }
   .ld-screen { position: relative; width: 100%; height: 100%; border-radius: 38px; overflow: hidden; display: flex; flex-direction: column; background: var(--background); color: var(--on-surface); font-family: 'Plus Jakarta Sans', var(--font-sans, sans-serif); font-size: 13px; line-height: 1.35; }
   .ld-screen button, .ld-screen input, .ld-screen select { font: inherit; color: inherit; }
@@ -293,9 +292,9 @@ const first = STORIES[stories[0]];
   /* ---------------------------------------------------------------- list picker (how-to page) */
   .ld-list .ld-body { grid-template-columns: 15rem minmax(0, 1fr) auto; gap: var(--space-xl); }
   .ld-list .ld-guide { display: contents; }
-  .ld-list .ld-stories { flex-direction: column; flex-wrap: nowrap; gap: 2px; position: sticky; top: var(--space-lg); align-self: start; }
-  .ld-list .ld-story { justify-content: flex-start; text-align: left; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--on-surface-variant); font-weight: 600; padding: var(--space-xs) var(--space-sm); display: flex; gap: var(--space-sm); align-items: center; }
-  .ld-list .ld-story[aria-pressed='true'] { background: var(--primary-container); color: var(--on-primary-container); }
+  .ld-list .ld-stories { flex-direction: column; flex-wrap: nowrap; gap: 0; position: sticky; top: 5.5rem; align-self: start; border-bottom: 0; }
+  .ld-list .ld-story { justify-content: flex-start; text-align: left; border: 0; border-bottom: 1px solid var(--outline-variant); border-radius: 0; background: transparent; color: var(--on-surface-variant); font-weight: 650; padding: 0.65rem 0.35rem; display: flex; gap: var(--space-sm); align-items: center; box-shadow: inset 3px 0 0 transparent; }
+  .ld-list .ld-story[aria-pressed='true'] { background: transparent; color: var(--on-surface); border-bottom-color: var(--outline-variant); box-shadow: inset 3px 0 0 var(--primary); }
   .ld-story-num { font-variant-numeric: tabular-nums; color: var(--primary); font-weight: 800; font-size: 0.8125rem; }
   .ld-list .ld-story[aria-pressed='true'] .ld-story-num { color: inherit; }
   .ld-list .ld-card { margin-top: 0; align-self: start; }
@@ -346,8 +345,9 @@ const first = STORIES[stories[0]];
   @media (max-width: 1100px) {
     .ld-list .ld-body { grid-template-columns: minmax(0, 1fr) auto; }
     .ld-list .ld-guide { display: block; }
-    .ld-list .ld-stories { position: static; flex-direction: row; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-md); }
-    .ld-list .ld-story { border: 1px solid var(--border-default); border-radius: var(--radius-full); background: var(--surface-container-lowest); }
+    .ld-list .ld-stories { position: static; flex-direction: row; flex-wrap: wrap; gap: 0.35rem 0.85rem; margin-bottom: var(--space-md); border-bottom: 1px solid var(--outline-variant); }
+    .ld-list .ld-story { border: 0; border-bottom: 2px solid transparent; box-shadow: none; padding: 0 0.1rem; }
+    .ld-list .ld-story[aria-pressed='true'] { border-bottom-color: var(--primary); box-shadow: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -356,8 +356,7 @@ const first = STORIES[stories[0]];
   @media (max-width: 860px) {
     .ld-body, .ld-list .ld-body { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
     .ld-guide { min-width: 0; }
-    .ld-list .ld-stories { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--space-xs); scrollbar-width: thin; }
-    .ld-list .ld-story { flex: none; }
+    .ld-list .ld-stories { flex-wrap: wrap; overflow: visible; }
   }
   @media (max-width: 400px) {
     .ld-phone { width: 100%; height: 700px; padding: 8px; border-radius: 36px; }

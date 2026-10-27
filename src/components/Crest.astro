@@ -1,0 +1,111 @@
+---
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { size = 'sm' } = Astro.props;
+---
+
+<span class:list={['crest', `is-${size}`]} aria-hidden="true">
+  <span class="bar bar-1"></span>
+  <span class="bar bar-2"></span>
+  <span class="bar bar-3"></span>
+</span>
+
+<style>
+  .crest {
+    display: inline-grid;
+    grid-auto-flow: column;
+    align-items: end;
+    gap: 3px;
+    height: 1.75rem;
+  }
+
+  .bar {
+    display: block;
+    width: 0.42rem;
+    border-radius: 2px 2px 0 0;
+    transform-origin: bottom;
+  }
+
+  .bar-1 {
+    height: 42%;
+    background: var(--mark-blue);
+  }
+
+  .bar-2 {
+    height: 70%;
+    background: var(--mark-sky);
+  }
+
+  .bar-3 {
+    position: relative;
+    height: 100%;
+    background: var(--mark-gold);
+  }
+
+  .bar-3::after {
+    content: '';
+    position: absolute;
+    top: -0.28rem;
+    right: -0.02rem;
+    width: 0.36rem;
+    height: 0.36rem;
+    border-radius: 50%;
+    background: var(--mark-sun);
+  }
+
+  .is-md {
+    height: 3.25rem;
+    gap: 4px;
+  }
+
+  .is-md .bar {
+    width: 0.68rem;
+  }
+
+  .is-md .bar-3::after {
+    top: -0.42rem;
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .is-lg {
+    height: 5.75rem;
+    gap: 5px;
+  }
+
+  .is-lg .bar {
+    width: 0.95rem;
+  }
+
+  .is-lg .bar-3::after {
+    top: -0.55rem;
+    width: 0.72rem;
+    height: 0.72rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .bar {
+      animation: crest-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+
+    .bar-2 {
+      animation-delay: 80ms;
+    }
+
+    .bar-3 {
+      animation-delay: 160ms;
+    }
+  }
+
+  @keyframes crest-rise {
+    from {
+      transform: scaleY(0.12);
+    }
+
+    to {
+      transform: scaleY(1);
+    }
+  }
+</style>

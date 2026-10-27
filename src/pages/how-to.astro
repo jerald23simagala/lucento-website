@@ -18,25 +18,27 @@ import { guides } from '../data/guides';
   />
 
   <section class="written" aria-labelledby="written-title">
-    <p class="eyebrow">Prefer to read?</p>
-    <h2 id="written-title">The same guides, step by step</h2>
+    <p class="kicker">The same steps, written out</p>
+    <h2 id="written-title">Read a guide, then try it</h2>
     <div class="guides">
       {
         guides.map((g, index) => (
-          <section class="guide" id={g.id} aria-labelledby={`${g.id}-title`}>
+          <article class="guide" id={g.id} aria-labelledby={`${g.id}-title`}>
             <p class="num">{String(index + 1).padStart(2, '0')}</p>
-            <h3 id={`${g.id}-title`}>{g.title}</h3>
-            <p class="summary">{g.summary}</p>
-            <ol class="steps">
-              {g.steps.map((step) => (
-                <li>{step}</li>
-              ))}
-            </ol>
-            {g.tip && <p class="tip">{g.tip}</p>}
-            <a class="try" href={`#guide-${g.id}`}>
-              Try it on the phone
-            </a>
-          </section>
+            <div>
+              <h3 id={`${g.id}-title`}>{g.title}</h3>
+              <p class="summary">{g.summary}</p>
+              <ol class="steps">
+                {g.steps.map((step) => (
+                  <li>{step}</li>
+                ))}
+              </ol>
+              {g.tip && <p class="tip">{g.tip}</p>}
+              <a class="text-link" href={`#guide-${g.id}`}>
+                Try it on the phone
+              </a>
+            </div>
+          </article>
         ))
       }
     </div>
@@ -45,65 +47,57 @@ import { guides } from '../data/guides';
 
 <style>
   .written {
-    max-width: var(--page-max);
+    max-width: 48rem;
     margin: 0 auto;
-    padding: var(--space-xxl) var(--page-gutter);
-  }
-
-  .eyebrow {
-    margin: 0;
-    color: var(--primary);
-    font-weight: 700;
-    font-size: 0.875rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    padding: 0 var(--page-gutter) var(--page-pad);
   }
 
   h2 {
-    margin: var(--space-xs) 0 0;
-    font-size: clamp(1.75rem, 2.5vw + 1rem, 2.5rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    margin: 0.4rem 0 0;
+    max-width: 14ch;
+    font-size: clamp(2rem, 2.4vw + 1rem, 3rem);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.035em;
   }
 
   .guides {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    gap: var(--space-lg);
-    margin-top: var(--space-xl);
+    margin-top: 1.5rem;
   }
 
   .guide {
-    padding: var(--space-xl);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-lg);
-    background: var(--surface-container-lowest);
-    scroll-margin-top: var(--space-lg);
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--outline-variant);
+    scroll-margin-top: 5.5rem;
   }
 
   .num {
-    margin: 0;
-    font-weight: 800;
+    margin: 0.15rem 0 0;
     color: var(--primary);
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
   }
 
   h3 {
-    margin: var(--space-xxs) 0 0;
-    font-size: 1.375rem;
+    margin: 0;
+    font-size: 1.35rem;
     line-height: 1.2;
+    letter-spacing: -0.02em;
   }
 
   .summary {
-    margin: var(--space-xs) 0 0;
+    margin: 0.35rem 0 0;
     color: var(--on-surface-variant);
   }
 
   .steps {
-    margin: var(--space-lg) 0 0;
-    padding-left: 1.25rem;
+    margin: 1rem 0 0;
+    padding-left: 1.15rem;
     display: grid;
-    gap: var(--space-sm);
+    gap: 0.55rem;
   }
 
   .steps li::marker {
@@ -112,23 +106,17 @@ import { guides } from '../data/guides';
   }
 
   .tip {
-    margin: var(--space-lg) 0 0;
-    padding: var(--space-md);
-    border-radius: var(--radius-md);
+    margin: 1rem 0 0;
+    padding: 0.85rem 0 0.85rem 0.9rem;
+    border-left: 3px solid var(--mark-gold);
     background: var(--highlight);
     color: var(--on-highlight);
   }
 
-  .try {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--min-touch);
-    margin-top: var(--space-lg);
-    padding: 0 var(--space-lg);
-    border-radius: var(--radius-md);
-    background: var(--primary);
-    color: var(--on-primary);
-    font-weight: 700;
-    text-decoration: none;
+  @media (max-width: 520px) {
+    .guide {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
   }
 </style>

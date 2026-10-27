@@ -2,15 +2,21 @@
 // "Where does my month stand?": the budget card's maths on any numbers the visitor types. Same rules as the app —
 // % used rounds half-up, % of month rounds down, pace allows 10 points either way, days left include today, and the
 // daily allowance is what's left divided by those days, rounded down to the cent.
+// The mascot pose follows the same mapping as the browser demo (src/demo/simulator.ts).
+import Crest from './Crest.astro';
 ---
 
 <section class="calc" id="pace" aria-labelledby="calc-title">
   <div class="calc-text">
-    <p class="eyebrow">Your month, in one look</p>
+    <p class="kicker"><Crest size="sm" /> Your month</p>
     <h2 id="calc-title">Are you spending faster than the month?</h2>
     <p>
-      Lucento compares how much of your budget you’ve used with how much of the month has passed, and tells you
-      what you can spend each day from here. Try it with your own numbers.
+      Lucento compares how much of your budget you’ve used with how much of the month has passed, and says what you
+      can still spend each day. Try it with your own numbers. This illustration uses US dollars; the app keeps each
+      currency as itself and never converts.
+    </p>
+    <p class="concept">
+      The character is concept art. In the demo, the pose on the budget card follows the pace.
     </p>
   </div>
 
@@ -20,17 +26,42 @@
       <label>Spent so far <input name="spent" inputmode="decimal" value="1000" autocomplete="off" /></label>
       <label>Today is day <input name="day" inputmode="numeric" value="20" autocomplete="off" /></label>
       <label>Days in the month
-        <select name="days"><option>28</option><option>29</option><option>30</option><option selected>31</option></select>
+        <select name="days">
+          <option>28</option>
+          <option>29</option>
+          <option>30</option>
+          <option selected>31</option>
+        </select>
       </label>
     </div>
 
     <div class="result" aria-live="polite">
       <div class="bars">
-        <div class="row"><span>Budget used</span><span class="track"><span class="fill used" id="calc-used-bar"></span></span><b id="calc-used">63%</b></div>
-        <div class="row"><span>Month passed</span><span class="track"><span class="fill month" id="calc-month-bar"></span></span><b id="calc-month">64%</b></div>
+        <div class="row">
+          <span>Budget used</span>
+          <span class="track" aria-hidden="true"><span class="fill used" id="calc-used-bar" style="width: 63%"></span></span>
+          <b class="num" id="calc-used">63%</b>
+        </div>
+        <div class="row">
+          <span>Month passed</span>
+          <span class="track" aria-hidden="true"><span class="fill month" id="calc-month-bar" style="width: 64%"></span></span>
+          <b class="num" id="calc-month">64%</b>
+        </div>
       </div>
-      <p class="verdict" id="calc-verdict">In step with the month</p>
-      <p class="allowance" id="calc-allowance">About $50.00 a day for the next 12 days keeps you within budget.</p>
+      <div class="verdict-row">
+        <img
+          id="calc-mascot"
+          src="/demo/art/mascot_thriving_greeting_happy.webp"
+          width="112"
+          height="112"
+          alt="Lucento mascot concept with a bright torch, used in the demo when spending is in step with the month."
+        />
+        <div>
+          <p class="verdict" id="calc-verdict">In step with the month</p>
+          <p class="allowance" id="calc-allowance">About $50.00 a day for the next 12 days keeps you within budget.</p>
+          <p class="pose-note" id="calc-pose">In the demo, this pose means spending is in step with the month.</p>
+        </div>
+      </div>
     </div>
     <p class="note">Illustration only. In the app these figures come from your own records.</p>
   </form>
@@ -38,12 +69,38 @@
 
 <script>
   const form = document.getElementById('calc-form') as HTMLFormElement;
+  const mascot = document.getElementById('calc-mascot') as HTMLImageElement;
   const $ = (id: string) => document.getElementById(id) as HTMLElement;
   const cents = (v: FormDataEntryValue | null): number | null => {
     const m = /^\s*(\d{1,9})(?:\.(\d{1,2}))?\s*$/.exec(String(v ?? '').replace(/,/g, ''));
     return m ? Number(m[1]) * 100 + Number((m[2] ?? '').padEnd(2, '0')) : null;
   };
   const money = (c: number) => `$${Math.floor(c / 100).toLocaleString('en-US')}.${String(c % 100).padStart(2, '0')}`;
+
+  const poses = {
+    ahead: {
+      src: '/demo/art/mascot_getting_tight_caution.webp',
+      alt: 'Lucento mascot concept with a dim torch, used in the demo when spending is ahead of the month.',
+      cap: 'In the demo, the torch dims when spending runs ahead of the month.',
+    },
+    behind: {
+      src: '/demo/art/mascot_steady_hero_neutral.webp',
+      alt: 'Lucento mascot concept standing steady with a torch, used in the demo when spending is slower than the month.',
+      cap: 'In the demo, this steadier pose means spending is slower than the month.',
+    },
+    step: {
+      src: '/demo/art/mascot_thriving_greeting_happy.webp',
+      alt: 'Lucento mascot concept with a bright torch, used in the demo when spending is in step with the month.',
+      cap: 'In the demo, this pose means spending is in step with the month.',
+    },
+  };
+
+  function setPose(key: keyof typeof poses): void {
+    const pose = poses[key];
+    if (mascot.getAttribute('src') !== pose.src) mascot.src = pose.src;
+    mascot.alt = pose.alt;
+    $('calc-pose').textContent = pose.cap;
+  }
 
   function update(): void {
     const data = new FormData(form);
@@ -54,6 +111,7 @@
     if (budget === null || spent === null || budget === 0) {
       $('calc-verdict').textContent = 'Enter a budget above zero and what you’ve spent.';
       $('calc-allowance').textContent = '';
+      $('calc-pose').textContent = 'The pose updates when the budget and the spending are numbers.';
       return;
     }
     const used = Math.floor((spent * 200 + budget) / (budget * 2));
@@ -65,16 +123,18 @@
     $('calc-used-bar').style.width = `${Math.min(100, used)}%`;
     $('calc-month-bar').style.width = `${month}%`;
     const ahead = used > month + 10;
+    const behind = used < month - 10;
     $('calc-used-bar').classList.toggle('is-ahead', ahead || remaining <= 0);
     $('calc-verdict').textContent =
       remaining <= 0 ? `Over budget by ${money(-remaining)}`
       : ahead ? 'Spending faster than the month'
-      : used < month - 10 ? 'Spending slower than the month'
+      : behind ? 'Spending slower than the month'
       : 'In step with the month';
     $('calc-allowance').textContent =
       remaining > 0
         ? `About ${money(Math.floor(remaining / left))} a day for the next ${left} ${left === 1 ? 'day' : 'days'} keeps you within budget.`
         : 'Lucento suggests pausing non-essential spending until the month turns.';
+    setPose(remaining <= 0 || ahead ? 'ahead' : behind ? 'behind' : 'step');
   }
   form.addEventListener('input', update);
   form.addEventListener('submit', (e) => e.preventDefault());
@@ -85,52 +145,57 @@
   .calc {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: var(--space-xxl) var(--page-gutter);
+    padding: var(--page-pad) var(--page-gutter);
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-    gap: var(--space-xxl);
-    align-items: center;
-    scroll-margin-top: var(--space-lg);
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: start;
   }
 
-  .eyebrow {
-    margin: 0;
-    color: var(--primary);
-    font-weight: 700;
-    font-size: 0.875rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+  .kicker :global(.crest) {
+    margin-right: 0.45rem;
+    vertical-align: -0.35rem;
   }
 
   h2 {
-    margin: var(--space-xs) 0 0;
-    font-size: clamp(1.75rem, 2.5vw + 1rem, 2.5rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    margin: 0.45rem 0 0;
+    max-width: 12ch;
+    font-size: clamp(2rem, 2.4vw + 1rem, 3.15rem);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.035em;
   }
 
-  .calc-text p:last-child {
+  .calc-text p:nth-of-type(2) {
+    max-width: 36rem;
     color: var(--on-surface-variant);
   }
 
+  .concept {
+    max-width: 32rem;
+    margin-top: 0.75rem;
+    color: var(--on-surface-variant);
+    font-size: 0.9375rem;
+  }
+
   .calc-card {
-    padding: var(--space-xl);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-lg);
-    background: var(--surface-container-lowest);
+    padding: 0 0 0.25rem;
+    border-top: 1px solid var(--outline-variant);
   }
 
   .fields {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-md);
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem 1rem;
+    padding-top: 1.1rem;
   }
 
   label {
     display: grid;
-    gap: var(--space-xxs);
-    font-weight: 600;
-    font-size: 0.9375rem;
+    gap: 0.25rem;
+    min-width: 0;
+    font-weight: 700;
+    font-size: 0.875rem;
   }
 
   input,
@@ -138,40 +203,48 @@
     min-width: 0;
     width: 100%;
     min-height: var(--min-touch);
-    padding: 0 var(--space-sm);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-default);
-    background: var(--surface);
+    padding: 0 0.75rem;
+    border: 0;
+    border-bottom: 2px solid var(--border-default);
+    border-radius: 0;
+    background: transparent;
     color: var(--on-surface);
     font: inherit;
+    font-size: 1.125rem;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
 
+  input:focus-visible,
+  select:focus-visible {
+    outline: none;
+    border-bottom-color: var(--primary);
+  }
+
   .result {
-    margin-top: var(--space-xl);
+    margin-top: 1.5rem;
   }
 
   .bars {
     display: grid;
-    gap: var(--space-sm);
+    gap: 0.7rem;
   }
 
   .row {
     display: grid;
-    grid-template-columns: 7.5rem 1fr 3rem;
+    grid-template-columns: 7.5rem minmax(0, 1fr) 3.25rem;
     align-items: center;
-    gap: var(--space-sm);
+    gap: 0.75rem;
     font-size: 0.9375rem;
   }
 
   .row b {
     text-align: right;
-    font-variant-numeric: tabular-nums;
   }
 
   .track {
-    height: 0.875rem;
-    border-radius: var(--radius-full);
+    display: block;
+    height: 0.7rem;
     background: var(--track);
     overflow: hidden;
   }
@@ -179,8 +252,6 @@
   .fill {
     display: block;
     height: 100%;
-    border-radius: var(--radius-full);
-    transition: width 0.2s;
   }
 
   .fill.used {
@@ -192,43 +263,73 @@
   }
 
   .fill.month {
-    background: color-mix(in srgb, var(--primary) 55%, transparent);
+    background: color-mix(in srgb, var(--primary) 70%, var(--paper));
+  }
+
+  .verdict-row {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: center;
+    margin-top: 1.25rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--outline-variant);
+  }
+
+  .verdict-row img {
+    width: 6.5rem;
+    height: auto;
   }
 
   .verdict {
-    margin: var(--space-lg) 0 0;
-    font-size: 1.25rem;
-    font-weight: 700;
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
   }
 
-  .allowance {
-    margin: var(--space-xxs) 0 0;
+  .allowance,
+  .pose-note,
+  .note {
+    margin: 0.3rem 0 0;
     color: var(--on-surface-variant);
+  }
+
+  .pose-note,
+  .note {
+    font-size: 0.875rem;
   }
 
   .note {
-    margin: var(--space-lg) 0 0;
-    font-size: 0.8125rem;
-    color: var(--on-surface-variant);
+    margin-top: 1rem;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .fill {
-      transition: none;
-    }
-  }
-
-  @media (max-width: 860px) {
+  @media (max-width: 900px) {
     .calc {
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: 1fr;
     }
+  }
 
-    .calc-card {
-      padding: var(--space-lg);
+  @media (max-width: 520px) {
+    .fields {
+      grid-template-columns: 1fr;
     }
 
     .row {
-      grid-template-columns: 6.5rem 1fr 2.75rem;
+      grid-template-columns: 1fr auto;
+    }
+
+    .row .track {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    .verdict-row {
+      grid-template-columns: 4.75rem minmax(0, 1fr);
+    }
+
+    .verdict-row img {
+      width: 4.75rem;
     }
   }
 </style>
