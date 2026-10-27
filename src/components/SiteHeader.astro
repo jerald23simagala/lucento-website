@@ -9,10 +9,11 @@ import Logo from './Logo.astro';
     </a>
     <nav aria-label="Site">
       <ul>
-        <li><a href="/#try">Try it</a></li>
+        <li><a href="/#how-it-works">How it works</a></li>
         <li><a href="/#features">Features</a></li>
-        <li><a href="/how-to">How-to</a></li>
-        <li><a href="/#privacy">Privacy</a></li>
+        <li><a href="/how-to">Guides</a></li>
+        <li><a href="/#faq">FAQ</a></li>
+        <li><a class="cta" href="/#try">Try the demo</a></li>
       </ul>
     </nav>
   </div>
@@ -57,6 +58,19 @@ import Logo from './Logo.astro';
 
   nav a:hover {
     background: var(--surface-container);
+  }
+
+  nav a.cta {
+    margin-left: var(--space-xs);
+    padding: 0 var(--space-md);
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  nav a.cta:hover {
+    background: var(--primary);
+    text-decoration: underline;
   }
 
   .home {

@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const sections = [
+  {
+    title: 'What stays on your phone',
+    items: [
+      'Your wallets, transactions, budgets, goals, scheduled payments and settings are stored in a database on your phone. Every core feature works without a connection.',
+      'Receipt scanning reads the photo on your phone (Google ML Kit’s on-device text recognition). The photo isn’t uploaded.',
+      'Lucento doesn’t take part in Android’s automatic cloud backup, so your data isn’t copied to a backup you didn’t choose.',
+      'There are no ads, no analytics and no crash-reporting services in the app.',
+    ],
+  },
+  {
+    title: 'Cloud sync (optional)',
+    items: [
+      'Nothing is sent anywhere until you connect a Google or email account in onboarding or Settings, and keep sync on.',
+      'With sync on, a copy of your records is stored in Lucento’s cloud database (Supabase). Database rules allow each row to be read and changed only by the signed-in account that owns it.',
+      'Disconnecting stops sync and signs the phone out. It doesn’t delete anything on the phone or in the cloud copy.',
+      'Deleting your cloud account from inside the app isn’t available yet.',
+    ],
+  },
+  {
+    title: 'Smarter reading (optional)',
+    items: [
+      'Off unless you turn it on in Settings, which first explains what is sent and asks for your consent. It needs a sync account.',
+      'When it’s on, the composer sends your message, today’s date, your main currency and the names of your categories and accounts to Lucento’s server, which asks Google’s Gemini to read it. Your balances and history are never sent.',
+      'Lucento’s server doesn’t store the messages; it keeps a count of requests per account per day to apply the daily allowance.',
+      'You can turn it off at any time; reading then happens on the phone again.',
+    ],
+  },
+  {
+    title: 'Speech',
+    items: [
+      'Speaking a transaction uses your phone’s own speech recogniser. Lucento asks it to work on the device; whether it can depends on your phone.',
+    ],
+  },
+  {
+    title: 'This website',
+    items: [
+      'The interactive demo runs entirely in your browser with fictional data. Nothing you type in it is saved or sent.',
+      'The site is hosted on Vercel and doesn’t use advertising or tracking cookies.',
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="How Lucento handles your data"
+  description="What stays on your phone, what cloud sync and Smarter reading send, and what the Lucento website does with your data."
+>
+  <article class="page">
+    <p class="eyebrow">Privacy</p>
+    <h1>How Lucento handles your data</h1>
+    <p class="lede">
+      A plain description of how the app works today. Lucento is in development; a formal privacy policy will be
+      published before it’s available on Google Play.
+    </p>
+    {
+      sections.map((s) => (
+        <section aria-labelledby={s.title.replace(/\W+/g, '-').toLowerCase()}>
+          <h2 id={s.title.replace(/\W+/g, '-').toLowerCase()}>{s.title}</h2>
+          <ul>
+            {s.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: clamp(var(--space-xxl), 6vw, 5rem) var(--page-gutter) var(--space-xxl);
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: var(--space-xs) 0 0;
+    font-size: clamp(2rem, 3vw + 1rem, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .lede {
+    margin: var(--space-lg) 0 0;
+    color: var(--on-surface-variant);
+    font-size: 1.125rem;
+  }
+
+  h2 {
+    margin: var(--space-xxl) 0 0;
+    font-size: 1.375rem;
+  }
+
+  ul {
+    margin: var(--space-md) 0 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-sm);
+  }
+</style>

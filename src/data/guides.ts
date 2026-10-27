@@ -1,6 +1,6 @@
 /**
- * The how-to guides, shown on /how-to and listed on the home page. They describe the Android app as it is today;
- * `demo` names the interactive story on the home page that walks through the same task.
+ * The how-to guides, shown on /how-to and listed on the home page. They describe the Android app as it is today.
+ * Each `id` is also the key of its interactive story in src/demo/simulator.ts.
  */
 export interface Guide {
   id: string;
@@ -8,7 +8,6 @@ export interface Guide {
   summary: string;
   steps: string[];
   tip?: string;
-  demo?: 'log' | 'bill' | 'budget' | 'restore';
 }
 
 export const guides: Guide[] = [
@@ -38,7 +37,6 @@ export const guides: Guide[] = [
       'Tap Save. All rows are saved together.',
     ],
     tip: 'Use the camera button to read a receipt, or the microphone to speak (English for now). Both are read on your phone. To change a saved transaction, swipe it left in Transactions and tap Edit.',
-    demo: 'log',
   },
   {
     id: 'budget',
@@ -52,7 +50,6 @@ export const guides: Guide[] = [
       'Tap a category on the Budget tab to see what is left in it.',
     ],
     tip: 'Spent is every expense in the month, including ones in categories without an amount. The Budget tab tells you how much is outside your categories so nothing hides.',
-    demo: 'budget',
   },
   {
     id: 'wallets',
@@ -77,7 +74,6 @@ export const guides: Guide[] = [
       'Tap the bell, then an item, and Mark paid when it’s done.',
     ],
     tip: 'Nothing is recorded until you mark it paid or received, so a plan never turns into spending by itself.',
-    demo: 'bill',
   },
   {
     id: 'debts',
@@ -112,7 +108,6 @@ export const guides: Guide[] = [
       'Lucento downloads your wallets, transactions, budgets, goals and scheduled payments, then opens Home.',
     ],
     tip: 'If the account has nothing saved yet, Lucento continues with the normal setup — you stay signed in.',
-    demo: 'restore',
   },
   {
     id: 'sync',

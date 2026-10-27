@@ -1,0 +1,234 @@
+---
+// "Where does my month stand?": the budget card's maths on any numbers the visitor types. Same rules as the app —
+// % used rounds half-up, % of month rounds down, pace allows 10 points either way, days left include today, and the
+// daily allowance is what's left divided by those days, rounded down to the cent.
+---
+
+<section class="calc" id="pace" aria-labelledby="calc-title">
+  <div class="calc-text">
+    <p class="eyebrow">Your month, in one look</p>
+    <h2 id="calc-title">Are you spending faster than the month?</h2>
+    <p>
+      Lucento compares how much of your budget you’ve used with how much of the month has passed, and tells you
+      what you can spend each day from here. Try it with your own numbers.
+    </p>
+  </div>
+
+  <form class="calc-card" id="calc-form" novalidate>
+    <div class="fields">
+      <label>Monthly budget <input name="budget" inputmode="decimal" value="1600" autocomplete="off" /></label>
+      <label>Spent so far <input name="spent" inputmode="decimal" value="1000" autocomplete="off" /></label>
+      <label>Today is day <input name="day" inputmode="numeric" value="20" autocomplete="off" /></label>
+      <label>Days in the month
+        <select name="days"><option>28</option><option>29</option><option>30</option><option selected>31</option></select>
+      </label>
+    </div>
+
+    <div class="result" aria-live="polite">
+      <div class="bars">
+        <div class="row"><span>Budget used</span><span class="track"><span class="fill used" id="calc-used-bar"></span></span><b id="calc-used">63%</b></div>
+        <div class="row"><span>Month passed</span><span class="track"><span class="fill month" id="calc-month-bar"></span></span><b id="calc-month">64%</b></div>
+      </div>
+      <p class="verdict" id="calc-verdict">In step with the month</p>
+      <p class="allowance" id="calc-allowance">About $50.00 a day for the next 12 days keeps you within budget.</p>
+    </div>
+    <p class="note">Illustration only. In the app these figures come from your own records.</p>
+  </form>
+</section>
+
+<script>
+  const form = document.getElementById('calc-form') as HTMLFormElement;
+  const $ = (id: string) => document.getElementById(id) as HTMLElement;
+  const cents = (v: FormDataEntryValue | null): number | null => {
+    const m = /^\s*(\d{1,9})(?:\.(\d{1,2}))?\s*$/.exec(String(v ?? '').replace(/,/g, ''));
+    return m ? Number(m[1]) * 100 + Number((m[2] ?? '').padEnd(2, '0')) : null;
+  };
+  const money = (c: number) => `$${Math.floor(c / 100).toLocaleString('en-US')}.${String(c % 100).padStart(2, '0')}`;
+
+  function update(): void {
+    const data = new FormData(form);
+    const budget = cents(data.get('budget'));
+    const spent = cents(data.get('spent'));
+    const days = Number(data.get('days'));
+    const day = Math.min(days, Math.max(1, Math.floor(Number(data.get('day')) || 1)));
+    if (budget === null || spent === null || budget === 0) {
+      $('calc-verdict').textContent = 'Enter a budget above zero and what you’ve spent.';
+      $('calc-allowance').textContent = '';
+      return;
+    }
+    const used = Math.floor((spent * 200 + budget) / (budget * 2));
+    const month = Math.floor((day * 100) / days);
+    const left = days - day + 1;
+    const remaining = budget - spent;
+    $('calc-used').textContent = `${used}%`;
+    $('calc-month').textContent = `${month}%`;
+    $('calc-used-bar').style.width = `${Math.min(100, used)}%`;
+    $('calc-month-bar').style.width = `${month}%`;
+    const ahead = used > month + 10;
+    $('calc-used-bar').classList.toggle('is-ahead', ahead || remaining <= 0);
+    $('calc-verdict').textContent =
+      remaining <= 0 ? `Over budget by ${money(-remaining)}`
+      : ahead ? 'Spending faster than the month'
+      : used < month - 10 ? 'Spending slower than the month'
+      : 'In step with the month';
+    $('calc-allowance').textContent =
+      remaining > 0
+        ? `About ${money(Math.floor(remaining / left))} a day for the next ${left} ${left === 1 ? 'day' : 'days'} keeps you within budget.`
+        : 'Lucento suggests pausing non-essential spending until the month turns.';
+  }
+  form.addEventListener('input', update);
+  form.addEventListener('submit', (e) => e.preventDefault());
+  update();
+</script>
+
+<style>
+  .calc {
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding: var(--space-xxl) var(--page-gutter);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: var(--space-xxl);
+    align-items: center;
+    scroll-margin-top: var(--space-lg);
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: var(--space-xs) 0 0;
+    font-size: clamp(1.75rem, 2.5vw + 1rem, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .calc-text p:last-child {
+    color: var(--on-surface-variant);
+  }
+
+  .calc-card {
+    padding: var(--space-xl);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--surface-container-lowest);
+  }
+
+  .fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+
+  label {
+    display: grid;
+    gap: var(--space-xxs);
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+
+  input,
+  select {
+    min-width: 0;
+    width: 100%;
+    min-height: var(--min-touch);
+    padding: 0 var(--space-sm);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-default);
+    background: var(--surface);
+    color: var(--on-surface);
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .result {
+    margin-top: var(--space-xl);
+  }
+
+  .bars {
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr 3rem;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.9375rem;
+  }
+
+  .row b {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .track {
+    height: 0.875rem;
+    border-radius: var(--radius-full);
+    background: var(--track);
+    overflow: hidden;
+  }
+
+  .fill {
+    display: block;
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.2s;
+  }
+
+  .fill.used {
+    background: var(--success);
+  }
+
+  .fill.used.is-ahead {
+    background: var(--negative-indicator);
+  }
+
+  .fill.month {
+    background: color-mix(in srgb, var(--primary) 55%, transparent);
+  }
+
+  .verdict {
+    margin: var(--space-lg) 0 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .allowance {
+    margin: var(--space-xxs) 0 0;
+    color: var(--on-surface-variant);
+  }
+
+  .note {
+    margin: var(--space-lg) 0 0;
+    font-size: 0.8125rem;
+    color: var(--on-surface-variant);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fill {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .calc {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .calc-card {
+      padding: var(--space-lg);
+    }
+
+    .row {
+      grid-template-columns: 6.5rem 1fr 2.75rem;
+    }
+  }
+</style>

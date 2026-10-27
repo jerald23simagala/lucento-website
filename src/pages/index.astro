@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PhoneDemo from '../components/PhoneDemo.astro';
+import PaceCalculator from '../components/PaceCalculator.astro';
 import { guides } from '../data/guides';
+import { faq, howItWorks, limitations, realLife } from '../data/site';
 
 const features = [
   {
@@ -21,47 +23,104 @@ const features = [
     body: 'Schedule rent, subscriptions and salary. The bell on Home shows what’s overdue or due this week; nothing is recorded until you mark it paid.',
   },
   {
-    title: 'Goals and debts in view',
-    body: 'Save toward a goal with its own picture, and split each loan payment into principal and interest so what you owe goes down correctly.',
+    title: 'Debts paid down correctly',
+    body: 'Add a card or loan with its terms. Each payment splits into principal, which lowers what you owe, and interest, which counts as spending.',
+  },
+  {
+    title: 'Goals with a picture',
+    body: 'Save toward a trip or a fund with its own image, target date and progress. The money stays in your wallets, so it’s never counted twice.',
   },
   {
     title: 'Insights from your own records',
     body: 'Income and spending trends, and what your net worth is made of. Every chart has its exact figures beside it.',
   },
+  {
+    title: 'Sync only if you want it',
+    body: 'Back up and keep phones in step with a Google or email account. On a new phone, sign in and your data comes across.',
+  },
 ];
+
+const demoStories = ['add-transactions', 'scheduled', 'budget', 'new-phone'];
+const strip = ['Write', 'Review', 'Save', 'Follow your pace'];
 ---
 
 <BaseLayout
   title="Lucento: financial clarity without the complexity"
   description="Lucento is a budget tracker for Android, in development. Your money stays on your phone, works offline and needs no bank login. Try the app in your browser."
 >
+  <!-- ------------------------------------------------------------ hero -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero-text">
-      <h1 id="hero-title">Financial clarity without the complexity.</h1>
+      <p class="eyebrow">Budget tracker for Android</p>
+      <h1 id="hero-title">Financial clarity <span>without the complexity.</span></h1>
       <p class="lede">
-        Lucento is a budget tracker for Android. It keeps your money on your phone, works offline and never asks for
-        a bank login. Sync between your phones only if you want to.
+        Write down what you spend like a message, see at a glance whether the month is on pace, and keep every wallet,
+        bill and goal in one calm place — on your phone, offline, with no bank login.
       </p>
       <div class="cta">
-        <a class="button" href="#try">Try it in your browser</a>
-        <a class="button is-quiet" href="/how-to">Read the how-to guides</a>
+        <a class="button" href="#try">Try the interactive demo →</a>
+        <a class="button is-quiet" href="/how-to">See the guides</a>
       </div>
-      <p class="status">In development · not on Google Play yet.</p>
+      <ul class="ticks">
+        <li>Works offline</li>
+        <li>No bank login</li>
+        <li>Nothing leaves your phone unless you sync</li>
+      </ul>
     </div>
-    <img
-      class="hero-art"
-      src="/demo/art/mascot_thriving_greeting_happy.webp"
-      alt="Lucento, the app’s golden mascot, waving with a crystal torch"
-      width="320"
-      height="320"
-    />
+    <a class="preview" href="#try" aria-label="Open the interactive demo">
+      <img src="/demo/art/mascot_thriving_greeting_happy.webp" alt="" width="220" height="220" />
+      <ol class="strip" aria-hidden="true">
+        {strip.map((s) => <li>{s}</li>)}
+      </ol>
+      <span class="preview-note">A faithful simulation of the app, with fictional money. No install needed.</span>
+    </a>
   </section>
 
-  <PhoneDemo />
+  <!-- ------------------------------------------------------------ how it works -->
+  <section class="block" id="how-it-works" aria-labelledby="how-title">
+    <p class="eyebrow">How it works</p>
+    <h2 id="how-title">From “I just spent” to “I’m on track” in seconds</h2>
+    <ol class="steps">
+      {
+        howItWorks.map((s, i) => (
+          <li>
+            <span class="step-num">{i + 1}</span>
+            <h3>{s.title}</h3>
+            <p>{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
 
+  <!-- ------------------------------------------------------------ demo -->
+  <PhoneDemo stories={demoStories} />
+
+  <!-- ------------------------------------------------------------ real life -->
+  <section class="block" id="real-life" aria-labelledby="real-title">
+    <p class="eyebrow">Careful with your money</p>
+    <h2 id="real-title">Built for real-life money</h2>
+    <p class="section-lede">Money is messy. Lucento flags what needs you, and never guesses on your behalf.</p>
+    <ul class="cards">
+      {
+        realLife.map((c) => (
+          <li>
+            <h3>{c.title}</h3>
+            <p>{c.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <a class="text-link" href="/how-to#guide-add-transactions">Try a messy message in the guide →</a>
+  </section>
+
+  <!-- ------------------------------------------------------------ calculator -->
+  <PaceCalculator />
+
+  <!-- ------------------------------------------------------------ features -->
   <section class="block" id="features" aria-labelledby="features-title">
-    <p class="eyebrow">What it does today</p>
-    <h2 id="features-title">Everything you need to see where your money goes</h2>
+    <p class="eyebrow">Features</p>
+    <h2 id="features-title">Everything a budget needs. Nothing it doesn’t.</h2>
     <ul class="features">
       {
         features.map((f) => (
@@ -74,14 +133,17 @@ const features = [
     </ul>
   </section>
 
-  <section class="block" aria-labelledby="howto-title">
-    <p class="eyebrow">How to</p>
-    <h2 id="howto-title">Short guides for everyday tasks</h2>
+  <!-- ------------------------------------------------------------ guides -->
+  <section class="block" id="guides" aria-labelledby="guides-title">
+    <p class="eyebrow">Interactive guides</p>
+    <h2 id="guides-title">Learn every task by doing it</h2>
+    <p class="section-lede">Each guide runs on a simulated phone: you tap, it responds, and the step completes.</p>
     <ul class="guides">
       {
-        guides.map((g) => (
+        guides.map((g, i) => (
           <li>
-            <a href={`/how-to#${g.id}`}>
+            <a href={`/how-to#guide-${g.id}`}>
+              <span class="guide-num">{String(i + 1).padStart(2, '0')}</span>
               <span class="guide-title">{g.title}</span>
               <span class="guide-sum">{g.summary}</span>
             </a>
@@ -91,6 +153,7 @@ const features = [
     </ul>
   </section>
 
+  <!-- ------------------------------------------------------------ privacy -->
   <section class="block privacy" id="privacy" aria-labelledby="privacy-title">
     <p class="eyebrow">Privacy</p>
     <h2 id="privacy-title">Your money stays yours</h2>
@@ -106,6 +169,56 @@ const features = [
         your balances or history. Receipts are always read on the phone.
       </li>
     </ul>
+    <a class="text-link" href="/privacy">How Lucento handles your data →</a>
+  </section>
+
+  <!-- ------------------------------------------------------------ status -->
+  <section class="block status-block" id="get" aria-labelledby="get-title">
+    <div>
+      <p class="eyebrow">Availability</p>
+      <h2 id="get-title">Coming to Google Play</h2>
+      <p class="section-lede">
+        Lucento is in development and isn’t on Google Play yet. Until it is, the interactive demo and guides show
+        exactly how it works.
+      </p>
+    </div>
+    <div class="cta">
+      <a class="button" href="#try">Try the demo</a>
+      <a class="button is-quiet" href="/how-to">Open the guides</a>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ FAQ -->
+  <section class="block" id="faq" aria-labelledby="faq-title">
+    <p class="eyebrow">FAQ</p>
+    <h2 id="faq-title">Frequently asked questions</h2>
+    <div class="faq">
+      {
+        faq.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ limitations -->
+  <section class="block" id="good-to-know" aria-labelledby="limits-title">
+    <p class="eyebrow">Good to know</p>
+    <h2 id="limits-title">Current limitations</h2>
+    <ul class="cards is-quiet">
+      {
+        limitations.map((c) => (
+          <li>
+            <h3>{c.title}</h3>
+            <p>{c.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="section-lede">Some are deliberate choices for your privacy; others are on the roadmap.</p>
   </section>
 </BaseLayout>
 
@@ -113,27 +226,30 @@ const features = [
   .hero {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: clamp(var(--space-xxl), 8vw, 6rem) var(--page-gutter) var(--space-xl);
+    padding: clamp(var(--space-xxl), 7vw, 5.5rem) var(--page-gutter) var(--space-xl);
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--space-xl);
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: var(--space-xxl);
     align-items: center;
   }
 
   h1 {
-    margin: 0;
-    max-width: 14ch;
-    font-size: clamp(2.25rem, 6vw + 1rem, 4.5rem);
-    line-height: 1.05;
+    margin: var(--space-sm) 0 0;
+    font-size: clamp(2.25rem, 5vw + 1rem, 4.25rem);
+    line-height: 1.04;
     font-weight: 800;
     letter-spacing: -0.035em;
+  }
+
+  h1 span {
+    color: var(--primary);
   }
 
   .lede {
     margin: var(--space-xl) 0 0;
     max-width: var(--measure);
-    font-size: clamp(1.125rem, 1vw + 0.9rem, 1.375rem);
-    line-height: 1.5;
+    font-size: clamp(1.0625rem, 0.6vw + 0.95rem, 1.25rem);
+    line-height: 1.55;
   }
 
   .cta {
@@ -161,14 +277,74 @@ const features = [
     border: 1px solid var(--border-default);
   }
 
-  .status {
+  .ticks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-lg);
     margin: var(--space-lg) 0 0;
+    padding: 0;
+    list-style: none;
+    color: var(--on-surface-variant);
+    font-size: 0.9375rem;
+  }
+
+  .ticks li::before {
+    content: '✓ ';
+    color: var(--positive);
+    font-weight: 700;
+  }
+
+  .preview {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-md);
+    padding: var(--space-xl);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(circle at 80% 10%, color-mix(in srgb, var(--accent) 40%, transparent), transparent 60%),
+      var(--surface-container-lowest);
+    color: var(--on-surface);
+    text-decoration: none;
+  }
+
+  .preview img {
+    width: clamp(9rem, 16vw, 13rem);
+    height: auto;
+  }
+
+  .strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .strip li {
+    padding: var(--space-xxs) var(--space-sm);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-default);
+    background: var(--surface);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .strip li:not(:last-child)::after {
+    content: ' →';
     color: var(--on-surface-variant);
   }
 
-  .hero-art {
-    width: clamp(10rem, 22vw, 20rem);
-    height: auto;
+  .preview-note {
+    font-size: 0.875rem;
+    color: var(--on-surface-variant);
+    text-align: center;
+  }
+
+  .preview:hover .strip li {
+    border-color: var(--primary);
   }
 
   .block {
@@ -189,10 +365,92 @@ const features = [
 
   h2 {
     margin: var(--space-xs) 0 0;
-    max-width: 24ch;
+    max-width: 26ch;
     font-size: clamp(1.75rem, 2.5vw + 1rem, 2.75rem);
     line-height: 1.1;
     letter-spacing: -0.02em;
+  }
+
+  .section-lede {
+    max-width: var(--measure);
+    margin: var(--space-md) 0 0;
+    color: var(--on-surface-variant);
+  }
+
+  .steps {
+    list-style: none;
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-md);
+    counter-reset: none;
+  }
+
+  .steps li {
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--border-default);
+  }
+
+  .step-num {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--on-primary);
+    font-weight: 800;
+  }
+
+  .steps h3,
+  .cards h3,
+  .features h3 {
+    margin: var(--space-sm) 0 0;
+    font-size: 1.0625rem;
+  }
+
+  .steps p,
+  .cards p,
+  .features p {
+    margin: var(--space-xs) 0 0;
+    color: var(--on-surface-variant);
+    font-size: 0.9375rem;
+  }
+
+  .cards {
+    list-style: none;
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  .cards li {
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-default);
+    border-left: 4px solid var(--warm-accent);
+    background: var(--surface-container-lowest);
+  }
+
+  .cards.is-quiet li {
+    border-left-color: var(--outline);
+  }
+
+  .cards h3 {
+    margin-top: 0;
+  }
+
+  .text-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--min-touch);
+    margin-top: var(--space-md);
+    font-weight: 700;
   }
 
   .features {
@@ -200,18 +458,13 @@ const features = [
     margin: var(--space-xl) 0 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
     gap: var(--space-lg) var(--space-xl);
   }
 
-  .features h3 {
-    margin: 0;
-    font-size: 1.125rem;
-  }
-
-  .features p {
-    margin: var(--space-xs) 0 0;
-    color: var(--on-surface-variant);
+  .features li {
+    padding-top: var(--space-md);
+    border-top: 2px solid var(--primary-container);
   }
 
   .guides {
@@ -236,6 +489,13 @@ const features = [
 
   .guides a:hover {
     border-color: var(--primary);
+  }
+
+  .guide-num {
+    display: block;
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 0.8125rem;
   }
 
   .guide-title {
@@ -263,14 +523,75 @@ const features = [
     display: block;
   }
 
-  @media (max-width: 720px) {
-    .hero {
-      grid-template-columns: 1fr;
-    }
+  .status-block {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-xl);
+    align-items: end;
+  }
 
-    .hero-art {
-      grid-row: 1;
-      width: 9rem;
+  .status-block > div:first-child {
+    padding: var(--space-xl);
+    border-radius: var(--radius-xl);
+    background: var(--hero);
+    color: var(--on-hero);
+  }
+
+  .status-block .eyebrow {
+    color: var(--accent);
+  }
+
+  .status-block .section-lede {
+    color: var(--on-hero-muted);
+  }
+
+  .faq {
+    margin-top: var(--space-xl);
+    border-top: 1px solid var(--outline-variant);
+    max-width: 52rem;
+  }
+
+  details {
+    border-bottom: 1px solid var(--outline-variant);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    min-height: 3.5rem;
+    padding: var(--space-sm) 0;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::after {
+    content: '+';
+    margin-left: auto;
+    padding-left: var(--space-md);
+    color: var(--primary);
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  details[open] summary::after {
+    content: '−';
+  }
+
+  details p {
+    margin: 0 0 var(--space-lg);
+    max-width: var(--measure);
+    color: var(--on-surface-variant);
+  }
+
+  @media (max-width: 860px) {
+    .hero,
+    .status-block {
+      grid-template-columns: 1fr;
     }
   }
 </style>

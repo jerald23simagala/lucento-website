@@ -1,27 +1,134 @@
 ---
+import Logo from './Logo.astro';
+
 const year = new Date().getFullYear();
+const columns = [
+  {
+    title: 'Product',
+    links: [
+      { href: '/#how-it-works', label: 'How it works' },
+      { href: '/#features', label: 'Features' },
+      { href: '/#try', label: 'Interactive demo' },
+      { href: '/#pace', label: 'Pace calculator' },
+    ],
+  },
+  {
+    title: 'Learn',
+    links: [
+      { href: '/how-to', label: 'Interactive guides' },
+      { href: '/#faq', label: 'FAQ' },
+      { href: '/#good-to-know', label: 'Current limitations' },
+    ],
+  },
+  {
+    title: 'Trust',
+    links: [
+      { href: '/#privacy', label: 'Privacy at a glance' },
+      { href: '/privacy', label: 'How we handle your data' },
+    ],
+  },
+];
 ---
 
 <footer class="site-footer">
   <div class="inner">
-    <p>© {year} Lucento</p>
+    <div class="brand">
+      <a href="/" aria-label="Lucento home"><Logo /></a>
+      <p>Financial clarity without the complexity. A budget tracker for Android, in development.</p>
+    </div>
+    {
+      columns.map((c) => (
+        <nav aria-label={c.title}>
+          <p class="col-title">{c.title}</p>
+          <ul>
+            {c.links.map((l) => (
+              <li>
+                <a href={l.href}>{l.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+  </div>
+  <div class="base">
+    <p>© {year} Lucento · The interactive demo uses fictional data and simulates the Android app.</p>
   </div>
 </footer>
 
 <style>
   .site-footer {
+    margin-top: var(--space-xxl);
     border-top: 1px solid var(--outline-variant);
+    background: var(--surface-container-low);
     color: var(--on-surface-variant);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
   }
 
   .inner {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: var(--space-xl) var(--page-gutter);
+    padding: var(--space-xxl) var(--page-gutter) var(--space-xl);
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+    gap: var(--space-xl);
   }
 
-  p {
+  .brand p {
+    max-width: 22rem;
+    margin: var(--space-md) 0 0;
+  }
+
+  .brand a {
+    display: inline-flex;
+    min-height: var(--min-touch);
+    align-items: center;
+  }
+
+  .col-title {
     margin: 0;
+    color: var(--on-surface);
+    font-weight: 700;
+  }
+
+  ul {
+    margin: var(--space-xs) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.5rem;
+    color: var(--on-surface-variant);
+    text-decoration: none;
+  }
+
+  li a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+
+  .base {
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding: var(--space-lg) var(--page-gutter) var(--space-xl);
+    border-top: 1px solid var(--outline-variant);
+    font-size: 0.8125rem;
+  }
+
+  .base p {
+    margin: 0;
+  }
+
+  @media (max-width: 760px) {
+    .inner {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .brand {
+      grid-column: 1 / -1;
+    }
   }
 </style>
