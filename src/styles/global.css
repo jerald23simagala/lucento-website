@@ -1,11 +1,23 @@
 @import './tokens.css';
 
-/* Marketing face is Manrope (Plus Jakarta Sans is reserved for the app UI). */
+/*
+  Marketing layer on the Sunrise Energy tokens.
+  --mark-* are the Rising Crest artwork colours (brand/logo/README.md).
+  They are not UI status colours and are never used for small text.
+  Plus Jakarta Sans stays inside the phone simulation; Manrope is the site face.
+*/
 :root {
   --font-sans: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --measure: 38rem;
   --page-max: 72rem;
-  --page-gutter: clamp(var(--space-lg), 5vw, var(--space-xxxl));
+  --page-gutter: clamp(var(--space-lg), 4vw, var(--space-xxxl));
+  --page-pad: clamp(3.25rem, 6vw, 6.25rem);
+  --mark-blue: #154dfd;
+  --mark-sky: #61aefd;
+  --mark-gold: #feca45;
+  --mark-sun: #fda81b;
+  --paper: var(--soft-ivory);
+  --ink: var(--midnight-navy);
 }
 
 *,
@@ -30,6 +42,17 @@ body {
   font-size: 1rem;
   line-height: 1.6;
   font-feature-settings: 'tnum' 0;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--mark-gold);
+  color: var(--ink);
 }
 
 img,
@@ -80,6 +103,123 @@ a:hover {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+section[id] {
+  scroll-margin-top: 5.5rem;
+}
+
+.kicker {
+  margin: 0;
+  color: var(--on-surface-variant);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.kicker.ruled::before {
+  content: '';
+  display: inline-block;
+  width: 1.75rem;
+  height: 3px;
+  margin-right: 0.7rem;
+  vertical-align: middle;
+  border-radius: 1px;
+  background: var(--mark-gold);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: var(--on-primary);
+  font: inherit;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: color-mix(in srgb, var(--primary) 86%, var(--midnight-navy));
+  text-decoration: none;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--min-touch);
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.page-wrap {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--page-pad) var(--page-gutter);
+}
+
+.prose-page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 6vw, 5rem) var(--page-gutter) var(--page-pad);
+}
+
+.prose-page h1 {
+  margin: 0.4rem 0 0;
+  font-size: clamp(2.25rem, 3vw + 1rem, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+}
+
+.prose-page .lede {
+  margin: 1.25rem 0 0;
+  color: var(--on-surface-variant);
+  font-size: 1.125rem;
+}
+
+.prose-page h2 {
+  margin: 2.5rem 0 0;
+  font-size: 1.375rem;
+  letter-spacing: -0.02em;
+}
+
+.prose-page ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.15rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.crest-rule {
+  display: grid;
+  grid-template-columns: 1.05fr 1.3fr 1.65fr;
+  height: 6px;
+}
+
+.crest-rule span:nth-child(1) {
+  background: var(--mark-blue);
+}
+
+.crest-rule span:nth-child(2) {
+  background: var(--mark-sky);
+}
+
+.crest-rule span:nth-child(3) {
+  background: var(--mark-gold);
 }
 
 @media (prefers-reduced-motion: reduce) {

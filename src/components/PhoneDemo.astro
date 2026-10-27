@@ -1,366 +1,148 @@
 ---
-// The interactive Lucento simulation (src/demo/simulator.ts): pick a story, follow the numbered steps, and use the
-// app on the phone. Everything runs in the browser with fictional data; nothing is saved or sent.
+// Interactive Lucento simulation. A guide dropdown, the phone, and a coach mark.
+// Written steps stay below the phone so existing hashes still open them.
+// Fictional money; nothing is saved or sent.
+import Mascot from './Mascot.astro';
+import { guides } from '../data/guides';
 import { STORIES } from '../demo/simulator';
+import '../styles/phone.css';
 
 interface Props {
-  /** Section id and the prefix of story links: #<id>-<story> opens a story here. */
+  /** Section id. `/#try` redirects here. */
   id?: string;
-  eyebrow?: string;
-  heading?: string;
-  intro?: string;
-  /** Which stories this instance offers, in order; the first is shown first. */
+  hashPrefix?: string;
+  /** Which stories this instance offers, in order. */
   stories: string[];
-  /** "chips" (a few stories, home page) or "list" (every guide, how-to page). */
-  picker?: 'chips' | 'list';
+  /** Story shown first. A hash such as `#guide-budget` still wins. */
+  initial?: string;
 }
 
-const {
-  id = 'try',
-  eyebrow = 'Try it here',
-  heading = 'Use Lucento right in your browser',
-  intro = 'Pick a story, then follow the steps on the phone. It is a simulation with fictional money: nothing is saved or sent anywhere.',
-  stories,
-  picker = 'chips',
-} = Astro.props;
-const first = STORIES[stories[0]];
+const { id = 'try', hashPrefix = 'guide-', stories, initial } = Astro.props;
+
+const initialKey = initial && stories.includes(initial) && STORIES[initial] ? initial : stories[0];
+const guideById = new Map(guides.map((guide) => [guide.id, guide]));
+const notes = stories.flatMap((key) => {
+  const guide = guideById.get(key);
+  return guide ? [guide] : [];
+});
+const first = STORIES[initialKey];
+if (!first) throw new Error(`Unknown story: ${initialKey}`);
+const firstStep = first.steps[0];
 ---
 
-<section class={`ld ld-${picker}`} id={id} aria-labelledby={`${id}-title`} data-simulator data-stories={stories.join(',')} data-prefix={`${id}-`}>
+<section
+  class="ld is-guided"
+  id={id}
+  aria-labelledby={`${id}-title`}
+  data-simulator
+  data-stories={stories.join(',')}
+  data-prefix={hashPrefix}
+  data-initial={initialKey}
+>
+  <div class="ld-show">
   <div class="ld-head">
-    <p class="eyebrow">{eyebrow}</p>
-    <h2 id={`${id}-title`}>{heading}</h2>
-    <p class="ld-sub">{intro}</p>
+    <h1 id={`${id}-title`}>Try Lucento</h1>
+    <p class="ld-fine">Fictional money. Nothing is saved or sent.</p>
   </div>
 
-  <div class="ld-body">
-    <div class="ld-guide">
-      <div class="ld-stories" role="group" aria-label="Choose a story">
-        {
-          stories.map((key, index) => (
-            <button type="button" class="ld-story" data-story={key} aria-pressed={index === 0 ? 'true' : 'false'}>
-              {picker === 'list' && <span class="ld-story-num">{String(index + 1).padStart(2, '0')}</span>}
-              {STORIES[key].title}
-            </button>
-          ))
-        }
+  <label class="ld-pick">
+    <span id={`${id}-guide-label`}>Guide</span>
+    <select id={`${id}-guide`} data-tour="story" aria-labelledby={`${id}-guide-label`}>
+      {
+        stories.map((key) => {
+          const guide = guideById.get(key);
+          const story = STORIES[key];
+          if (!story) return null;
+          return (
+            <option id={`${hashPrefix}${key}`} value={key} selected={key === initialKey}>
+              {guide?.title ?? story.title}
+            </option>
+          );
+        })
+      }
+    </select>
+  </label>
+
+  <p class="ld-reopen-row">
+    <button type="button" class="ld-reopen" data-tour="reopen" hidden>Show the steps</button>
+  </p>
+
+  <div class="ld-stage">
+    <div class="ld-bubble" data-tour="bubble" role="dialog" aria-modal="false" aria-labelledby="tour-title" tabindex="-1">
+      <Mascot
+        pose="pointing"
+        size="2.75rem"
+        alt=""
+      />
+      <p class="ld-count" data-tour="count">1 of {first.steps.length}</p>
+      <p class="ld-bubble-title" id="tour-title" data-tour="title">{firstStep?.title}</p>
+      <p class="ld-bubble-body" id="tour-body" data-tour="body">{firstStep?.body}</p>
+      <div class="ld-bubble-actions">
+        <button type="button" class="ld-next" data-tour="next">Next</button>
+        <button type="button" class="ld-skip" data-tour="skip">Skip</button>
       </div>
-      <div class="ld-card">
-        <p class="ld-kicker" data-sim="kicker">{first.kicker}</p>
-        <h3 class="ld-story-title" data-sim="title">{first.title}</h3>
-        <p class="ld-story-text" data-sim="text">{first.text}</p>
-        <ol class="ld-steps" data-sim="steps">
-          {first.steps.map((step) => <li class="ld-step is-later"><span class="ld-num">·</span><span><b>{step.title}</b></span></li>)}
-        </ol>
-        <div class="ld-actions">
-          <button type="button" class="ld-reset" data-sim="reset">Start this guide again</button>
-        </div>
-      </div>
-      <p class="ld-live" data-sim="live" aria-live="polite"></p>
     </div>
 
-    <div class="ld-phone-wrap">
-      <div class="ld-phone">
-        <div class="ld-notch" aria-hidden="true"></div>
-        <div class="ld-screen" data-sim="screen" role="region" aria-label="Lucento app simulation"></div>
+    <div class="ld-phone">
+      <div class="ld-notch" aria-hidden="true"></div>
+      <div class="ld-screen" data-sim="screen" role="region" aria-label="Lucento app simulation"></div>
+      <div class="ld-spot" data-tour="spot" aria-hidden="true">
+        <span class="ld-bar" data-bar="t"></span>
+        <span class="ld-bar" data-bar="l"></span>
+        <span class="ld-bar" data-bar="r"></span>
+        <span class="ld-bar" data-bar="b"></span>
       </div>
-      <p class="ld-note">Fictional data · simulation of the Android app</p>
     </div>
   </div>
+  <p class="ld-note">Fictional data · simulation of the Android app</p>
+  <p class="ld-live" data-sim="live" aria-live="polite"></p>
+  </div>
+
+  {
+    notes.length > 0 && (
+      <div class="ld-notes">
+        <h2 id="guides" class="ld-notes-title">The same steps, written out</h2>
+        {notes.map((guide) => (
+          <details id={guide.id}>
+            <summary>
+              <span class="ld-note-title">{guide.title}</span>
+              <span class="ld-note-sum">{guide.summary}</span>
+            </summary>
+            <ol>
+              {guide.steps.map((step) => (
+                <li>{step}</li>
+              ))}
+            </ol>
+            {guide.tip && <p class="ld-tip">{guide.tip}</p>}
+          </details>
+        ))}
+      </div>
+    )
+  }
 </section>
 
 <script>
   import { mountSimulator } from '../demo/simulator';
+  import { mountTour } from '../scripts/demo-tour';
 
   document.querySelectorAll<HTMLElement>('[data-simulator]').forEach((root) => {
     if (root.dataset.mounted) return;
     root.dataset.mounted = 'true';
     const stories = (root.dataset.stories ?? '').split(',').filter(Boolean);
-    mountSimulator(root, { stories, initial: stories[0], hashPrefix: root.dataset.prefix ?? 'try-' });
+    // Listen before the simulator renders, so the first step opens the coach mark.
+    mountTour(root);
+    mountSimulator(root, {
+      stories,
+      initial: root.dataset.initial || stories[0],
+      hashPrefix: root.dataset.prefix ?? 'guide-',
+    });
+    const hash = window.location.hash.slice(1);
+    const prefix = root.dataset.prefix ?? '';
+    const noteId = hash.startsWith(prefix) ? hash.slice(prefix.length) : hash;
+    if (!noteId) return;
+    const note = root.querySelector(`details#${CSS.escape(noteId)}`);
+    if (note instanceof HTMLDetailsElement) note.open = true;
   });
 </script>
 
-<style is:global>
-  @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
-  @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
-  @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_semibold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
-  @font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 
-  /* ---------------------------------------------------------------- the section and the guide */
-  .ld { max-width: var(--page-max); margin: 0 auto; padding: var(--space-xxl) var(--page-gutter); scroll-margin-top: var(--space-lg); }
-  .ld-head { max-width: var(--measure); }
-  .eyebrow { margin: 0; color: var(--primary); font-weight: 700; font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; }
-  .ld-head h2 { margin: var(--space-xs) 0 0; font-size: clamp(1.75rem, 2.5vw + 1rem, 2.75rem); line-height: 1.1; letter-spacing: -0.02em; }
-  .ld-sub { color: var(--on-surface-variant); margin: var(--space-md) 0 0; }
-  .ld-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-xxl); align-items: start; margin-top: var(--space-xl); }
-  .ld-stories { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
-  .ld-story { min-height: var(--min-touch); padding: 0 var(--space-md); border-radius: var(--radius-full); border: 1px solid var(--border-default); background: var(--surface-container-lowest); color: var(--on-surface); font: inherit; font-weight: 600; cursor: pointer; }
-  .ld-story[aria-pressed='true'] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
-  .ld-story:focus-visible, .ld-reset:focus-visible, .ld-next:focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
-  .ld-card { margin-top: var(--space-md); padding: var(--space-lg); border: 1px solid var(--border-default); border-radius: var(--radius-lg); background: var(--surface-container-lowest); }
-  .ld-kicker { margin: 0; color: var(--primary); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.04em; text-transform: uppercase; }
-  .ld-story-title { margin: var(--space-xs) 0 0; font-size: 1.375rem; line-height: 1.25; }
-  .ld-story-text { margin: var(--space-sm) 0 0; color: var(--on-surface-variant); }
-  .ld-steps { list-style: none; margin: var(--space-lg) 0 0; padding: 0; display: grid; gap: var(--space-sm); }
-  .ld-step { display: grid; grid-template-columns: 2rem 1fr; gap: var(--space-sm); align-items: start; color: var(--on-surface-variant); }
-  .ld-step b { display: block; font-weight: 600; }
-  .ld-step.is-now { color: var(--on-surface); padding: var(--space-sm); margin: 0 calc(-1 * var(--space-sm)); border-radius: var(--radius-md); background: var(--highlight); }
-  .ld-step.is-now b { color: var(--on-highlight); }
-  .ld-step-body { display: block; margin-top: var(--space-xxs); color: var(--on-surface-variant); }
-  .ld-step.is-now .ld-step-body { color: var(--on-highlight); }
-  .ld-num { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: 50%; border: 1px solid var(--border-default); font-weight: 700; font-size: 0.875rem; background: var(--surface); }
-  .ld-step.is-now .ld-num { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
-  .ld-step.is-done .ld-num { background: var(--positive-container); color: var(--positive); border-color: transparent; }
-  .ld-step.is-finale { color: var(--on-surface); }
-  .ld-step.is-finale .ld-num { background: var(--accent); color: var(--midnight-navy); border-color: transparent; }
-  .ld-next, .ld-reset { margin-top: var(--space-sm); min-height: var(--min-touch); padding: 0 var(--space-md); border-radius: var(--radius-md); font: inherit; font-weight: 600; cursor: pointer; }
-  .ld-next { border: 0; background: var(--primary); color: var(--on-primary); }
-  .ld-reset { border: 1px solid var(--border-default); background: transparent; color: var(--on-surface); }
-  .ld-actions { margin-top: var(--space-md); }
-  .ld-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .ld-phone-wrap { display: grid; justify-items: center; gap: var(--space-sm); }
-  .ld-note { margin: 0; font-size: 0.8125rem; color: var(--on-surface-variant); }
-
-  /* ---------------------------------------------------------------- the phone */
-  .ld-phone { position: relative; width: 360px; height: 740px; padding: 12px; border-radius: 48px; background: #0b1222; box-shadow: 0 30px 60px -20px rgba(16, 24, 43, 0.45), inset 0 0 0 2px #2a3550; }
-  .ld-notch { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 18px; height: 18px; border-radius: 50%; background: #0b1222; z-index: 5; }
-  .ld-screen { position: relative; width: 100%; height: 100%; border-radius: 38px; overflow: hidden; display: flex; flex-direction: column; background: var(--background); color: var(--on-surface); font-family: 'Plus Jakarta Sans', var(--font-sans, sans-serif); font-size: 13px; line-height: 1.35; }
-  .ld-screen button, .ld-screen input, .ld-screen select { font: inherit; color: inherit; }
-  .ld-screen b { font-weight: 700; }
-  .ld-screen small { display: block; color: var(--on-surface-variant); font-size: 11.5px; }
-  .ls-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .ls-status { display: flex; justify-content: space-between; padding: 12px 26px 4px; font-size: 12px; font-weight: 600; }
-  .ls-body { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
-  .ls-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 0 14px 14px; scrollbar-width: none; }
-  .ls-scroll::-webkit-scrollbar { display: none; }
-  .ls-header { display: flex; align-items: center; gap: 6px; padding: 6px 14px 8px; }
-  .ls-brand { flex: 1; display: inline-flex; align-items: center; gap: 6px; }
-  .ls-word { font-weight: 700; font-size: 20px; letter-spacing: -0.02em; }
-  .ls-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 9px; border-radius: 999px; background: var(--surface-container); font-size: 11.5px; font-weight: 600; }
-  .ls-icon-btn { position: relative; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
-  .ls-badge { position: absolute; top: 3px; right: 2px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--primary); color: var(--on-primary); font-size: 10.5px; font-weight: 700; display: grid; place-items: center; }
-  .ls-badge.is-overdue { background: var(--negative); color: var(--surface); }
-  .ls-avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--primary-container); color: var(--on-primary-container); }
-  .ls-pill { display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px; border-radius: 14px; border: 1px solid var(--border-default); background: var(--surface-container-lowest); font-weight: 600; }
-  .ls-budget-wrap { position: relative; padding-top: 0; }
-  .ls-mascot { position: absolute; right: 2px; top: -8px; width: 96px; height: 96px; z-index: 2; pointer-events: none; }
-  .ls-budget { position: relative; display: block; width: 100%; margin-top: 10px; padding: 14px 16px; text-align: left; border: 1px solid var(--border-default); border-radius: 20px; overflow: hidden; cursor: pointer; background: var(--surface-container-lowest); }
-  .ls-pace-aligned { background: color-mix(in srgb, var(--positive-container) 92%, var(--surface)); }
-  .ls-pace-ahead { background: color-mix(in srgb, var(--negative-container) 92%, var(--surface)); }
-  .ls-pace-behind { background: color-mix(in srgb, var(--info-container) 92%, var(--surface)); }
-  .ls-torch { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at calc(100% - 34px) 6px, color-mix(in srgb, var(--accent) 62%, transparent) 0%, color-mix(in srgb, var(--warm-accent) 34%, transparent) 14%, color-mix(in srgb, var(--accent) 10%, transparent) 45%, transparent 75%); animation: ls-breathe 2.4s ease-in-out infinite alternate; }
-  @keyframes ls-breathe { from { opacity: 0.82; } to { opacity: 1; } }
-  .ls-budget > span:not(.ls-torch) { position: relative; }
-  .ls-budget-title { display: block; font-weight: 700; font-size: 17px; }
-  .ls-budget-figure { display: block; margin: 2px 74px 10px 0; font-weight: 600; }
-  .ls-budget-figure b { font-size: 24px; letter-spacing: -0.02em; margin-right: 2px; font-variant-numeric: tabular-nums; }
-  .ls-bar { position: relative; height: 15px; border-radius: 999px; background: var(--track); margin-bottom: 5px; }
-  .ls-bar-fill { height: 100%; border-radius: 999px; display: flex; justify-content: flex-end; align-items: center; }
-  .ls-bar-fill span { padding-right: 6px; font-size: 10.5px; font-weight: 700; color: #fff; }
-  .ls-bar-fill.is-used { background: var(--success); }
-  .ls-pace-ahead .ls-bar-fill.is-used { background: var(--negative-indicator); }
-  .ls-bar-fill.is-month { background: color-mix(in srgb, var(--primary) 55%, transparent); }
-  .ls-bar-fill.is-month span { color: var(--midnight-navy); }
-  .ls-bar-out { position: absolute; top: 0; font-size: 10.5px; font-weight: 700; }
-  .ls-stats { display: grid; grid-template-columns: 1.2fr 1.2fr 0.8fr; margin: 10px 0; }
-  .ls-stats > span { padding: 0 4px; border-left: 1px solid var(--outline-variant); }
-  .ls-stats > span:first-child { border-left: 0; padding-left: 0; }
-  .ls-stats b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
-  .ls-advice { display: flex; gap: 8px; align-items: center; padding: 9px 10px; border-radius: 14px; background: color-mix(in srgb, var(--surface-container-lowest) 82%, transparent); color: var(--positive); }
-  .ls-advice b { display: block; color: var(--on-surface); font-size: 12.5px; }
-  .ls-two { display: grid; grid-template-columns: 1.1fr 1fr; gap: 8px; margin-top: 12px; }
-  .ls-card { padding: 12px; border: 1px solid var(--border-default); border-radius: 18px; background: var(--surface-container-lowest); }
-  .ls-card hr { border: 0; border-top: 1px solid var(--outline-variant); margin: 8px -12px; }
-  .ls-wide { margin-top: 12px; }
-  .ls-card-title { display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
-  .ls-amount { display: block; font-size: 19px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-  .is-pos { color: var(--positive); }
-  .is-neg, .is-red { color: var(--negative) !important; font-style: normal; }
-  .is-primary { color: var(--primary); }
-  .ls-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
-  .ls-links button { display: grid; justify-items: center; gap: 4px; padding: 8px 2px; border-radius: 14px; border: 1px solid var(--primary-container); background: color-mix(in srgb, var(--primary-container) 55%, var(--surface-container-lowest)); color: var(--primary); font-size: 11px; font-weight: 600; cursor: pointer; }
-  .ls-sched { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--outline-variant); }
-  .ls-card-title + .ls-sched { border-top: 0; }
-  .ls-grow { flex: 1; min-width: 0; }
-  .ls-due { text-align: right; font-size: 11.5px; }
-  .ls-due em { font-style: normal; font-weight: 600; }
-  .ls-tile { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 12px; background: var(--surface-container); color: var(--on-surface-variant); }
-  .ls-tone-green { background: var(--category-green-tile); color: var(--category-green-glyph); }
-  .ls-tone-coral { background: var(--category-coral-tile); color: var(--category-coral-glyph); }
-  .ls-tone-sky { background: var(--category-sky-tile); color: var(--category-sky-glyph); }
-  .ls-tone-amber { background: var(--category-amber-tile); color: var(--category-amber-glyph); }
-  .ls-tone-violet { background: var(--category-violet-tile); color: var(--category-violet-glyph); }
-  .ls-tone-slate { background: var(--category-slate-tile); color: var(--category-slate-glyph); }
-  .ls-wallet-bank { background: var(--wallet-bank-container); color: var(--wallet-bank-content); }
-  .ls-wallet-cash { background: var(--wallet-cash-container); color: var(--wallet-cash-content); }
-  .ls-wallet-savings { background: var(--wallet-savings-container); color: var(--wallet-savings-content); }
-  .ls-wallet-credit { background: var(--wallet-credit-container); color: var(--wallet-credit-content); }
-
-  /* dock */
-  .ls-dock { position: relative; display: grid; grid-template-columns: 1fr 1fr 64px 1fr 1fr; align-items: end; margin: 0 10px 12px; padding: 6px 4px; border: 1px solid var(--border-default); border-radius: 24px; background: var(--surface-container-lowest); }
-  .ls-tab { display: grid; justify-items: center; gap: 2px; padding: 4px 0; border: 0; background: transparent; color: var(--on-surface-variant); cursor: pointer; min-height: 48px; }
-  .ls-tab small { font-size: 10.5px; }
-  .ls-tab.is-on { color: var(--primary); }
-  .ls-tab.is-on svg { background: var(--primary-container); border-radius: 12px; padding: 2px 10px; box-sizing: content-box; }
-  .ls-plus { justify-self: center; margin-top: -30px; width: 58px; height: 58px; border: 0; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; cursor: pointer; box-shadow: 0 8px 18px -6px color-mix(in srgb, var(--primary) 70%, transparent); }
-
-  /* bell menu and sheet */
-  .ls-menu { position: absolute; top: 48px; right: 12px; left: 46px; z-index: 6; padding: 8px 0; border-radius: 16px; background: var(--surface-container-high); box-shadow: 0 16px 30px -10px rgba(16, 24, 43, 0.35); }
-  .ls-menu-title { display: block; padding: 6px 14px 8px; font-size: 14px; }
-  .ls-menu-item { display: flex; gap: 10px; width: 100%; padding: 9px 14px; border: 0; background: transparent; text-align: left; cursor: pointer; align-items: center; }
-  .ls-menu-all { width: 100%; padding: 12px 14px; border: 0; border-top: 1px solid var(--outline-variant); background: transparent; color: var(--primary); text-align: left; font-weight: 600; cursor: pointer; }
-  .ls-menu-empty { padding: 0 14px 8px; }
-  .ls-scrim { position: absolute; inset: 0; z-index: 7; background: rgba(11, 18, 34, 0.42); }
-  .ls-sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 8; display: grid; gap: 6px; padding: 10px 18px 22px; border-radius: 24px 24px 0 0; background: var(--surface-container-low); }
-  .ls-handle { justify-self: center; width: 36px; height: 4px; border-radius: 2px; background: var(--outline); margin-bottom: 6px; }
-  .ls-sheet-title { font-size: 18px; }
-  .ls-sheet-amount { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .ls-primary, .ls-outline, .ls-text { min-height: 48px; border-radius: 14px; font-weight: 700 !important; cursor: pointer; }
-  .ls-primary { border: 0; background: var(--primary); color: var(--on-primary) !important; margin-top: 8px; }
-  .ls-primary:disabled { background: var(--surface-container-high); color: var(--on-surface-variant) !important; cursor: not-allowed; }
-  .ls-outline { border: 1px solid var(--border-default); background: transparent; margin-top: 8px; }
-  .ls-text { border: 0; background: transparent; color: var(--primary) !important; }
-  .ls-google { display: flex; align-items: center; justify-content: center; gap: 8px; }
-
-  /* composer */
-  .ls-topbar { display: flex; align-items: center; gap: 8px; padding: 4px 14px 8px; font-size: 18px; }
-  .ls-big { font-size: 26px; letter-spacing: -0.02em; padding: 4px 0; }
-  .ls-back { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--primary-container); color: var(--primary); cursor: pointer; }
-  .ls-walletbar { display: flex; align-items: center; gap: 6px; padding: 0 14px 8px; border-bottom: 1px solid var(--outline-variant); }
-  .ls-wpill { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border-default); font-weight: 600; font-size: 12px; }
-  .ls-wpill.is-on { background: var(--midnight-navy); color: #fff; border-color: transparent; }
-  .ls-convo { padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-  .ls-empty { display: grid; justify-items: center; text-align: center; gap: 6px; padding: 30px 12px; }
-  .ls-example { margin-top: 10px; padding: 10px 12px; border-radius: 14px; border: 1px dashed var(--primary); background: var(--primary-container); color: var(--on-primary-container); font-weight: 600; cursor: pointer; }
-  .ls-bubble.is-user { align-self: flex-end; max-width: 80%; padding: 9px 12px; border-radius: 16px 16px 4px 16px; background: var(--pale-sky); color: var(--midnight-navy); }
-  .ls-reply { display: flex; align-items: center; gap: 6px; font-weight: 600; }
-  .ls-row { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--border-default); border-radius: 14px; background: var(--surface-container-lowest); }
-  .ls-row.is-bad { border: 1.5px solid var(--negative); }
-  .ls-row select { margin-top: 4px; max-width: 100%; padding: 4px 8px; border-radius: 10px; border: 1px solid var(--border-default); background: var(--surface); font-size: 12px; min-height: 32px; }
-  .ls-row select.is-soft { border-color: var(--warning); }
-  .ls-savebar { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-top: 1px solid var(--outline-variant); }
-  .ls-savebar small { flex: 1; }
-  .ls-savebar .ls-primary { margin: 0; padding: 0 16px; }
-  .ls-input { display: flex; gap: 8px; padding: 8px 14px 14px; }
-  .ls-input input { flex: 1; min-width: 0; min-height: 46px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border-default); background: var(--surface-container-lowest); }
-  .ls-input input:focus-visible { outline: 2px solid var(--border-focus); }
-  .ls-send { width: 46px; height: 46px; border: 0; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; cursor: pointer; }
-  .ls-send:disabled { background: var(--surface-container-high); color: var(--on-surface-variant); cursor: not-allowed; }
-
-  /* budget, wallets */
-  .ls-hero { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; padding: 16px; border-radius: 20px; background: var(--hero); color: var(--on-hero); }
-  .ls-hero small { color: var(--on-hero-muted); grid-column: 1 / -1; }
-  .ls-hero > div > small { grid-column: auto; }
-  .ls-hero-big { display: block; font-size: 30px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-  .ls-hero-side { display: grid; gap: 2px; justify-items: start; padding-left: 12px; border-left: 1px solid var(--hero-rule); }
-  .ls-tag { display: inline-block !important; width: fit-content; padding: 2px 8px; border-radius: 999px; background: var(--on-hero); color: var(--hero) !important; font-weight: 600; }
-  .ls-tag.is-sun { background: var(--accent); color: var(--midnight-navy) !important; }
-  .ls-hero-bar { grid-column: 1 / -1; position: relative; height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--on-hero) 25%, transparent); margin-top: 6px; }
-  .ls-hero-bar span { display: block; height: 100%; border-radius: 999px; background: var(--accent); }
-  .ls-hero-bar i { position: absolute; top: -4px; width: 3px; height: 18px; background: var(--on-hero); border-radius: 2px; }
-  .ls-note { display: block; width: 100%; margin-top: 10px; padding: 10px 12px; border-radius: 14px; border: 0; background: var(--info-container); color: var(--on-surface); text-align: left; cursor: pointer; }
-  .ls-section { display: flex; justify-content: space-between; align-items: baseline; margin-top: 14px; font-size: 15px; }
-  .ls-lines { padding: 4px 12px; }
-  .ls-line { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 0; border: 0; border-top: 1px solid var(--outline-variant); background: transparent; text-align: left; cursor: pointer; }
-  .ls-line:first-child { border-top: 0; }
-  .ls-minibar { display: block; height: 5px; margin-top: 5px; border-radius: 3px; background: var(--track); }
-  .ls-minibar span { display: block; height: 100%; border-radius: 3px; background: var(--success); }
-  .ls-minibar span.is-near { background: var(--warning-indicator); }
-  .ls-minibar span.is-full { background: var(--negative-indicator); }
-  .ls-detail { margin-top: 4px; color: var(--on-surface) !important; }
-
-  /* onboarding */
-  .ls-onb { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 10px 20px 22px; text-align: center; }
-  .ls-onb.ls-left { text-align: left; }
-  .ls-onb-mid { flex: 1; display: grid; justify-items: center; align-content: center; gap: 6px; }
-  .ls-onb-word { font-size: 34px; letter-spacing: -0.03em; }
-  .ls-onb-art { width: 100%; border-radius: 18px; margin-top: 14px; aspect-ratio: 16 / 9; object-fit: cover; }
-  .ls-onb-title { font-size: 26px; line-height: 1.15; letter-spacing: -0.02em; margin-top: 10px; }
-  .ls-warnbox { display: flex; gap: 8px; margin-top: 10px; padding: 12px; border-radius: 14px; background: var(--warning-container); color: var(--warning); font-weight: 500; }
-  .ls-dots { display: flex; gap: 6px; margin: 40px auto; }
-  .ls-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); animation: ls-dot 1s ease-in-out infinite alternate; }
-  .ls-dots i:nth-child(2) { animation-delay: 0.2s; }
-  .ls-dots i:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes ls-dot { from { opacity: 0.25; transform: translateY(0); } to { opacity: 1; transform: translateY(-6px); } }
-
-  /* feedback */
-  .ls-toast { position: absolute; left: 14px; right: 14px; bottom: 96px; z-index: 9; padding: 12px 14px; border-radius: 14px; background: var(--inverse-surface); color: var(--inverse-on-surface); font-weight: 600; }
-  .ls-hint { outline: 3px solid var(--warm-accent) !important; outline-offset: 2px; animation: ls-pulse 1.4s ease-in-out infinite; }
-  @keyframes ls-pulse { 0%, 100% { outline-color: var(--warm-accent); } 50% { outline-color: color-mix(in srgb, var(--warm-accent) 25%, transparent); } }
-  .ld-screen :focus-visible { outline: 3px solid var(--border-focus); outline-offset: 2px; }
-
-
-  /* ---------------------------------------------------------------- list picker (how-to page) */
-  .ld-list .ld-body { grid-template-columns: 15rem minmax(0, 1fr) auto; gap: var(--space-xl); }
-  .ld-list .ld-guide { display: contents; }
-  .ld-list .ld-stories { flex-direction: column; flex-wrap: nowrap; gap: 2px; position: sticky; top: var(--space-lg); align-self: start; }
-  .ld-list .ld-story { justify-content: flex-start; text-align: left; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--on-surface-variant); font-weight: 600; padding: var(--space-xs) var(--space-sm); display: flex; gap: var(--space-sm); align-items: center; }
-  .ld-list .ld-story[aria-pressed='true'] { background: var(--primary-container); color: var(--on-primary-container); }
-  .ld-story-num { font-variant-numeric: tabular-nums; color: var(--primary); font-weight: 800; font-size: 0.8125rem; }
-  .ld-list .ld-story[aria-pressed='true'] .ld-story-num { color: inherit; }
-  .ld-list .ld-card { margin-top: 0; align-self: start; }
-
-  /* ---------------------------------------------------------------- extra phone pieces */
-  .ls-avatar { border: 0; cursor: pointer; }
-  .ls-card-link { display: block; width: 100%; padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
-  .ls-welcome { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 8px; padding: 18px; border-radius: 20px; background: var(--hero); color: var(--on-hero); }
-  .ls-welcome b { font-size: 22px; line-height: 1.15; }
-  .ls-welcome small { grid-column: 1 / -1; color: var(--on-hero-muted) !important; }
-  .ls-welcome .ls-primary { grid-column: 1 / -1; }
-  .ls-primary.is-onhero { background: var(--on-hero); color: var(--hero) !important; }
-  .ls-actions-row { display: flex; gap: 8px; margin-top: 10px; }
-  .ls-actions-row > * { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; margin: 0; }
-  .ls-rowbtn { width: 100%; border-left: 0; border-right: 0; border-bottom: 0; background: transparent; text-align: left; cursor: pointer; }
-  .ls-card .ls-rowbtn:first-child, .ls-sheet .ls-rowbtn { border-top: 0; }
-  .ls-due-line { display: flex; align-items: center; gap: 10px; padding-top: 8px; border-top: 1px solid var(--outline-variant); }
-  .ls-small { min-height: 40px !important; padding: 0 12px; margin: 0 !important; font-size: 12px; }
-  .ls-goal { padding: 0; overflow: hidden; }
-  .ls-goal img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
-  .ls-goal > *:not(img) { margin-left: 14px; margin-right: 14px; }
-  .ls-goal .ls-primary { display: block; width: calc(100% - 28px); margin-bottom: 14px; }
-  .ls-goal-body { display: flex; align-items: center; margin-top: 10px; }
-  .ls-goalbar { height: 8px; margin-top: 8px; margin-bottom: 6px; }
-  .ls-sec { display: block; margin: 14px 2px 6px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--primary); }
-  .ls-pad { display: grid; gap: 6px; }
-  .ls-pad .ls-primary { margin-top: 4px; }
-  .ls-switchrow { display: flex; align-items: center; gap: 10px; width: 100%; padding: 4px 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
-  .ls-switch { position: relative; flex: none; width: 46px; height: 28px; border-radius: 999px; background: var(--surface-container-highest); border: 2px solid var(--outline); }
-  .ls-switch i { position: absolute; top: 4px; left: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--outline); transition: left 0.15s; }
-  .ls-switch.is-on { background: var(--primary); border-color: var(--primary); }
-  .ls-switch.is-on i { left: 22px; width: 18px; height: 18px; top: 3px; background: var(--on-primary); }
-  .ls-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .ls-chip-btn { display: inline-flex; align-items: center; gap: 4px; min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--border-default); background: var(--surface-container-lowest); font-weight: 600; cursor: pointer; }
-  .ls-chip-btn.is-on { background: var(--primary-container); border-color: var(--primary); color: var(--on-primary-container); }
-  .ls-field { display: grid; gap: 4px; margin-top: 6px; font-weight: 600; font-size: 12px; }
-  .ls-field input { min-height: 46px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--border-default); background: var(--surface-container-lowest); font-size: 16px; font-variant-numeric: tabular-nums; }
-  .ls-field input:focus-visible { outline: 2px solid var(--border-focus); }
-  .ls-example.ls-small { justify-self: start; margin-top: 2px !important; }
-  .ls-seg { display: grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 12px; background: var(--surface-container); font-weight: 600; text-align: center; }
-  .ls-seg span { padding: 8px; border-radius: 10px; }
-  .ls-seg .is-on { background: var(--surface-container-lowest); }
-  .ls-dialog { position: absolute; left: 18px; right: 18px; top: 50%; transform: translateY(-50%); z-index: 8; display: grid; gap: 10px; padding: 20px; border-radius: 24px; background: var(--surface-container-lowest); }
-  .ls-dialog small { font-size: 12px; line-height: 1.45; }
-  .ls-dialog-actions { display: flex; justify-content: flex-end; gap: 4px; }
-  .ls-dialog-actions .ls-text { padding: 0 14px; }
-
-  @media (max-width: 1100px) {
-    .ld-list .ld-body { grid-template-columns: minmax(0, 1fr) auto; }
-    .ld-list .ld-guide { display: block; }
-    .ld-list .ld-stories { position: static; flex-direction: row; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-md); }
-    .ld-list .ld-story { border: 1px solid var(--border-default); border-radius: var(--radius-full); background: var(--surface-container-lowest); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .ls-torch, .ls-hint, .ls-dots i { animation: none; }
-  }
-  @media (max-width: 860px) {
-    .ld-body, .ld-list .ld-body { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
-    .ld-guide { min-width: 0; }
-    .ld-list .ld-stories { flex-wrap: nowrap; overflow-x: auto; padding-bottom: var(--space-xs); scrollbar-width: thin; }
-    .ld-list .ld-story { flex: none; }
-  }
-  @media (max-width: 400px) {
-    .ld-phone { width: 100%; height: 700px; padding: 8px; border-radius: 36px; }
-    .ld-screen { border-radius: 30px; }
-  }
-</style>

@@ -1,134 +1,21 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PhoneDemo from '../components/PhoneDemo.astro';
-import { guides } from '../data/guides';
+// Old guide URLs land here. A script keeps the hash (`#guide-budget`, `#add-transactions`)
+// because a meta refresh would drop it. The link is the no-JavaScript path.
 ---
 
-<BaseLayout
-  title="How to use Lucento — interactive guides"
-  description="Interactive, step-by-step guides for Lucento: try each task on a simulated phone — setting up, adding transactions, budgets, wallets, bills, debts, goals, a new phone, sync, Smarter reading and export."
->
-  <PhoneDemo
-    id="guide"
-    eyebrow="How to"
-    heading="Learn Lucento by using it"
-    intro="Pick a guide and do it yourself on the phone: each step completes when you do it. Fictional money; nothing is saved or sent. Prefer reading? Every guide is written out below."
-    stories={guides.map((g) => g.id)}
-    picker="list"
-  />
-
-  <section class="written" aria-labelledby="written-title">
-    <p class="eyebrow">Prefer to read?</p>
-    <h2 id="written-title">The same guides, step by step</h2>
-    <div class="guides">
-      {
-        guides.map((g, index) => (
-          <section class="guide" id={g.id} aria-labelledby={`${g.id}-title`}>
-            <p class="num">{String(index + 1).padStart(2, '0')}</p>
-            <h3 id={`${g.id}-title`}>{g.title}</h3>
-            <p class="summary">{g.summary}</p>
-            <ol class="steps">
-              {g.steps.map((step) => (
-                <li>{step}</li>
-              ))}
-            </ol>
-            {g.tip && <p class="tip">{g.tip}</p>}
-            <a class="try" href={`#guide-${g.id}`}>
-              Try it on the phone
-            </a>
-          </section>
-        ))
-      }
-    </div>
-  </section>
-</BaseLayout>
-
-<style>
-  .written {
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: var(--space-xxl) var(--page-gutter);
-  }
-
-  .eyebrow {
-    margin: 0;
-    color: var(--primary);
-    font-weight: 700;
-    font-size: 0.875rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  h2 {
-    margin: var(--space-xs) 0 0;
-    font-size: clamp(1.75rem, 2.5vw + 1rem, 2.5rem);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-
-  .guides {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    gap: var(--space-lg);
-    margin-top: var(--space-xl);
-  }
-
-  .guide {
-    padding: var(--space-xl);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-lg);
-    background: var(--surface-container-lowest);
-    scroll-margin-top: var(--space-lg);
-  }
-
-  .num {
-    margin: 0;
-    font-weight: 800;
-    color: var(--primary);
-    font-variant-numeric: tabular-nums;
-  }
-
-  h3 {
-    margin: var(--space-xxs) 0 0;
-    font-size: 1.375rem;
-    line-height: 1.2;
-  }
-
-  .summary {
-    margin: var(--space-xs) 0 0;
-    color: var(--on-surface-variant);
-  }
-
-  .steps {
-    margin: var(--space-lg) 0 0;
-    padding-left: 1.25rem;
-    display: grid;
-    gap: var(--space-sm);
-  }
-
-  .steps li::marker {
-    font-weight: 700;
-    color: var(--primary);
-  }
-
-  .tip {
-    margin: var(--space-lg) 0 0;
-    padding: var(--space-md);
-    border-radius: var(--radius-md);
-    background: var(--highlight);
-    color: var(--on-highlight);
-  }
-
-  .try {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--min-touch);
-    margin-top: var(--space-lg);
-    padding: 0 var(--space-lg);
-    border-radius: var(--radius-md);
-    background: var(--primary);
-    color: var(--on-primary);
-    font-weight: 700;
-    text-decoration: none;
-  }
-</style>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Guides · Lucento</title>
+    <meta name="robots" content="noindex" />
+    <script is:inline>
+      location.replace('/demo' + location.search + location.hash);
+    </script>
+    <meta http-equiv="refresh" content="0;url=/demo" />
+  </head>
+  <body>
+    <p><a href="/demo">Continue to the guides</a></p>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhoneDemo from '../components/PhoneDemo.astro';
+import { guides } from '../data/guides';
+---
+
+<BaseLayout
+  title="Try Lucento — interactive demo"
+  description="Walk through Lucento on a phone simulation. Fictional money, nothing saved or sent. The steps follow the Android app."
+>
+  <PhoneDemo id="try" hashPrefix="guide-" stories={guides.map((guide) => guide.id)} initial="budget" />
+</BaseLayout>

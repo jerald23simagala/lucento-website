@@ -1,0 +1,14 @@
+{
+  "name": "lucento-explainer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "render": "remotion render src/index.ts Explainer ../public/video/explainer.mp4 --codec=h264 --crf=30 --browser-executable=/usr/bin/google-chrome"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.539",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.539"
+  }
+}

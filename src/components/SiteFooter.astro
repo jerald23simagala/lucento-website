@@ -6,16 +6,16 @@ const columns = [
   {
     title: 'Product',
     links: [
-      { href: '/#how-it-works', label: 'How it works' },
-      { href: '/#features', label: 'Features' },
-      { href: '/#try', label: 'Interactive demo' },
-      { href: '/#pace', label: 'Pace calculator' },
+      { href: '/demo', label: 'Interactive demo' },
+      { href: '/#keeps', label: 'On your phone' },
+      { href: '/#pace', label: 'The month’s pace' },
     ],
   },
   {
     title: 'Learn',
     links: [
-      { href: '/how-to', label: 'Interactive guides' },
+      { href: '/demo', label: 'Interactive guides' },
+      { href: '/demo#guides', label: 'Written steps' },
       { href: '/#faq', label: 'FAQ' },
       { href: '/#good-to-know', label: 'Current limitations' },
     ],
@@ -31,9 +31,10 @@ const columns = [
 ---
 
 <footer class="site-footer">
+  <div class="crest-rule" aria-hidden="true"><span></span><span></span><span></span></div>
   <div class="inner">
     <div class="brand">
-      <a href="/" aria-label="Lucento home"><Logo /></a>
+      <a href="/" aria-label="Lucento home"><Logo size="footer" /></a>
       <p>Financial clarity without the complexity. A budget tracker for Android, in development.</p>
     </div>
     {
@@ -52,14 +53,13 @@ const columns = [
     }
   </div>
   <div class="base">
-    <p>© {year} Lucento · The interactive demo uses fictional data and simulates the Android app.</p>
+    <p>© {year} Lucento. The interactive demo uses fictional data and simulates the Android app.</p>
   </div>
 </footer>
 
 <style>
   .site-footer {
     margin-top: var(--space-xxl);
-    border-top: 1px solid var(--outline-variant);
     background: var(--surface-container-low);
     color: var(--on-surface-variant);
     font-size: 0.9375rem;
@@ -70,8 +70,8 @@ const columns = [
     margin: 0 auto;
     padding: var(--space-xxl) var(--page-gutter) var(--space-xl);
     display: grid;
-    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
-    gap: var(--space-xl);
+    grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(8rem, 1fr));
+    gap: var(--space-xl) var(--space-lg);
   }
 
   .brand p {
@@ -100,7 +100,7 @@ const columns = [
   li a {
     display: inline-flex;
     align-items: center;
-    min-height: 2.5rem;
+    min-height: 2.75rem;
     color: var(--on-surface-variant);
     text-decoration: none;
   }
@@ -122,13 +122,19 @@ const columns = [
     margin: 0;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 800px) {
     .inner {
       grid-template-columns: 1fr 1fr;
     }
 
     .brand {
       grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .inner {
+      grid-template-columns: 1fr;
     }
   }
 </style>

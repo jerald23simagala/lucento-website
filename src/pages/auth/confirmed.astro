@@ -9,7 +9,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   cleared from the address bar. Only an error code is read, to explain an expired or reused link.
 -->
 <BaseLayout title="Email confirmed · Lucento" description="Your Lucento sync account is confirmed." noindex>
-  <section class="confirm" aria-labelledby="confirm-title">
+  <section class="prose-page" aria-labelledby="confirm-title">
     <div data-state="ok">
       <h1 id="confirm-title">Your email is confirmed</h1>
       <p>Go back to Lucento on your phone and sign in with the same email and password to turn on sync.</p>
@@ -45,24 +45,15 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 </script>
 
 <style>
-  .confirm {
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: var(--space-xxxl) var(--page-gutter);
-  }
-
   h1 {
-    margin: 0 0 var(--space-md);
-    font-size: 2rem;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
+    margin: 0 0 0.75rem;
   }
 
   p {
-    margin: 0 0 var(--space-sm);
+    margin: 0 0 0.65rem;
   }
 
   .muted {
-    opacity: 0.75;
+    color: var(--on-surface-variant);
   }
 </style>

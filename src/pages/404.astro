@@ -1,29 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Crest from '../components/Crest.astro';
 ---
 
 <BaseLayout title="Page not found · Lucento" description="This page doesn’t exist." noindex>
-  <section class="notfound" aria-labelledby="nf-title">
+  <section class="prose-page" aria-labelledby="nf-title">
+    <Crest size="md" />
     <h1 id="nf-title">This page doesn’t exist</h1>
-    <p>The link may be out of date. <a href="/">Go to the Lucento home page</a>.</p>
+    <p class="lede">The link may be out of date. The home page still has the demo, the guides, and how Lucento handles your data.</p>
+    <p class="actions"><a class="btn" href="/">Go to the Lucento home page</a></p>
   </section>
 </BaseLayout>
 
 <style>
-  .notfound {
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: var(--space-xxxl) var(--page-gutter);
-  }
-
-  h1 {
-    margin: 0 0 var(--space-md);
-    font-size: 2rem;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-  }
-
-  p {
-    margin: 0;
+  .actions {
+    margin: 1.5rem 0 0;
   }
 </style>

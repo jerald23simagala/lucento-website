@@ -55,13 +55,18 @@ Earlier explorations stay in `brand/logo-concepts/` for reference.
 ## Structure
 
 ```
-design/tokens.json        Design-system export (source of truth for tokens)
+design/tokens.json        Design-system export (source of truth for UI tokens)
 scripts/build-tokens.mjs  tokens.json -> src/styles/tokens.css
 src/styles/               tokens.css (generated) and global.css
 src/layouts/              BaseLayout: metadata, skip link, header, footer
-src/components/           SiteHeader, SiteFooter
-src/pages/                index, 404, robots.txt
+src/components/           Header, footer, Rising Crest mark, mascot, demo, pace calculator
+src/pages/                index, demo, how-to (redirect), privacy, 404, auth confirm, robots.txt
 brand/logo/               Rising Crest logo: symbol, wordmark, lockups, Android
 brand/logo-concepts/      Earlier logo explorations
-public/                   Static files (favicon)
+public/                   Static files (favicon, demo art, explainer video)
+public/lottie/            Mascot loops authored here from the existing WebP art. The repo had no Lottie source.
 ```
+
+The marketing site keeps Manrope and the Sunrise Energy tokens. The Rising Crest
+artwork colours live in `global.css` as `--mark-*` and are only used for the
+crest mark, not for text or status.
