@@ -95,7 +95,7 @@ const PRESETS = ['Groceries', 'Dining', 'Transport', 'Bills', 'Shopping', 'Healt
 
 type Screen =
   | 'welcome' | 'warn' | 'signin' | 'restoring' | 'onb-cats' | 'onb-currency' | 'onb-sync' | 'onb-done'
-  | 'home' | 'composer' | 'budget' | 'transactions' | 'wallets' | 'wallet' | 'debts' | 'goals' | 'settings';
+  | 'home' | 'composer' | 'budget' | 'transactions' | 'wallets' | 'wallet' | 'debts' | 'goals' | 'insights' | 'settings';
 type Sheet =
   | null | 'profile' | 'transfer' | 'goal-add' | 'consent' | 'export' | 'chooser'
   | { bill: string };
@@ -125,6 +125,8 @@ export interface State {
   transferText: string;
   goalSaved: number;
   goalText: string;
+  goalMode: 'add' | 'take';
+  intoWallet: string;
   syncEmail: string | null;
   synced: number;
   disconnected: boolean;
@@ -177,6 +179,8 @@ function fresh(story: string): State {
     transferText: '',
     goalSaved: 1_650_00,
     goalText: '',
+    goalMode: 'add',
+    intoWallet: 'bank',
     syncEmail: story === 'smarter-reading' ? 'ada@example.com' : null,
     synced: 0,
     disconnected: false,
@@ -249,10 +253,15 @@ export function findStepHit(screen: ParentNode, target: string | undefined, s?: 
   if (!target) return null;
   const q = (sel: string): HTMLElement | null => screen.querySelector<HTMLElement>(sel);
   if (target === 'row-cat') return q('select.is-soft');
-  if (target === 'interest') return q('[data-action="interest-example"]') ?? q('[data-input="interest"]');
-  if (target === 'transfer-to-savings' && (s === undefined || s.transferTo === 'savings')) {
-    return q('[data-action="transfer-example"]') ?? q('[data-input="transfer"]') ?? q('[data-action="transfer-to-savings"]');
+  if (target.startsWith('pick-')) return q('[data-select="picks"]');
+  if (target.startsWith('currency-')) return q('[data-select="currency"]');
+  if (target === 'transfer-to-savings') {
+    if (s === undefined || s.transferTo === 'savings') {
+      return q('[data-action="transfer-example"]') ?? q('[data-input="transfer"]') ?? q('[data-select="transfer-to"]');
+    }
+    return q('[data-select="transfer-to"]');
   }
+  if (target === 'interest') return q('[data-action="interest-example"]') ?? q('[data-input="interest"]');
   if (target === 'goal-save' && (s === undefined || !s.goalText)) {
     return q('[data-action="goal-example"]') ?? q('[data-action="goal-save"]');
   }
@@ -271,9 +280,9 @@ export const STORIES: Record<string, Story> = {
     text: 'A first open: choose the categories you spend on, your currency, and whether to sync. Your budget is built from those categories.',
     steps: [
       { title: 'Tap Get started', body: 'In the app you’re also asked what you care about and which modules to show; both can be skipped.', target: 'setup-start', done: (s) => s.screen !== 'welcome' },
-      { title: 'Choose your spending categories', body: 'Tap to add or remove. At least one is required: your budget is built from them. Add “Health”.', target: 'pick-Health', done: (s) => s.picks.includes('Health') || s.onboarded || !['welcome', 'onb-cats'].includes(s.screen) },
+      { title: 'Choose your spending categories', body: 'Use the list. At least one is required: your budget is built from them. Add Health.', target: 'pick-Health', done: (s) => s.picks.includes('Health') || s.onboarded || !['welcome', 'onb-cats'].includes(s.screen) },
       { title: 'Continue', body: 'You can add, rename or archive categories later.', target: 'setup-cats-next', done: (s) => !['welcome', 'onb-cats'].includes(s.screen) },
-      { title: 'Pick your main currency', body: 'Lucento never converts between currencies; each one has its own totals.', target: 'setup-currency-next', done: (s) => ['onb-sync', 'onb-done', 'home'].includes(s.screen) },
+      { title: 'Pick your main currency', body: 'Choose it in the dropdown. Lucento never converts between currencies; each one has its own totals.', target: 'setup-currency-next', done: (s) => ['onb-sync', 'onb-done', 'home'].includes(s.screen) },
       { title: 'Decide on sync', body: 'Optional. “Not now” keeps everything on this phone; you can connect later in Settings.', target: 'setup-sync-skip', done: (s) => ['onb-done', 'home'].includes(s.screen) },
       { title: 'Finish', body: 'A short guided setup follows in the app: your accounts, any cards or loans, two budget amounts, a goal and first transactions.', target: 'setup-finish', done: (s) => s.onboarded },
     ],
@@ -311,7 +320,7 @@ export const STORIES: Record<string, Story> = {
       { title: 'Open Wallets in the dock', body: 'Every account in one place, with net worth as assets minus debts.', target: 'tab-wallets', done: (s) => ['wallets', 'wallet'].includes(s.screen) || s.moves.length > 0 },
       { title: 'Open Everyday bank', body: 'Each wallet has its balance, recent activity and actions.', target: 'wallet-bank', done: (s) => s.screen === 'wallet' || s.moves.length > 0 },
       { title: 'Tap Transfer', body: 'Transfers use two linked records, so the money is never counted twice.', target: 'transfer', done: (s) => s.sheet === 'transfer' || s.moves.length > 0 },
-      { title: 'Choose Savings and enter 200', body: 'Both accounts must use the same currency: Lucento never converts.', target: 'transfer-to-savings', done: (s) => (s.transferTo === 'savings' && parseMoney(s.transferText) !== null) || s.moves.length > 0 },
+      { title: 'Choose Savings and enter 200', body: 'Pick Savings in the dropdown, then enter 200. Both accounts must use the same currency: Lucento never converts.', target: 'transfer-to-savings', done: (s) => (s.transferTo === 'savings' && parseMoney(s.transferText) !== null) || s.moves.length > 0 },
       { title: 'Save the transfer', body: 'One atomic save writes both sides.', target: 'transfer-save', done: (s) => s.moves.length > 0 },
     ],
     finale: 'Everyday bank went down by $200, Savings went up by $200 — and your net worth and your budget’s Spent didn’t change.',
@@ -443,7 +452,7 @@ function home(s: State): string {
   return `${header(s)}
   <div class="ls-scroll">
     <div class="ls-budget-wrap">
-      <span class="ls-pill">${icon(P.list, 16)}${TODAY.label} ▾</span>
+      <label class="ls-field ls-month"><span class="ls-sr">Month</span><select data-select="month" aria-label="Month"><option value="2026-10" selected>${TODAY.label}</option></select></label>
       <img class="ls-mascot" src="${ART}${mascotFor(p.pace)}.webp" alt="Lucento, ${p.pace === 'ahead' ? 'gently concerned' : 'cheering you on'}" width="96" height="96" />
       <button type="button" class="ls-budget ls-pace-${p.pace}" data-action="budget-card" aria-label="Monthly budget: ${p.used}% used of ${fmt(TOTAL)}. Open budget">
         <span class="ls-torch" aria-hidden="true"></span>
@@ -475,7 +484,7 @@ function home(s: State): string {
           <button type="button" data-action="open-goals">${icon(P.savings)}Goals</button>
           <button type="button" data-action="bell">${icon(P.list)}Scheduled</button>
           <button type="button" data-action="open-debts">${icon(P.card)}Debts</button>
-          <button type="button" data-action="soon" data-label="Insights">${icon(P.trend)}Insights</button>
+          <button type="button" data-action="open-insights">${icon(P.trend)}Insights</button>
         </div>
       </div>
     </div>
@@ -506,8 +515,9 @@ function composer(s: State): string {
        ${rows.map((r, i) => rowCard(r, i)).join('')}`
     : `<div class="ls-empty"><img src="${ART}mascot_thriving_thinking.webp" alt="" width="64" height="64" /><b>Describe what happened</b><small>Write several at once — each becomes a row to check before saving.</small>
        <button type="button" class="ls-example" data-action="example">${EXAMPLE}</button></div>`;
+  const wallets = WALLETS.filter((w) => w.id === 'bank' || w.id === 'cash');
   return `${topbar('Add transactions')}
-  <div class="ls-walletbar"><small>INTO</small><span class="ls-wpill is-on">${icon(P.check, 14)}Everyday bank</span><span class="ls-wpill">Cash</span></div>
+  <div class="ls-walletbar"><label class="ls-field"><span>Into</span><select data-select="into" aria-label="Wallet for these transactions">${wallets.map((w) => `<option value="${w.id}" ${w.id === s.intoWallet ? 'selected' : ''}>${w.name}</option>`).join('')}</select></label></div>
   <div class="ls-scroll ls-convo">${convo}</div>
   ${s.sent && rows.length ? `<div class="ls-savebar"><small>${rows.length} expenses · ${signed(-total)}</small><button type="button" class="ls-primary" data-action="save-rows" ${ready ? '' : 'disabled'}>${ready ? `Save ${rows.length}` : 'Fix highlighted to save'}</button></div>` : ''}
   <form class="ls-input" data-form="composer">
@@ -633,6 +643,30 @@ function goals(s: State): string {
   </div>`;
 }
 
+function insights(s: State): string {
+  const p = plan(s);
+  const income = s.txs.filter((t) => t.income).reduce((a, t) => a + t.amount, 0);
+  const flowMax = Math.max(income, p.spent, 1);
+  const parts = WALLETS.map((w) => ({ name: w.name, amount: balance(s, w.id) }));
+  const weight = parts.reduce((a, part) => a + Math.abs(part.amount), 0) || 1;
+  const meter = (label: string, amount: number, share: number): string =>
+    `<div class="ls-meter"><span>${label}</span><b>${signed(amount, amount > 0)}</b><span class="ls-minibar" aria-hidden="true"><span style="width:${Math.max(4, Math.round(share))}%"></span></span></div>`;
+  return `${topbar('Insights')}
+  <div class="ls-scroll">
+    <div class="ls-card ls-wide ls-pad">
+      <b>Income and spending · ${TODAY.month}</b>
+      ${meter('Income', income, (income / flowMax) * 100)}
+      ${meter('Spending', -p.spent, (p.spent / flowMax) * 100)}
+      <small>Net flow ${signed(p.net, true)} · money in minus money out</small>
+    </div>
+    <div class="ls-card ls-wide ls-pad">
+      <b>What net worth is made of</b>
+      <small>Net worth ${fmt(netWorth(s))} · assets minus debts, never converted</small>
+      ${parts.map((part) => meter(part.name, part.amount, (Math.abs(part.amount) / weight) * 100)).join('')}
+    </div>
+  </div>`;
+}
+
 function settings(s: State): string {
   const sync = s.syncEmail
     ? `<div class="ls-sched"><span class="ls-tile">${icon(P.cloud, 18)}</span><span class="ls-grow"><b>${esc(s.syncEmail)}</b><small>${s.synced ? `Synced just now — ${s.synced} sent, 0 received` : 'Not synced yet'}</small></span></div>
@@ -667,7 +701,7 @@ function onboarding(s: State): string {
       return `<div class="ls-onb ls-left">
         <b class="ls-onb-title">What do you spend on?</b>
         <small>Choose your spending categories. Your budget is built from them.</small>
-        <div class="ls-chips">${PRESETS.map((p) => `<button type="button" class="ls-chip-btn ${s.picks.includes(p) ? 'is-on' : ''}" data-action="pick-${p}" aria-pressed="${s.picks.includes(p)}">${s.picks.includes(p) ? icon(P.check, 14) : ''}${p}</button>`).join('')}</div>
+        <label class="ls-field"><span>Spending categories</span><select data-select="picks" multiple size="6" aria-label="Spending categories">${PRESETS.map((p) => `<option value="${esc(p)}" ${s.picks.includes(p) ? 'selected' : ''}>${esc(p)}</option>`).join('')}</select></label>
         <span class="ls-grow"></span>
         <small>${s.picks.length} chosen</small>
         <button type="button" class="ls-primary" data-action="setup-cats-next" ${s.picks.length ? '' : 'disabled'}>Continue</button>
@@ -676,7 +710,7 @@ function onboarding(s: State): string {
       return `<div class="ls-onb ls-left">
         <b class="ls-onb-title">Your main currency</b>
         <small>Totals are kept per currency and never converted.</small>
-        <div class="ls-chips">${Object.keys(SYMBOLS).map((c) => `<button type="button" class="ls-chip-btn ${s.currency === c ? 'is-on' : ''}" data-action="currency-${c}" aria-pressed="${s.currency === c}">${SYMBOLS[c]} ${c}</button>`).join('')}</div>
+        <label class="ls-field"><span>Main currency</span><select data-select="currency" aria-label="Main currency">${Object.keys(SYMBOLS).map((c) => `<option value="${c}" ${s.currency === c ? 'selected' : ''}>${SYMBOLS[c]} ${c}</option>`).join('')}</select></label>
         <span class="ls-grow"></span>
         <button type="button" class="ls-primary" data-action="setup-currency-next">Continue</button>
       </div>`;
@@ -750,8 +784,7 @@ function sheet(s: State): string {
     const amount = parseMoney(s.transferText);
     const ok = s.transferTo !== null && amount !== null && amount <= balance(s, 'bank');
     return wrap('Transfer', `<b class="ls-sheet-title">Transfer from Everyday bank</b>
-      <small>To</small>
-      <div class="ls-chips">${['cash', 'savings'].map((id) => `<button type="button" class="ls-chip-btn ${s.transferTo === id ? 'is-on' : ''}" data-action="transfer-to-${id}" aria-pressed="${s.transferTo === id}">${WALLETS.find((w) => w.id === id)?.name}</button>`).join('')}</div>
+      <label class="ls-field"><span>To</span><select data-select="transfer-to" aria-label="Transfer to"><option value="" ${s.transferTo ? '' : 'selected'}>Choose a wallet</option>${['cash', 'savings'].map((id) => `<option value="${id}" ${s.transferTo === id ? 'selected' : ''}>${WALLETS.find((w) => w.id === id)?.name}</option>`).join('')}</select></label>
       <label class="ls-field"><span>Amount</span><input data-input="transfer" inputmode="decimal" value="${esc(s.transferText)}" placeholder="0.00" /></label>
       ${s.transferText ? '' : '<button type="button" class="ls-example ls-small" data-action="transfer-example">Use 200</button>'}
       <button type="button" class="ls-primary" data-action="transfer-save" ${ok ? '' : 'disabled'}>Save transfer</button>`);
@@ -759,10 +792,10 @@ function sheet(s: State): string {
   if (sh === 'goal-add') {
     const ok = parseMoney(s.goalText) !== null;
     return wrap('Add money', `<b class="ls-sheet-title">Japan trip</b>
-      <div class="ls-seg"><span class="is-on">Add money</span><span>Take out</span></div>
+      <label class="ls-field"><span>What to do</span><select data-select="goal-mode" aria-label="Add money or take it out"><option value="add" ${s.goalMode === 'add' ? 'selected' : ''}>Add money</option><option value="take" ${s.goalMode === 'take' ? 'selected' : ''}>Take out</option></select></label>
       <label class="ls-field"><span>Amount</span><input data-input="goal" inputmode="decimal" value="${esc(s.goalText)}" placeholder="0.00" /></label>
       ${s.goalText ? '' : '<button type="button" class="ls-example ls-small" data-action="goal-example">Use 100</button>'}
-      <button type="button" class="ls-primary" data-action="goal-save" ${ok ? '' : 'disabled'}>Add to goal</button>`);
+      <button type="button" class="ls-primary" data-action="goal-save" ${ok ? '' : 'disabled'}>${s.goalMode === 'take' ? 'Take out of goal' : 'Add to goal'}</button>`);
   }
   if (sh === 'consent') {
     return `<div class="ls-scrim" data-action="close-sheet"></div><div class="ls-dialog" role="alertdialog" aria-label="Send messages to Gemini?">
@@ -853,6 +886,7 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
       : s.screen === 'wallet' ? walletDetail(s)
       : s.screen === 'debts' ? debts(s)
       : s.screen === 'goals' ? goals(s)
+      : s.screen === 'insights' ? insights(s)
       : s.screen === 'settings' ? settings(s)
       : onboarding(s);
     // Sheets and dialogs sit over the whole screen, dock included, as on the phone.
@@ -933,7 +967,7 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
     else if (action === 'example') s.draft = EXAMPLE;
     else if (action === 'save-rows') {
       if (s.rows.length && s.rows.every((r) => r.amount !== null)) {
-        s.rows.forEach((r, i) => s.txs.push({ id: 101 + s.saved * 10 + i, desc: r.desc, amount: r.amount as number, cat: r.cat, date: 'Oct 20', wallet: 'bank' }));
+        s.rows.forEach((r, i) => s.txs.push({ id: 101 + s.saved * 10 + i, desc: r.desc, amount: r.amount as number, cat: r.cat, date: 'Oct 20', wallet: s.intoWallet }));
         s.saved += s.rows.length;
         toast(`${s.rows.length} ${s.rows.length === 1 ? 'transaction' : 'transactions'} saved`);
         s.rows = [];
@@ -966,15 +1000,23 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
       }
     } else if (action === 'open-debts') go('debts');
     else if (action === 'open-goals') go('goals');
+    else if (action === 'open-insights') go('insights');
     else if (action === 'goal-add') {
       s.goalText = '';
+      s.goalMode = 'add';
       s.sheet = 'goal-add';
     } else if (action === 'goal-example') s.goalText = '100';
     else if (action === 'goal-save') {
       const amount = parseMoney(s.goalText);
       if (amount !== null) {
-        s.goalSaved += amount;
-        toast(`Added ${fmt(amount)} to Japan trip`);
+        if (s.goalMode === 'take') {
+          const taken = Math.min(amount, s.goalSaved);
+          s.goalSaved -= taken;
+          toast(`Took ${fmt(taken)} out of Japan trip`);
+        } else {
+          s.goalSaved += amount;
+          toast(`Added ${fmt(amount)} to Japan trip`);
+        }
         s.sheet = null;
       }
     } else if (action === 'profile') s.sheet = 'profile';
@@ -1074,11 +1116,20 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
   });
   screenEl.addEventListener('change', (e) => {
     const el = e.target as HTMLSelectElement;
-    if (el.dataset.select === 'row-cat') {
+    const select = el.dataset.select;
+    if (select === 'row-cat') {
       const row = state.rows[Number(el.dataset.row)];
       if (row) row.cat = el.value || null;
       render(`#${el.id}`);
+      return;
     }
+    if (select === 'into') state.intoWallet = el.value;
+    else if (select === 'currency') state.currency = el.value;
+    else if (select === 'transfer-to') state.transferTo = el.value || null;
+    else if (select === 'goal-mode') state.goalMode = el.value === 'take' ? 'take' : 'add';
+    else if (select === 'picks') state.picks = [...el.selectedOptions].map((option) => option.value);
+    else return;
+    render(`[data-select="${select}"]`);
   });
 
   function choose(story: string, scroll = false): void {
@@ -1126,4 +1177,28 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
     const story = fromHash();
     if (story) choose(story, true);
   });
+}
+
+export interface PosterSlide {
+  id: string;
+  label: string;
+  html: string;
+}
+
+/** Static screens for the homepage reel. Same markup and example records as the interactive demo. */
+export function posterSlides(): PosterSlide[] {
+  const s = fresh('budget');
+  symbol = SYMBOLS[s.currency] ?? '$';
+  const frame = (screen: Screen, label: string, body: string): PosterSlide => {
+    s.screen = screen;
+    return { id: screen, label, html: `${statusBar}<div class="ls-body">${body}</div>${dock(s)}` };
+  };
+  return [
+    frame('home', 'Dashboard', home(s)),
+    frame('budget', 'Budgets', budget(s)),
+    frame('wallet', 'Everyday bank', walletDetail(s)),
+    frame('goals', 'Goals', goals(s)),
+    frame('wallets', 'Wallets', wallets(s)),
+    frame('insights', 'Insights', insights(s)),
+  ];
 }

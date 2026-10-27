@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Mascot from '../components/Mascot.astro';
-import PaceCalculator from '../components/PaceCalculator.astro';
+import ScreenReel from '../components/ScreenReel.astro';
 import { guides } from '../data/guides';
 import { faq, limitations, realLife } from '../data/site';
 
@@ -52,46 +51,7 @@ const also = [
       <a class="btn" href="/demo">Try the demo</a>
     </div>
 
-    <figure class="poster">
-      <div class="poster-card">
-        <Mascot
-          pose="greeting"
-          size="7.25rem"
-          eager
-          alt="Lucento mascot concept: a golden orb with a hair crest and a bright crystal torch, the pose the app uses when spending is in step with the month."
-        />
-        <p class="poster-month">October 2026</p>
-        <p class="poster-name">Monthly budget</p>
-        <p class="poster-figure"><b>63%</b> of $1,600 used</p>
-        <div class="poster-bars" aria-hidden="true">
-          <span class="track"><span class="fill used" style="width: 63%"></span></span>
-          <span class="track"><span class="fill month" style="width: 64%"></span></span>
-        </div>
-        <p class="poster-keys"><span>63% used</span><span>64% of the month</span></p>
-        <dl class="poster-stats">
-          <div>
-            <dt>Spent</dt>
-            <dd>$1,000.00</dd>
-          </div>
-          <div>
-            <dt>Remaining</dt>
-            <dd>$600.00</dd>
-          </div>
-          <div>
-            <dt>Days left</dt>
-            <dd>12</dd>
-          </div>
-        </dl>
-        <p class="poster-advice">
-          <b>Spending in step with the month</b>
-          <span>About $50.00 a day keeps you within budget</span>
-        </p>
-      </div>
-      <figcaption>
-        The app’s own comparison, with example numbers: day 20 of 31. Not your records. Lucento never converts currencies.
-        <a href="#your-numbers">Use your own numbers</a>
-      </figcaption>
-    </figure>
+    <ScreenReel />
   </section>
 
   <section class="band" aria-labelledby="sentence-title">
@@ -166,8 +126,6 @@ const also = [
     </div>
     <p class="note">Insights show income, spending, and what net worth is made of, with the figures beside every chart.</p>
   </section>
-
-  <PaceCalculator />
 
   <section class="block trust" aria-labelledby="trust-title">
     <h2 id="trust-title">Before you rely on it</h2>
@@ -316,144 +274,6 @@ const also = [
 
   .open .btn {
     margin-top: 1.35rem;
-  }
-
-  .poster {
-    margin: 0;
-  }
-
-  .poster-card {
-    position: relative;
-    padding: 1.35rem 1.25rem 1.15rem;
-    border: 1px solid color-mix(in srgb, var(--positive) 28%, var(--border-default));
-    border-radius: 1.75rem;
-    background: color-mix(in srgb, var(--positive-container) 92%, var(--surface));
-    font-family: 'Plus Jakarta Sans', var(--font-sans);
-  }
-
-  .poster-card :global(.mascot) {
-    position: absolute;
-    top: -1.65rem;
-    right: 0.35rem;
-  }
-
-  .poster-month,
-  .poster-name {
-    margin: 0;
-  }
-
-  .poster-month {
-    font-size: 0.8125rem;
-    font-weight: 700;
-    color: var(--on-surface-variant);
-  }
-
-  .poster-name {
-    margin-top: 0.85rem;
-    font-size: 1.05rem;
-    font-weight: 700;
-  }
-
-  .poster-figure {
-    margin: 0.15rem 6.5rem 0.85rem 0;
-    font-size: 1.05rem;
-    font-weight: 650;
-    letter-spacing: -0.02em;
-  }
-
-  .poster-figure b {
-    font-size: clamp(2.6rem, 4vw, 3.4rem);
-    font-weight: 800;
-    letter-spacing: -0.045em;
-    line-height: 0.95;
-  }
-
-  .poster-bars {
-    display: grid;
-    gap: 0.45rem;
-  }
-
-  .track {
-    display: block;
-    height: 1rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--surface) 55%, transparent);
-    overflow: hidden;
-  }
-
-  .fill {
-    display: block;
-    height: 100%;
-    border-radius: inherit;
-  }
-
-  .fill.used {
-    background: var(--success);
-  }
-
-  .fill.month {
-    background: color-mix(in srgb, var(--primary) 62%, var(--surface));
-  }
-
-  .poster-keys {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    margin: 0.4rem 0 0;
-    font-size: 0.8125rem;
-    font-weight: 700;
-  }
-
-  .poster-stats {
-    display: grid;
-    grid-template-columns: 1.2fr 1.15fr 0.7fr;
-    margin: 0.95rem 0 0;
-  }
-
-  .poster-stats div {
-    padding-left: 0.75rem;
-    border-left: 1px solid color-mix(in srgb, var(--on-surface) 16%, transparent);
-  }
-
-  .poster-stats div:first-child {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .poster-stats dt,
-  .poster-stats dd {
-    margin: 0;
-  }
-
-  .poster-stats dd {
-    font-size: 1.2rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .poster-stats dt {
-    color: var(--on-surface-variant);
-    font-size: 0.75rem;
-    font-weight: 650;
-  }
-
-  .poster-advice {
-    display: grid;
-    gap: 0.1rem;
-    margin: 0.95rem 0 0;
-    padding-top: 0.8rem;
-    border-top: 1px solid color-mix(in srgb, var(--on-surface) 12%, transparent);
-  }
-
-  .poster-advice b {
-    font-size: 0.95rem;
-  }
-
-  .poster-advice span {
-    color: var(--positive);
-    font-size: 0.875rem;
-    font-weight: 650;
   }
 
   figcaption,
@@ -752,10 +572,6 @@ const also = [
 
     h1 {
       max-width: 12ch;
-    }
-
-    .poster {
-      max-width: 28rem;
     }
 
     .pair,
