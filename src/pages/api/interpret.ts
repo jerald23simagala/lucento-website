@@ -139,7 +139,10 @@ export const POST: APIRoute = async ({ request }) => {
     headers: { apikey: publishableKey, Authorization: auth, 'Content-Type': 'application/json' },
     body: '{}',
   });
-  if (!quota.ok) return json(502, { error: 'quota_unavailable' });
+  if (!quota.ok) {
+    console.error(`interpret: consume_ai_quota answered HTTP ${quota.status}`);
+    return json(502, { error: 'quota_unavailable' });
+  }
   const used = Number(await quota.json());
   if (!Number.isFinite(used)) return json(502, { error: 'quota_unavailable' });
   if (used > limit) return json(429, { error: 'daily_limit', limit });
@@ -161,10 +164,16 @@ export const POST: APIRoute = async ({ request }) => {
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: SYSTEM }] },
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: SCHEMA },
+      // No "thinking" pass: reading a short note doesn't need it, and on 2.5 models it can take longer than the app
+      // waits (15 s), which the app reports as "couldn't be reached".
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: SCHEMA, thinkingConfig: { thinkingBudget: 0 } },
     }),
   });
-  if (!gemini.ok) return json(502, { error: 'model_unavailable' });
+  if (!gemini.ok) {
+    // Status only — never the request or response body, which carry the user's note.
+    console.error(`interpret: Gemini answered HTTP ${gemini.status} for model ${model}`);
+    return json(502, { error: 'model_unavailable', status: gemini.status });
+  }
   const reply = (await gemini.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
   const text = reply.candidates?.[0]?.content?.parts?.[0]?.text;
   let items: unknown[] = [];
