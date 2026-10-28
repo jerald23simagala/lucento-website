@@ -11,13 +11,20 @@ import vercel from '@astrojs/vercel';
 const site = process.env.SITE_URL || undefined;
 
 /** Astro writes page HTML itself, so defer the stylesheets after the build. */
+/**
+ * @param {string} html
+ * @returns {string}
+ */
 function deferStylesheetLinks(html) {
-  return html.replace(/<noscript>[\s\S]*?<\/noscript>|<link rel="stylesheet" href="([^"]+)"(?![^>]*\bmedia=)[^>]*>/g, (match, href) => {
-    if (!href) return match;
+  return html.replace(/<noscript>[\s\S]*?<\/noscript>|<link rel="stylesheet" href="([^"]+)"(?![^>]*\bmedia=)[^>]*>/g, (/** @type {string} */ match, /** @type {string | undefined} */ href) => {
+    if (typeof href !== 'string' || href.length === 0) return match;
     return `<link rel="stylesheet" href="${href}" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="${href}"></noscript>`;
   });
 }
 
+/**
+ * @param {string} dir
+ */
 function rewriteHtmlTree(dir) {
   for (const name of readdirSync(dir)) {
     const path = join(dir, name);
@@ -36,6 +43,9 @@ function deferBuiltStyles() {
   return {
     name: 'defer-built-styles',
     hooks: {
+      /**
+       * @param {{ dir: URL }} params
+       */
       'astro:build:done': ({ dir }) => {
         const built = fileURLToPath(dir);
         rewriteHtmlTree(built);

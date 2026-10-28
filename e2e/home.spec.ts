@@ -241,7 +241,39 @@ test('hero, showcase, and demo phones share one frame', async ({ page }) => {
     expect(Math.abs(ratio(demo) - ratio(hero)), `${width} demo ratio`).toBeLessThan(0.02);
     expect(Math.abs(ratio(showcase) - ratio(hero)), `${width} showcase ratio`).toBeLessThan(0.02);
     if (width === 360) expect(sizes.fontSize).toBeGreaterThanOrEqual(12);
+    if (width === 1440) {
+      const minis = await page.locator('.phone.is-mini').evaluateAll((nodes) => nodes.map((node) => {
+        const rect = node.getBoundingClientRect();
+        const image = node.querySelector('img');
+        const fit = image ? getComputedStyle(image).objectFit : '';
+        return { width: rect.width, height: rect.height, fit };
+      }));
+      expect(minis.length).toBeGreaterThan(0);
+      for (const mini of minis) {
+        expect(Math.abs(mini.width / mini.height - 360 / 740), 'mini phone ratio').toBeLessThan(0.01);
+        expect(mini.fit).toBe('cover');
+      }
+    }
   }
+});
+
+test('desktop load barely shifts the hero', async ({ page }) => {
+  await page.addInitScript(() => {
+    const record = window as Window & { __cls?: number };
+    record.__cls = 0;
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        const shift = entry as PerformanceEntry & { value: number; hadRecentInput: boolean };
+        if (!shift.hadRecentInput) record.__cls = (record.__cls ?? 0) + shift.value;
+      }
+    }).observe({ type: 'layout-shift', buffered: true });
+  });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(300);
+  const cls = await page.evaluate(() => (window as Window & { __cls?: number }).__cls ?? 0);
+  expect(cls).toBeLessThan(0.05);
 });
 
 test('scrolling the showcase barely shifts layout', async ({ page }) => {

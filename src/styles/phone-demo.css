@@ -44,7 +44,7 @@
 .ld-screen { position: relative; width: 100%; height: 100%; overflow: hidden; display: flex; flex-direction: column; background: var(--background); color: var(--on-surface); font-family: 'Plus Jakarta Sans', var(--font-sans, sans-serif); font-size: max(12px, 3.6cqi); line-height: 1.35; }
 .ld-screen button, .ld-screen input, .ld-screen select { font: inherit; color: inherit; }
 .ld-screen b { font-weight: 700; }
-.ld-screen small { display: block; color: var(--on-surface-variant); font-size: 11.5px; }
+.ld-screen small { display: block; color: var(--on-surface-variant); font-size: 12px; }
 .ls-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .ls-status { display: flex; justify-content: space-between; padding: 12px 26px 4px; font-size: 12px; font-weight: 600; }
 .ls-body { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
@@ -53,9 +53,9 @@
 .ls-header { display: flex; align-items: center; gap: 6px; padding: 6px 14px 8px; }
 .ls-brand { flex: 1; display: inline-flex; align-items: center; gap: 6px; }
 .ls-word { font-weight: 700; font-size: 20px; letter-spacing: -0.02em; }
-.ls-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 9px; border-radius: 999px; background: var(--surface-container); font-size: 11.5px; font-weight: 600; }
+.ls-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 9px; border-radius: 999px; background: var(--surface-container); font-size: 12px; font-weight: 600; }
 .ls-icon-btn { position: relative; display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
-.ls-badge { position: absolute; top: 3px; right: 2px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: var(--primary); color: var(--on-primary); font-size: 10.5px; font-weight: 700; display: grid; place-items: center; }
+.ls-badge { position: absolute; top: 3px; right: 2px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: var(--primary); color: var(--on-primary); font-size: 12px; font-weight: 700; display: grid; place-items: center; }
 .ls-badge.is-overdue { background: var(--negative); color: var(--surface); }
 .ls-avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--primary-container); color: var(--on-primary-container); }
 .ls-pill { display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px; border-radius: 14px; border: 1px solid var(--border-default); background: var(--surface-container-lowest); font-weight: 600; }
@@ -73,12 +73,12 @@
 .ls-budget-figure b { font-size: 24px; letter-spacing: -0.02em; margin-right: 2px; font-variant-numeric: tabular-nums; }
 .ls-bar { position: relative; height: 15px; border-radius: 999px; background: var(--track); margin-bottom: 5px; }
 .ls-bar-fill { height: 100%; border-radius: 999px; display: flex; justify-content: flex-end; align-items: center; }
-.ls-bar-fill span { padding-right: 6px; font-size: 10.5px; font-weight: 700; color: #fff; }
+.ls-bar-fill span { padding-right: 6px; font-size: 12px; font-weight: 700; color: #fff; }
 .ls-bar-fill.is-used { background: var(--success); }
 .ls-pace-ahead .ls-bar-fill.is-used { background: var(--negative-indicator); }
 .ls-bar-fill.is-month { background: color-mix(in srgb, var(--primary) 55%, transparent); }
 .ls-bar-fill.is-month span { color: var(--midnight-navy); }
-.ls-bar-out { position: absolute; top: 0; font-size: 10.5px; font-weight: 700; }
+.ls-bar-out { position: absolute; top: 0; font-size: 12px; font-weight: 700; }
 .ls-stats { display: grid; grid-template-columns: 1.2fr 1.2fr 0.8fr; margin: 10px 0; }
 .ls-stats > span { padding: 0 4px; border-left: 1px solid var(--outline-variant); }
 .ls-stats > span:first-child { border-left: 0; padding-left: 0; }
@@ -95,11 +95,11 @@
 .is-neg, .is-red { color: var(--negative) !important; font-style: normal; }
 .is-primary { color: var(--primary); }
 .ls-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 6px; }
-.ls-links button { display: grid; justify-items: center; gap: 4px; padding: 8px 2px; border-radius: 14px; border: 1px solid var(--primary-container); background: color-mix(in srgb, var(--primary-container) 55%, var(--surface-container-lowest)); color: var(--primary); font-size: 11px; font-weight: 600; cursor: pointer; }
+.ls-links button { display: grid; justify-items: center; gap: 4px; padding: 8px 2px; border-radius: 14px; border: 1px solid var(--primary-container); background: color-mix(in srgb, var(--primary-container) 55%, var(--surface-container-lowest)); color: var(--primary); font-size: 12px; font-weight: 600; cursor: pointer; }
 .ls-sched { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-top: 1px solid var(--outline-variant); }
 .ls-card-title + .ls-sched { border-top: 0; }
 .ls-grow { flex: 1; min-width: 0; }
-.ls-due { text-align: right; font-size: 11.5px; }
+.ls-due { text-align: right; font-size: 12px; }
 .ls-due em { font-style: normal; font-weight: 600; }
 .ls-tile { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 12px; background: var(--surface-container); color: var(--on-surface-variant); }
 .ls-tone-green { background: var(--category-green-tile); color: var(--category-green-glyph); }
@@ -116,7 +116,7 @@
 /* dock */
 .ls-dock { position: relative; display: grid; grid-template-columns: 1fr 1fr 64px 1fr 1fr; align-items: end; margin: 0 10px 12px; padding: 6px 4px; border: 1px solid var(--border-default); border-radius: 24px; background: var(--surface-container-lowest); }
 .ls-tab { display: grid; justify-items: center; gap: 2px; padding: 4px 0; border: 0; background: transparent; color: var(--on-surface-variant); cursor: pointer; min-height: 48px; }
-.ls-tab small { font-size: 10.5px; }
+.ls-tab small { font-size: 12px; }
 .ls-tab.is-on { color: var(--primary); }
 .ls-tab.is-on svg { background: var(--primary-container); border-radius: 12px; padding: 2px 10px; box-sizing: content-box; }
 .ls-plus { justify-self: center; margin-top: -30px; width: 58px; height: 58px; border: 0; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; cursor: pointer; box-shadow: 0 8px 18px -6px color-mix(in srgb, var(--primary) 70%, transparent); }

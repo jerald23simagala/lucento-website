@@ -139,7 +139,7 @@ svg {
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  margin: 12px 0 28px;
+  margin: 12px 0 clamp(28px, 4vw, 48px);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -220,24 +220,50 @@ svg {
   align-items: center;
 }
 
-.lx-front,
-.lx-hero-stage {
+.lx-phones {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+}
+
+.lx-back {
+  flex: 0 0 auto;
+  width: auto;
+  margin-right: -48px;
+}
+
+.lx-front {
+  flex: 0 0 auto;
   width: var(--phone-width);
   max-width: 100%;
 }
 
-.phone,
-.lx-front .phone {
+.phone {
   position: relative;
   width: var(--phone-width);
   max-width: 100%;
-  height: calc(var(--phone-width) * 740 / 360);
+  height: auto;
+  aspect-ratio: 360 / 740;
   overflow: hidden;
+}
+
+.lx-front .phone {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 360 / 740;
 }
 
 .lx-back .phone {
   width: calc(var(--phone-width) * 0.62);
-  height: calc(var(--phone-width) * 0.62 * 740 / 360);
+  height: auto;
+  aspect-ratio: 360 / 740;
+}
+
+.phone.is-mini {
+  width: min(168px, 42vw);
+  height: auto;
+  aspect-ratio: 360 / 740;
 }
 
 .phone-screen {
