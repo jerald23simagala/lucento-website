@@ -1,5 +1,12 @@
 @import './tokens.css';
 
+/* App UI face. Kept here, not in the deferred demo sheet, so the hero phone can
+   swap to it without that sheet delaying first paint. swap keeps text visible. */
+@font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_semibold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Plus Jakarta Sans'; src: url('/demo/fonts/plus_jakarta_sans_bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+
 /* Marketing face is Manrope (Plus Jakarta Sans is reserved for the app UI). */
 :root {
   --font-sans: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
