@@ -1,0 +1,27 @@
+---
+interface Props {
+  day: number;
+  night?: boolean;
+  variant?: 'rule' | 'month';
+}
+
+const { day, night = false, variant = 'rule' } = Astro.props;
+const marks = Array.from({ length: 31 }, (_, index) => {
+  const date = index + 1;
+  const today = date === day;
+  const past = date < day;
+  if (variant === 'month') {
+    const height = today ? 34 : date === 1 || date === 31 ? 20 : 12;
+    return { today, past, height, width: today ? 4 : 2 };
+  }
+  return { today, past, height: today ? 16 : 8, width: today ? 3 : 1 };
+});
+---
+
+<div class:list={['lx-marks', night && 'is-night', variant === 'month' && 'is-month']} aria-hidden="true">
+  {
+    marks.map((mark) => (
+      <span class:list={[mark.today && 'is-today', mark.past && 'is-past']} style={`width:${mark.width}px;height:${mark.height}px`} />
+    ))
+  }
+</div>

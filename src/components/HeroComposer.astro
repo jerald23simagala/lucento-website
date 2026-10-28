@@ -1,0 +1,137 @@
+---
+import Glyph from './Glyph.astro';
+import PhoneFrame from './PhoneFrame.astro';
+import { composerExamples, icons } from '../data/home';
+---
+
+<PhoneFrame class="is-live">
+  <div class="cmp" data-composer role="region" aria-label="Interactive preview of the Lucento composer">
+    <img class="cmp-chrome" src="/chrome/status-bar.webp" alt="" width="540" height="40" />
+
+    <div class="cmp-static">
+      <p class="cmp-static-title">Add transactions</p>
+      <p class="cmp-static-lead">“Lunch 250, groceries 800, salary 35000”</p>
+      <p class="cmp-found">Found 3 transactions. Review anything that looks wrong.</p>
+      <ul class="cmp-rows">
+        <li><span>Lunch</span><b>−$250.00</b></li>
+        <li><span>Groceries</span><b>−$800.00</b></li>
+        <li><span>Salary</span><b class="is-pos">+$35,000.00</b></li>
+      </ul>
+      <p class="cmp-static-note">Fictional preview. Nothing is saved or sent. With JavaScript you can try the other messages on this phone; the full simulation is below.</p>
+    </div>
+
+    <div class="cmp-live">
+      <div class="cmp-head">
+        <button type="button" data-reset aria-label="Back to the suggestions">
+          <Glyph d={icons.back} stroke="#3563F5" size={18} />
+        </button>
+        <p>Add transactions</p>
+      </div>
+
+      <div class="cmp-view" data-view="empty">
+        <div class="cmp-intro">
+          <img src="/mascot/composer-160.webp" alt="" width="40" height="40" />
+          <div>
+            <p>Describe what happened</p>
+            <p>Write several at once — each becomes a row to check before saving.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cmp-wallets" role="radiogroup" aria-label="Wallet these transactions go into">
+        <span>INTO</span>
+        <button type="button" role="radio" data-wallet="bank" aria-checked="true" tabindex="0">Everyday bank <b>★</b></button>
+        <button type="button" role="radio" data-wallet="cash" aria-checked="false" tabindex="-1">Cash</button>
+        <button type="button" role="radio" data-wallet="visa" aria-checked="false" tabindex="-1">Visa card</button>
+      </div>
+
+      <div class="cmp-scroll">
+        <div class="cmp-view" data-view="empty">
+          <p class="cmp-try">TRY</p>
+          {
+            composerExamples.map((example) => (
+              <button type="button" class="cmp-sugg" data-pick={example.id}>“{example.message}”</button>
+            ))
+          }
+          <p class="cmp-hint">
+            Typed in this preview, on this phone — nothing you type is sent. In the app, speech only requests offline
+            recognition, which isn’t guaranteed.
+          </p>
+        </div>
+
+        {
+          composerExamples.map((example) => (
+            <div
+              class="cmp-view"
+              data-view={example.id}
+              data-example={example.id}
+              data-found={example.found}
+              data-ready={example.ready}
+              data-totals={example.totals}
+              data-save-label={example.save}
+              data-saved={example.saved}
+              hidden
+            >
+              <p class="cmp-bubble">{example.message}</p>
+              <p class="cmp-edit"><button type="button" data-reset>Edit message</button></p>
+              <p class="cmp-found">{example.found}</p>
+              <ul class="cmp-rows">
+                {example.rows.map((row) => (
+                  <li>
+                    <span class="cmp-tile" style={`background:${row.tile}`}>
+                      <Glyph d={icons[row.icon]} stroke={row.glyph} size={16} />
+                    </span>
+                    <span class="cmp-row-copy">
+                      <span>{row.name}</span>
+                      <span>{row.meta}</span>
+                    </span>
+                    <b style={`color:${row.amountColor}`}>{row.amount}</b>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+
+        {
+          composerExamples.map((example) => (
+            <div class="cmp-view" data-view={`saved-${example.id}`} hidden>
+              <p class="cmp-bubble">{example.message}</p>
+              <p class="cmp-saved">{example.saved}</p>
+              <p class="cmp-edit"><button type="button" data-reset>Try another</button></p>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="cmp-save" data-savebar hidden>
+        <p class="cmp-ready"></p>
+        <p class="cmp-totals"></p>
+        <button type="button" class="lx-btn" data-save>Save</button>
+      </div>
+
+      <div class="cmp-input" aria-hidden="true">
+        <span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3563F5" stroke-width="1.8"><path d="M4 7V4h3M17 4h3v3M20 17v3h-3M7 20H4v-3M8 9h8M8 12h8M8 15h5"></path></svg>
+        </span>
+        <span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3563F5" stroke-width="1.8"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3"></path></svg>
+        </span>
+        <span><i></i>Lunch 250, groceries…</span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#7A869F"><path d="M3 20l18-8L3 4v6l12 2-12 2z"></path></svg>
+        </span>
+      </div>
+      <img class="cmp-chrome" src="/chrome/gesture-bar.webp" alt="" width="540" height="60" />
+    </div>
+    <p class="visually-hidden" data-composer-live aria-live="polite"></p>
+  </div>
+</PhoneFrame>
+
+<script>
+  import { mountComposer } from '../scripts/composer';
+
+  document.querySelectorAll<HTMLElement>('[data-composer]').forEach((root) => {
+    mountComposer(root);
+  });
+</script>

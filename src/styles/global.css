@@ -1,11 +1,12 @@
 @import './tokens.css';
 
-/* Marketing face is Manrope (Plus Jakarta Sans is reserved for the app UI). */
+/* Marketing face is Manrope. The headline paints first in Manrope Fallback
+   (critical.css, size-adjust). Plus Jakarta Sans is only the in-phone UI. */
 :root {
-  --font-sans: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Manrope Variable', 'Manrope Fallback', 'Liberation Sans', Arial, sans-serif;
   --measure: 38rem;
-  --page-max: 72rem;
-  --page-gutter: clamp(var(--space-lg), 5vw, var(--space-xxxl));
+  --page-max: 77.5rem;
+  --page-gutter: clamp(20px, 5vw, 64px);
 }
 
 *,

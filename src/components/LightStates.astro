@@ -1,0 +1,61 @@
+---
+import { lightTiers } from '../data/home';
+---
+
+<div class="lx-light-grid">
+  <div class="lx-light-copy">
+    <h2 class="lx-title" id="h-light">Its light is <span class="lx-sun">your month.</span></h2>
+    <p>
+      On the Budget card, Lucento’s torch follows your month. On pace, it shines; when money gets tight, it dims and
+      Lucento looks a little worn — never scolded. A circumstance, not a judgement.
+    </p>
+    <div role="radiogroup" aria-label="Budget states">
+      {
+        lightTiers.map((tier, index) => (
+          <label class="lx-tier">
+            <input type="radio" name="lucento-light" value={tier.id} checked={index === 0} />
+            <img src={`/mascot/${tier.image}-96.webp`} alt="" width="44" height="44" loading="lazy" decoding="async" fetchpriority="low" />
+            <span>
+              <span>{tier.name}</span>
+              <span>{tier.when}</span>
+            </span>
+            <span class="lx-glow">Light {tier.glow}%</span>
+            <span class="visually-hidden">
+              Lucento in the {tier.name.toLowerCase()} state, torch crystal at {tier.glow}% brightness. {tier.line}
+            </span>
+          </label>
+        ))
+      }
+    </div>
+  </div>
+
+  <figure class="lx-light-figure">
+    <div class="lx-tier-frame">
+      {
+        lightTiers.map((tier) => (
+          <img
+            class={`lx-tier-shot is-${tier.id}`}
+            src={`/mascot/${tier.image}.webp`}
+            alt=""
+            width="900"
+            height="900"
+            loading="lazy"
+            decoding="async"
+            fetchpriority="low"
+          />
+        ))
+      }
+    </div>
+    <figcaption>
+      {
+        lightTiers.map((tier) => (
+          <span class={`lx-tier-cap is-${tier.id}`}>
+            <span>Budget · {tier.name}</span>
+            <span>{tier.line}</span>
+            <span aria-hidden="true"><span style={`width:${tier.glow}%`}></span></span>
+          </span>
+        ))
+      }
+    </figcaption>
+  </figure>
+</div>

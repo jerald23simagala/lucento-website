@@ -1,5 +1,6 @@
 ---
-import '@fontsource-variable/manrope';
+import manropeLatin from '@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2?url';
+import criticalCss from '../styles/critical.css?raw';
 import '../styles/global.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -8,15 +9,17 @@ interface Props {
   title: string;
   description: string;
   noindex?: boolean;
+  /** Lock the page to the light palette. The homepage does this so its night band stays intentional. */
+  theme?: 'light';
 }
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, theme } = Astro.props;
 // Only emit a canonical URL when the real site origin is configured (SITE_URL).
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme={theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,17 +27,53 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#FFFDF5" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#10182B" media="(prefers-color-scheme: dark)" />
+    {
+      theme === 'light' ? (
+        <meta name="theme-color" content="#FFFDF5" />
+      ) : (
+        <>
+          <meta name="theme-color" content="#FFFDF5" media="(prefers-color-scheme: light)" />
+          <meta name="theme-color" content="#10182B" media="(prefers-color-scheme: dark)" />
+        </>
+      )
+    }
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {canonical && <meta property="og:url" content={canonical} />}
+    <style is:inline set:html={criticalCss} />
+    <script is:inline define:vars={{ manropeLatin }}>
+      window.addEventListener('load', function () {
+        const face = document.createElement('style');
+        face.textContent =
+          "@font-face{font-family:'Manrope Variable';font-style:normal;font-display:swap;font-weight:200 800;src:url('" +
+          manropeLatin +
+          "') format('woff2-variations');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}";
+        document.head.appendChild(face);
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/demo/app-fonts.css';
+        document.head.appendChild(link);
+      });
+    </script>
+    <slot name="head" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     {Astro.site && <link rel="sitemap" href="/sitemap-index.xml" />}
   </head>
   <body>
+    <script is:inline>
+      window.addEventListener(
+        'error',
+        function (event) {
+          const target = event.target;
+          if (!target || target.tagName !== 'IMG' || !target.closest) return;
+          const frame = target.closest('picture') && target.closest('.phone-screen');
+          if (frame) frame.classList.add('is-missing');
+        },
+        true,
+      );
+    </script>
     <a class="skip-link" href="#main">Skip to content</a>
     <SiteHeader />
     <main id="main" tabindex="-1">

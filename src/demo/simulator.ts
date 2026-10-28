@@ -110,6 +110,8 @@ export interface State {
   bellOpen: boolean;
   sheet: Sheet;
   draft: string;
+  /** Wallet the unsaved composer rows will be saved into. */
+  entryWallet: string;
   sent: string | null;
   rows: Row[];
   saved: number;
@@ -162,6 +164,7 @@ function fresh(story: string): State {
     bellOpen: false,
     sheet: null,
     draft: '',
+    entryWallet: 'bank',
     sent: null,
     rows: [],
     saved: 0,
@@ -258,7 +261,18 @@ export const STORIES: Record<string, Story> = {
       { title: 'Tap + to open the composer', body: 'The blue + in the middle of the dock is the one place new transactions start.', target: 'open-composer', done: (s) => s.screen === 'composer' || s.saved > 0 },
       { title: 'Write what happened', body: `Type your own, or tap the example: “${EXAMPLE}”.`, target: 'example', done: (s) => s.draft.trim() !== '' || s.sent !== null || s.saved > 0 },
       { title: 'Send it', body: 'Lucento reads it on the phone and turns it into rows. Nothing is saved yet.', target: 'send', done: (s) => s.sent !== null || s.saved > 0 },
-      { title: 'Check the rows', body: 'Every row is yours to correct. Give “Parking” a category: pick Transport.', target: 'row-cat', done: (s) => s.saved > 0 || (s.sent !== null && s.rows.every((r) => r.cat !== null)) },
+      {
+        title: 'Check the rows',
+        body: 'Every row is yours to correct. Give “Parking” a category: pick Transport.',
+        target: 'row-cat',
+        // A guessed category is not the same as a review. Stay on this step after sending so it isn't skipped.
+        done: (s) => {
+          if (s.saved > 0) return true;
+          if (s.sent === null) return false;
+          const parking = s.rows.find((r) => /park/i.test(r.desc));
+          return parking ? parking.cat === 'transport' : false;
+        },
+      },
       { title: 'Save them together', body: 'All rows are written in one go, so a retry can never save them twice.', target: 'save-rows', done: (s) => s.saved > 0 },
     ],
     finale: 'Home updated at once: Spent, the % used, Remaining and the daily allowance all include what you just added.',
@@ -336,7 +350,7 @@ export const STORIES: Record<string, Story> = {
   sync: {
     kicker: 'Cloud sync',
     title: 'Back up and sync your phones',
-    text: 'Optional: keep your data the same on every phone. Nothing leaves this one until you connect an account.',
+    text: 'Optional: keep your data the same on every phone. Nothing leaves this one unless you turn on sync or Gemini reading.',
     steps: [
       { title: 'Open Settings from your profile', body: 'Tap the round profile button, then Settings.', target: 'profile', done: (s) => s.sheet === 'profile' || onSettings(s) || s.syncEmail !== null || s.disconnected },
       { title: 'Tap Settings', body: 'Cloud sync is near the top.', target: 'open-settings', done: (s) => onSettings(s) || s.syncEmail !== null || s.disconnected },
@@ -416,7 +430,7 @@ function home(s: State): string {
     <div class="ls-budget-wrap">
       <span class="ls-pill">${icon(P.list, 16)}${TODAY.label} ▾</span>
       <img class="ls-mascot" src="${ART}${mascotFor(p.pace)}.webp" alt="Lucento, ${p.pace === 'ahead' ? 'gently concerned' : 'cheering you on'}" width="96" height="96" />
-      <button type="button" class="ls-budget ls-pace-${p.pace}" data-action="budget-card" aria-label="Monthly budget: ${p.used}% used of ${fmt(TOTAL)}. Open budget">
+      <button type="button" class="ls-budget ls-pace-${p.pace}" data-action="budget-card">
         <span class="ls-torch" aria-hidden="true"></span>
         <span class="ls-budget-title">Monthly budget ›</span>
         <span class="ls-budget-figure"><b>${p.used}%</b> of ${fmt(TOTAL)} used</span>
@@ -477,10 +491,19 @@ function composer(s: State): string {
        ${rows.map((r, i) => rowCard(r, i)).join('')}`
     : `<div class="ls-empty"><img src="${ART}mascot_thriving_thinking.webp" alt="" width="64" height="64" /><b>Describe what happened</b><small>Write several at once — each becomes a row to check before saving.</small>
        <button type="button" class="ls-example" data-action="example">${EXAMPLE}</button></div>`;
+  const into = [
+    { id: 'bank', name: 'Everyday bank', star: true },
+    { id: 'cash', name: 'Cash', star: false },
+    { id: 'visa', name: 'Visa card', star: false },
+  ];
+  const missing = rows.filter((r) => r.amount === null).length;
+  const saveLabel = !ready
+    ? missing === 1 ? 'Fix 1 highlighted to save' : `Fix ${missing} highlighted to save`
+    : rows.length === 1 ? 'Save 1 transaction' : `Save ${rows.length} transactions`;
   return `${topbar('Add transactions')}
-  <div class="ls-walletbar"><small>INTO</small><span class="ls-wpill is-on">${icon(P.check, 14)}Everyday bank</span><span class="ls-wpill">Cash</span></div>
+  <div class="ls-walletbar" role="radiogroup" aria-label="Wallet these transactions go into"><small>INTO</small>${into.map((w) => `<button type="button" class="ls-wpill${s.entryWallet === w.id ? ' is-on' : ''}" role="radio" aria-checked="${s.entryWallet === w.id}" tabindex="${s.entryWallet === w.id ? 0 : -1}" data-action="into-${w.id}">${s.entryWallet === w.id ? icon(P.check, 14) : ''}${w.name}${w.star ? ' ★' : ''}</button>`).join('')}</div>
   <div class="ls-scroll ls-convo">${convo}</div>
-  ${s.sent && rows.length ? `<div class="ls-savebar"><small>${rows.length} expenses · ${signed(-total)}</small><button type="button" class="ls-primary" data-action="save-rows" ${ready ? '' : 'disabled'}>${ready ? `Save ${rows.length}` : 'Fix highlighted to save'}</button></div>` : ''}
+  ${s.sent && rows.length ? `<div class="ls-savebar"><small>${rows.length} expenses · ${signed(-total)}</small><button type="button" class="ls-primary" data-action="save-rows" ${ready ? '' : 'disabled'}>${saveLabel}</button></div>` : ''}
   <form class="ls-input" data-form="composer">
     <label class="ls-sr" for="ls-text">Describe what happened</label>
     <input id="ls-text" data-input="draft" autocomplete="off" placeholder="e.g. Lunch 45, parking 15" value="${esc(s.draft)}" />
@@ -654,7 +677,7 @@ function onboarding(s: State): string {
     case 'onb-sync':
       return `<div class="ls-onb ls-left">
         <b class="ls-onb-title">Back up and sync?</b>
-        <small>Optional. Nothing leaves this phone unless you connect an account and keep sync on.</small>
+        <small>Optional. Nothing leaves this phone unless you turn on sync or Gemini reading.</small>
         <button type="button" class="ls-primary ls-google" data-action="soon" data-label="Connecting an account during setup">${icon(P.google, 18)}Continue with Google</button>
         <span class="ls-grow"></span>
         <button type="button" class="ls-text" data-action="setup-sync-skip">Not now — keep it on this phone</button>
@@ -895,9 +918,14 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
       go('composer');
     } else if (action === 'home') go('home');
     else if (action === 'example') s.draft = EXAMPLE;
+    else if (action.startsWith('into-')) {
+      s.entryWallet = action.slice(5);
+      render(`[data-action="into-${s.entryWallet}"]`);
+      return;
+    }
     else if (action === 'save-rows') {
       if (s.rows.length && s.rows.every((r) => r.amount !== null)) {
-        s.rows.forEach((r, i) => s.txs.push({ id: 101 + s.saved * 10 + i, desc: r.desc, amount: r.amount as number, cat: r.cat, date: 'Oct 20', wallet: 'bank' }));
+        s.rows.forEach((r, i) => s.txs.push({ id: 101 + s.saved * 10 + i, desc: r.desc, amount: r.amount as number, cat: r.cat, date: 'Oct 20', wallet: s.entryWallet }));
         s.saved += s.rows.length;
         toast(`${s.rows.length} ${s.rows.length === 1 ? 'transaction' : 'transactions'} saved`);
         s.rows = [];
@@ -1003,6 +1031,22 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
     render();
   }
 
+  screenEl.addEventListener('keydown', (e) => {
+    const current = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-action^="into-"]');
+    if (!current) return;
+    const items = [...screenEl.querySelectorAll<HTMLButtonElement>('[data-action^="into-"]')];
+    const index = items.indexOf(current);
+    if (index < 0) return;
+    let next = index;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (index + 1) % items.length;
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (index - 1 + items.length) % items.length;
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = items.length - 1;
+    else return;
+    e.preventDefault();
+    const choice = items[next];
+    if (choice?.dataset.action) act(choice.dataset.action, choice);
+  });
   screenEl.addEventListener('click', (e) => {
     const el = (e.target as HTMLElement).closest<HTMLElement>('[data-action]');
     if (!el || el.tagName === 'SELECT' || el.getAttribute('type') === 'submit') return;
