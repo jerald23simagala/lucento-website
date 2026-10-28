@@ -133,6 +133,7 @@ test.describe('app showcase', () => {
 
 test('hero composer reviews rows and saves explicitly', async ({ page }) => {
   await page.goto('/');
+  await expect(page.locator('.cmp-wallets').getByRole('radio')).toHaveText([/Everyday bank/, 'Cash', 'Visa card']);
   await page.getByRole('button', { name: /Lunch 250, groceries 800/ }).click();
   await expect(page.getByRole('button', { name: 'Save 3 transactions' })).toBeVisible();
   await expect(page.locator('[data-view="lunch"] li')).toHaveCount(3);
@@ -148,6 +149,7 @@ test('full demo still logs a day and stays quiet in the console', async ({ page 
   });
   await page.goto('/#try');
   await page.getByRole('button', { name: 'Add transaction' }).click();
+  await expect(page.locator('#try .ls-walletbar').getByRole('radio')).toHaveText([/Everyday bank/, 'Cash', 'Visa card']);
   await page.locator('#ls-text').fill('Lunch 45');
   await page.locator('#ls-text').press('Enter');
   await expect(page.locator('#try .ld-step.is-now')).toContainText('Check the rows');

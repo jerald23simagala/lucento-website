@@ -494,7 +494,7 @@ function composer(s: State): string {
   const into = [
     { id: 'bank', name: 'Everyday bank', star: true },
     { id: 'cash', name: 'Cash', star: false },
-    { id: 'savings', name: 'Savings', star: false },
+    { id: 'visa', name: 'Visa card', star: false },
   ];
   const missing = rows.filter((r) => r.amount === null).length;
   const saveLabel = !ready
