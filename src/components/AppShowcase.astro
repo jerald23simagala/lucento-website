@@ -2,7 +2,7 @@
 import PhoneShot from './PhoneShot.astro';
 import { showcaseScreens } from '../data/showcase';
 
-const sizes = '(min-width: 1100px) 300px, (min-width: 768px) 260px, 78vw';
+const sizes = '(min-width: 768px) 360px, calc(100vw - 40px)';
 ---
 
 <script is:inline>
@@ -53,7 +53,6 @@ const sizes = '(min-width: 1100px) 300px, (min-width: 768px) 260px, 78vw';
                     alt={screen.alt}
                     sizes={sizes}
                     fallback={`${screen.title}. ${screen.body}`}
-                    eager
                   />
                 </a>
                 <div class="lx-copy">
@@ -92,7 +91,7 @@ const sizes = '(min-width: 1100px) 300px, (min-width: 768px) 260px, 78vw';
       </div>
 
       <div class="lx-also">
-        <p>Also: savings goals, receipt scan and voice, debt payments split into principal and interest, CSV export, optional sync.</p>
+        <p>Also: insights, scheduled payments, a dark theme, and optional sync.</p>
         <a href="/how-to">Learn each one by doing it</a>
       </div>
     </div>

@@ -2,6 +2,7 @@
 // The interactive Lucento simulation (src/demo/simulator.ts): pick a story, follow the numbered steps, and use the
 // app on the phone. Everything runs in the browser with fictional data; nothing is saved or sent.
 import { STORIES } from '../demo/simulator';
+import PhoneFrame from './PhoneFrame.astro';
 import phoneDemoCss from '../styles/phone-demo.css?url';
 
 interface Props {
@@ -65,14 +66,13 @@ const first = STORIES[stories[0]];
     </div>
 
     <div class="ld-phone-wrap">
-      <div class="ld-phone">
-        <div class="ld-notch" aria-hidden="true"></div>
+      <PhoneFrame>
         <div class="ld-screen" data-sim="screen" role="region" aria-label="Lucento app simulation">
           <noscript>
             <p class="ld-noscript">This simulation needs JavaScript. The same tasks are written out in the <a href="/how-to">guides</a>.</p>
           </noscript>
         </div>
-      </div>
+      </PhoneFrame>
       <p class="ld-note">Fictional data · simulation of the Android app</p>
     </div>
   </div>

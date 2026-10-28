@@ -1,0 +1,31 @@
+---
+import PhoneShot from './PhoneShot.astro';
+import { featureCards } from '../data/features';
+
+const sizes = '168px';
+---
+
+<section class="lx-wrap lx-section lx-features" aria-labelledby="h-features">
+  <h2 class="lx-title" id="h-features">More of what it already does.</h2>
+  <p class="lx-lede">
+    Real screens from this Android build, filled with demo data. Nothing here is a bank connection.
+  </p>
+  <ul class="lx-feature-row">
+    {
+      featureCards.map((card) => (
+        <li>
+          <PhoneShot
+            id={card.id}
+            source={card.file}
+            alt={card.alt}
+            sizes={sizes}
+            fallback={card.title}
+            frameClass="is-mini"
+          />
+          <h3>{card.title}</h3>
+          <p>{card.body}</p>
+        </li>
+      ))
+    }
+  </ul>
+</section>

@@ -14,7 +14,7 @@ import { lightTiers } from '../data/home';
         lightTiers.map((tier, index) => (
           <label class="lx-tier">
             <input type="radio" name="lucento-light" value={tier.id} checked={index === 0} />
-            <img src={`/mascot/${tier.image}-96.webp`} alt="" width="44" height="44" />
+            <img src={`/mascot/${tier.image}-96.webp`} alt="" width="44" height="44" loading="lazy" decoding="async" fetchpriority="low" />
             <span>
               <span>{tier.name}</span>
               <span>{tier.when}</span>
@@ -39,7 +39,9 @@ import { lightTiers } from '../data/home';
             alt=""
             width="900"
             height="900"
+            loading="lazy"
             decoding="async"
+            fetchpriority="low"
           />
         ))
       }

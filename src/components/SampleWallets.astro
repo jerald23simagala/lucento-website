@@ -1,0 +1,42 @@
+---
+import PhoneShot from './PhoneShot.astro';
+import { sampleWallets } from '../data/features';
+
+const sizes = '(min-width: 700px) 360px, calc(100vw - 40px)';
+---
+
+<section class="lx-wrap lx-section" id="wallets" aria-labelledby="h-wallets">
+  <div class="lx-split">
+    <div class="lx-split-phone">
+      <PhoneShot
+        id="12-wallets"
+        source="12-wallets.png"
+        sizes={sizes}
+        fallback="Example wallets: Cash, Everyday bank, Savings, and a Visa card."
+        alt="Wallets in the demo data: Cash $563.00, Everyday bank $9,889.01, Savings $8,400.00, and a Visa card owing $640.00."
+      />
+      <p class="lx-caption">The Wallets screen, shown as it is. These figures are the demo’s.</p>
+    </div>
+    <div class="lx-split-copy">
+      <h2 class="lx-title" id="h-wallets">Your own names. <span class="lx-soft">No bank login.</span></h2>
+      <p class="lx-lede">
+        You record the places money sits. Lucento never connects to a bank. The list beside this phone is the same
+        example as the screenshot — a sample, not a rule for how many wallets you can keep.
+      </p>
+      <ul class="lx-wallet-card">
+        {
+          sampleWallets.map((row) => (
+            <li>
+              <span>
+                {row.name}
+                <small>{row.detail}</small>
+              </span>
+              <b class={row.owe ? 'is-owe' : undefined}>{row.amount}</b>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="lx-fine">Example data. Not your accounts, and not a connection to any of them.</p>
+    </div>
+  </div>
+</section>

@@ -8,9 +8,11 @@ import Glyph from '../components/Glyph.astro';
 import HeroComposer from '../components/HeroComposer.astro';
 import LightStates from '../components/LightStates.astro';
 import AppShowcase from '../components/AppShowcase.astro';
+import FeatureStrip from '../components/FeatureStrip.astro';
+import SampleWallets from '../components/SampleWallets.astro';
 import { answers, checkRows, icons, limits } from '../data/home';
 
-const shot = '(min-width: 700px) 340px, 100vw';
+const shot = '(min-width: 700px) 360px, calc(100vw - 40px)';
 ---
 
 <BaseLayout
@@ -194,6 +196,10 @@ const shot = '(min-width: 700px) 340px, 100vw';
   </section>
 
   <AppShowcase />
+
+  <SampleWallets />
+
+  <FeatureStrip />
 
   <section class="lx-privacy lx-section" id="privacy" aria-labelledby="h-privacy">
     <div class="lx-wrap lx-privacy-grid">

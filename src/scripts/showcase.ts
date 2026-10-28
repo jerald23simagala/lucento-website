@@ -12,6 +12,12 @@ function relativeScale(distance: number): number {
   return Math.max(0.42, 0.54 - (distance - 3) * 0.06);
 }
 
+/** Focused phone stays at full size. `squeeze` only shrinks the others so five still fit. */
+function fittedScale(distance: number, squeeze: number): number {
+  if (distance < 0.001) return 1;
+  return relativeScale(distance) * squeeze;
+}
+
 export function mountShowcase(root: HTMLElement): void {
   if (root.dataset.mounted === 'true') return;
   if (!document.documentElement.classList.contains('js-motion')) return;
@@ -81,24 +87,43 @@ export function mountShowcase(root: HTMLElement): void {
     current = index;
   };
 
+  const standardWidth = (): number => {
+    const probe = document.querySelector<HTMLElement>('.lx-front .phone');
+    const measured = probe?.getBoundingClientRect().width ?? 0;
+    if (measured >= 120) return measured;
+    return Math.min(360, window.innerWidth - 40);
+  };
+
   const layoutPinned = (): void => {
     const indexFloat = progress() * (count - 1);
     const stageWidth = stage.clientWidth;
-    const stageHeight = stage.clientHeight;
     const pad = 10;
     const gap = 14;
-    const heightCap = Math.min(300, Math.max(120, stageHeight * (9 / 16) * 0.92));
-    let widest = 0;
-    for (let step = 0; step <= count - 1; step += 0.25) {
-      let sum = 0;
-      for (let index = 0; index < count; index += 1) sum += relativeScale(Math.abs(index - step));
-      widest = Math.max(widest, sum);
-    }
+    const phone = standardWidth();
     const room = Math.max(0, stageWidth - pad * 2 - gap * (count - 1));
-    const phone = room > 0 && widest > 0 ? Math.min(heightCap, room / widest) : heightCap;
+    const peak = (squeeze: number): number => {
+      let widest = 0;
+      for (let step = 0; step <= count - 1; step += 0.25) {
+        let sum = 0;
+        for (let index = 0; index < count; index += 1) sum += fittedScale(Math.abs(index - step), squeeze);
+        widest = Math.max(widest, sum);
+      }
+      return widest;
+    };
+    let squeeze = 1;
+    if (phone > 0 && peak(1) * phone > room) {
+      let low = 0.2;
+      let high = 1;
+      for (let attempt = 0; attempt < 14; attempt += 1) {
+        const mid = (low + high) / 2;
+        if (peak(mid) * phone <= room) low = mid;
+        else high = mid;
+      }
+      squeeze = low;
+    }
     const phonePx = `${phone.toFixed(2)}px`;
     const distances = slides.map((_, index) => Math.abs(index - indexFloat));
-    const widths = distances.map((distance) => phone * relativeScale(distance));
+    const widths = distances.map((distance) => phone * fittedScale(distance, squeeze));
     const centers: number[] = [];
     let cursor = 0;
     widths.forEach((width) => {
@@ -116,7 +141,7 @@ export function mountShowcase(root: HTMLElement): void {
 
     slides.forEach((slide, index) => {
       const distance = distances[index] ?? 0;
-      const scale = relativeScale(distance);
+      const scale = fittedScale(distance, squeeze);
       if (slide.style.width !== phonePx) slide.style.width = phonePx;
       slide.style.opacity = '1';
       slide.style.pointerEvents = '';

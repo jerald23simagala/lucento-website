@@ -92,7 +92,7 @@
 
 .lx-lede {
   margin: clamp(20px, 3vw, 32px) 0 0;
-  max-width: 46ch;
+  max-width: 32rem;
   color: #3b465e;
   font-size: clamp(17px, 1.4vw, 19px);
 }
@@ -186,14 +186,19 @@
 
 .lx-back {
   flex: 0 0 auto;
-  width: clamp(180px, 19vw, 270px);
-  margin-right: -72px;
-  transform: translateY(-36px);
+  width: auto;
+  margin-right: -48px;
+  transform: translateY(-28px);
 }
 
 .lx-front {
   flex: 0 0 auto;
-  width: min(350px, 100%);
+  width: var(--phone-width);
+  max-width: 100%;
+}
+
+.lx-front .phone {
+  width: 100%;
 }
 
 .lx-caption {
@@ -205,10 +210,11 @@
 }
 
 .lx-split-phone {
-  flex: 0 1 340px;
+  flex: 0 1 auto;
   min-width: 0;
   margin-inline: auto;
-  width: min(340px, 100%);
+  width: var(--phone-width);
+  max-width: 100%;
 }
 
 .lx-split-copy .lx-title {
@@ -645,10 +651,11 @@
 
 .lx-open {
   display: block;
-  width: min(280px, 100%);
+  width: var(--phone-width);
+  max-width: 100%;
   color: inherit;
   text-decoration: none;
-  border-radius: 36px;
+  border-radius: 12.78% / 6.22%;
 }
 
 .lx-synced,
@@ -739,8 +746,8 @@ html.js-motion .lx-sticky {
 
 html.js-motion .lx-stage {
   position: relative;
-  height: min(520px, calc(100svh - 230px));
-  min-height: 260px;
+  height: calc(var(--phone-width) * 740 / 360 + 24px);
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -754,9 +761,13 @@ html.js-motion .lx-slide {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(300px, 46%);
+  width: var(--phone-width);
   display: block;
   transform: translate3d(-50%, -50%, 0);
+}
+
+html.js-motion .lx-slide .phone {
+  width: 100%;
 }
 
 html.js-motion .lx-open {
@@ -806,8 +817,8 @@ html.js-motion .lx-dots {
     position: relative !important;
     left: auto !important;
     top: auto !important;
-    flex: 0 0 84%;
-    width: auto !important;
+    flex: 0 0 var(--phone-width);
+    width: var(--phone-width) !important;
     scroll-snap-align: center;
     transform: none !important;
     opacity: 1 !important;
@@ -979,108 +990,17 @@ html.js-motion .lx-dots {
 }
 
 .lx-close-phone {
-  flex: 0 1 340px;
-  width: min(340px, 100%);
+  flex: 0 1 auto;
+  width: var(--phone-width);
+  max-width: 100%;
   margin-inline: auto;
 }
 
-/* Phone frame shared by screenshots and the hero composer. */
-.device {
-  position: relative;
-  border-radius: 10.5% / 5.6%;
-  padding: 3%;
-  background: linear-gradient(155deg, #454c5c 0%, #1b202b 30%, #0d1119 100%);
-  box-shadow:
-    inset 0 0 0 1.5px rgb(255 255 255 / 10%),
-    inset 0 0 0 4px #0b0e15,
-    0 0 0 1px rgb(23 35 63 / 30%),
-    0 30px 50px -28px rgb(23 35 63 / 55%);
-}
-
-.device::before,
-.device::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  width: 3px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, #1b202b, #3a4150);
-}
-
-.device::before {
-  top: 19%;
-  height: 8%;
-}
-
-.device::after {
-  top: 31%;
-  height: 14%;
-}
-
-.device-scr {
-  position: relative;
-  border-radius: 7.6% / 4.3%;
-  overflow: hidden;
-  background: #fffdf5;
-  aspect-ratio: 9 / 16;
-}
-
-.device-scr img {
-  display: block;
-  max-width: 100%;
-  background: #fffdf5;
-  color: #17233f;
-}
-
-.device-scr > picture img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 9 / 16;
-  object-fit: cover;
-  object-position: top;
-}
-
-.device-cam {
-  position: absolute;
-  z-index: 4;
-  top: 1.6%;
-  left: 50%;
-  width: 3.6%;
-  aspect-ratio: 1;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #2b3346 0 22%, #05070c 30%);
-  box-shadow: 0 0 0 1.5px rgb(0 0 0 / 60%);
-}
-
-.device-fallback {
-  display: none;
-  margin: 0;
-  padding: 18% 12px 12px;
-  color: #17233f;
-  font-size: 0.95rem;
-  line-height: 1.45;
-}
-
-.device-scr.is-missing > picture img {
-  display: none;
-}
-
-.device-scr.is-missing .device-fallback {
-  display: block;
-}
-
-.device.is-live {
-  width: min(350px, 100%);
-}
-
-.device.is-live .device-scr {
+.phone.is-live .cmp {
   display: flex;
   flex-direction: column;
-  color: #17233f;
-  font-family: 'Plus Jakarta Sans', var(--font-sans);
-  font-size: 13px;
-  line-height: 1.35;
+  height: 100%;
+  min-height: 0;
 }
 
 .cmp-chrome {
@@ -1428,4 +1348,70 @@ html.js-motion .lx-dots {
   .cmp-input i {
     display: none;
   }
+}
+
+.lx-feature-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: min(168px, 42vw);
+  gap: 18px;
+  margin: 28px 0 0;
+  padding: 0 0 12px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.lx-feature-row li {
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.lx-feature-row h3 {
+  margin: 12px 0 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.lx-feature-row p {
+  margin: 6px 0 0;
+  color: #3b465e;
+  font-size: 0.875rem;
+}
+
+.lx-wallet-card {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 4px 0;
+  border: 1px solid #d8dde7;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.lx-wallet-card li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid #e6ebf3;
+}
+
+.lx-wallet-card li:first-child {
+  border-top: 0;
+}
+
+.lx-wallet-card small {
+  display: block;
+  color: #5e687d;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.lx-wallet-card b {
+  font-variant-numeric: tabular-nums;
+}
+
+.lx-wallet-card b.is-owe {
+  color: #d9452f;
 }

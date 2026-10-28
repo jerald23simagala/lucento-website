@@ -125,7 +125,7 @@ test.describe('app showcase', () => {
       image.srcset = '';
       image.src = '/screens/missing-check.webp';
     });
-    const fallback = page.locator('#check .device-fallback');
+    const fallback = page.locator('#check .phone-fallback');
     await expect(fallback).toBeVisible();
     await expect(fallback).toContainText('One incomplete row');
   });
@@ -203,6 +203,47 @@ test('reduced motion does not build the scrolling stage', async ({ page }) => {
   expect(height).toBeLessThan(viewport * 4);
 });
 
+test('hero, showcase, and demo phones share one frame', async ({ page }) => {
+  for (const [width, height] of [[1440, 900], [768, 900], [360, 740]] as const) {
+    await page.setViewportSize({ width, height });
+    await page.goto('/');
+    await page.evaluate(() => document.fonts.ready);
+    const measure = () => page.evaluate(() => {
+      const box = (selector: string) => {
+        const node = document.querySelector(selector);
+        if (!node) return null;
+        const rect = node.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      };
+      const hero = box('.lx-front .phone');
+      const demo = box('.ld-phone-wrap .phone');
+      const showcase = [...document.querySelectorAll('.lx-slide .phone')].reduce<{ width: number; height: number } | null>((best, node) => {
+        const rect = node.getBoundingClientRect();
+        if (!best || rect.width > best.width) return { width: rect.width, height: rect.height };
+        return best;
+      }, null);
+      const sample = document.querySelector('.cmp-static-title, .ld-screen');
+      const fontSize = sample ? Number.parseFloat(getComputedStyle(sample).fontSize) : 0;
+      return { hero, demo, showcase, fontSize };
+    });
+    if (width >= 768) await scrollPin(page, 0);
+    const sizes = await measure();
+    expect(sizes.hero, `${width} hero`).not.toBeNull();
+    expect(sizes.demo, `${width} demo`).not.toBeNull();
+    expect(sizes.showcase, `${width} showcase`).not.toBeNull();
+    const hero = sizes.hero!;
+    const demo = sizes.demo!;
+    const showcase = sizes.showcase!;
+    expect(Math.abs(hero.width - demo.width), `${width} hero/demo width`).toBeLessThanOrEqual(2);
+    expect(Math.abs(hero.width - showcase.width), `${width} hero/showcase width`).toBeLessThanOrEqual(2);
+    const ratio = (item: { width: number; height: number }) => item.width / item.height;
+    expect(Math.abs(ratio(hero) - 360 / 740), `${width} hero ratio`).toBeLessThan(0.02);
+    expect(Math.abs(ratio(demo) - ratio(hero)), `${width} demo ratio`).toBeLessThan(0.02);
+    expect(Math.abs(ratio(showcase) - ratio(hero)), `${width} showcase ratio`).toBeLessThan(0.02);
+    if (width === 360) expect(sizes.fontSize).toBeGreaterThanOrEqual(12);
+  }
+});
+
 test('scrolling the showcase barely shifts layout', async ({ page }) => {
   await page.addInitScript(() => {
     const record = window as Window & { __cls?: number };
@@ -216,6 +257,10 @@ test('scrolling the showcase barely shifts layout', async ({ page }) => {
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() => {
+    (window as Window & { __cls?: number }).__cls = 0;
+  });
   await scrollPin(page, 0);
   await scrollPin(page, 0.5);
   await scrollPin(page, 1);

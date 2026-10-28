@@ -1,4 +1,7 @@
 // @ts-check
+import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
@@ -7,16 +10,55 @@ import vercel from '@astrojs/vercel';
 // URLs and the sitemap; until then neither is emitted rather than pointing at a guess.
 const site = process.env.SITE_URL || undefined;
 
+/** Astro writes page HTML itself, so defer the stylesheets after the build. */
+function deferStylesheetLinks(html) {
+  return html.replace(/<noscript>[\s\S]*?<\/noscript>|<link rel="stylesheet" href="([^"]+)"(?![^>]*\bmedia=)[^>]*>/g, (match, href) => {
+    if (!href) return match;
+    return `<link rel="stylesheet" href="${href}" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="${href}"></noscript>`;
+  });
+}
+
+function rewriteHtmlTree(dir) {
+  for (const name of readdirSync(dir)) {
+    const path = join(dir, name);
+    if (statSync(path).isDirectory()) {
+      rewriteHtmlTree(path);
+      continue;
+    }
+    if (!name.endsWith('.html')) continue;
+    const html = readFileSync(path, 'utf8');
+    const next = deferStylesheetLinks(html);
+    if (next !== html) writeFileSync(path, next);
+  }
+}
+
+function deferBuiltStyles() {
+  return {
+    name: 'defer-built-styles',
+    hooks: {
+      'astro:build:done': ({ dir }) => {
+        const built = fileURLToPath(dir);
+        rewriteHtmlTree(built);
+        for (const extra of ['dist/client', '.vercel/output/static']) {
+          try {
+            rewriteHtmlTree(extra);
+          } catch {
+            /* that output is absent in this build */
+          }
+        }
+      },
+    },
+  };
+}
+
 export default defineConfig({
   site,
   trailingSlash: 'ignore',
-  integrations: site ? [sitemap()] : [],
+  integrations: [...(site ? [sitemap()] : []), deferBuiltStyles()],
   // Pages stay static; only on-demand routes (src/pages/api/interpret.ts, prerender = false) become Vercel Functions.
   adapter: vercel(),
   build: {
-    // The homepage LCP element is the hero lede. `auto` only inlines stylesheets
-    // under Vite's 4kB limit, so the layout, homepage, and demo CSS stay
-    // render-blocking requests. Inline them so that paragraph can paint with the HTML.
-    inlineStylesheets: 'always',
+    // Keep the built stylesheets external. critical.css is the only CSS inlined into the document.
+    inlineStylesheets: 'never',
   },
 });

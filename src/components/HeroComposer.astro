@@ -1,11 +1,11 @@
 ---
 import Glyph from './Glyph.astro';
+import PhoneFrame from './PhoneFrame.astro';
 import { composerExamples, icons } from '../data/home';
 ---
 
-<div class="device is-live" data-composer>
-  <div class="device-scr cmp" role="region" aria-label="Interactive preview of the Lucento composer">
-    <span class="device-cam" aria-hidden="true"></span>
+<PhoneFrame class="is-live">
+  <div class="cmp" data-composer role="region" aria-label="Interactive preview of the Lucento composer">
     <img class="cmp-chrome" src="/chrome/status-bar.webp" alt="" width="540" height="40" />
 
     <div class="cmp-static">
@@ -126,7 +126,7 @@ import { composerExamples, icons } from '../data/home';
     </div>
     <p class="visually-hidden" data-composer-live aria-live="polite"></p>
   </div>
-</div>
+</PhoneFrame>
 
 <script>
   import { mountComposer } from '../scripts/composer';
