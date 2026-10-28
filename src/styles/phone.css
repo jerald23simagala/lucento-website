@@ -1,5 +1,5 @@
-/* One phone frame. The outer box is 9:16, and the bezel is an even inset,
-   so the screen is 9:16 too — the same ratio as the 1080×1920 screenshots.
+/* One phone frame. The bezel is the same length on every side, and the screen
+   inside it is 9:16 — the same ratio as the 1080×1920 screenshots.
    --phone-width is the shared size. Hero, showcase centre, demo, and feature
    phones all use it. Side phones and the rear hero phone scale from this frame. */
 
@@ -7,12 +7,12 @@
   position: relative;
   width: var(--phone-width);
   max-width: 100%;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: var(--phone-aspect, 0.577952);
   overflow: hidden;
   box-sizing: border-box;
   container-type: inline-size;
   padding: 0;
-  border-radius: 12.7778% / 6.2162%;
+  border-radius: 12.7778% / 7.3849%;
   background: linear-gradient(155deg, #454c5c 0%, #1b202b 30%, #0d1119 100%);
   box-shadow:
     inset 0 0 0 1.5px rgb(255 255 255 / 10%),
@@ -43,8 +43,11 @@
 
 .phone-screen {
   position: absolute;
-  inset: 3.0556%;
-  border-radius: 11.24% / 5.29%;
+  top: calc(var(--phone-bezel, 0.030556) * 100cqw);
+  right: calc(var(--phone-bezel, 0.030556) * 100cqw);
+  bottom: calc(var(--phone-bezel, 0.030556) * 100cqw);
+  left: calc(var(--phone-bezel, 0.030556) * 100cqw);
+  border-radius: 10.355% / 5.825%;
   overflow: hidden;
   background: #fffdf5;
 }
@@ -111,12 +114,12 @@
 .phone.is-mini {
   width: min(168px, 42vw);
   height: auto;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: var(--phone-aspect, 0.577952);
 }
 
 .lx-back .phone {
   width: calc(var(--phone-width) * 0.62);
   height: auto;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: var(--phone-aspect, 0.577952);
 }
 

@@ -1,7 +1,18 @@
-type Mode = 'five' | 'snap';
+type Mode = 'five' | 'three' | 'snap';
 
 function modeFor(width: number): Mode {
-  return width < 768 ? 'snap' : 'five';
+  if (width < 768) return 'snap';
+  if (width < 1100) return 'three';
+  return 'five';
+}
+
+/** Phones on screen. Below 1100px that is a window of three around the focus. */
+function visibleIndices(count: number, step: number, mode: Mode): number[] {
+  if (mode !== 'three') return Array.from({ length: count }, (_, index) => index);
+  const focus = Math.min(count - 1, Math.max(0, Math.round(step)));
+  const start = Math.max(0, Math.min(focus - 1, count - 3));
+  const shown = Math.min(3, count);
+  return Array.from({ length: shown }, (_, offset) => start + offset);
 }
 
 /** Relative size: the focused phone is largest; the others stay visible and recede. */
@@ -36,13 +47,18 @@ export function mountShowcase(root: HTMLElement): void {
   if (!pin || !stage || !track || count === 0) return;
 
   const snapQuery = window.matchMedia('(max-width: 767px)');
+  const threeQuery = window.matchMedia('(max-width: 1099px)');
   let mode: Mode = modeFor(window.innerWidth);
   let current = -1;
   let ready = false;
   let frame = 0;
   let observer: IntersectionObserver | null = null;
 
-  const readMode = (): Mode => (snapQuery.matches ? 'snap' : 'five');
+  const readMode = (): Mode => {
+    if (snapQuery.matches) return 'snap';
+    if (threeQuery.matches) return 'three';
+    return 'five';
+  };
 
   const progress = (): number => {
     const scrollable = pin.offsetHeight - window.innerHeight;
@@ -100,12 +116,13 @@ export function mountShowcase(root: HTMLElement): void {
     const pad = 10;
     const gap = 14;
     const phone = standardWidth();
-    const room = Math.max(0, stageWidth - pad * 2 - gap * (count - 1));
+    const slots = mode === 'three' ? Math.min(3, count) : count;
+    const room = Math.max(0, stageWidth - pad * 2 - gap * Math.max(0, slots - 1));
     const peak = (squeeze: number): number => {
       let widest = 0;
       for (let step = 0; step <= count - 1; step += 0.25) {
         let sum = 0;
-        for (let index = 0; index < count; index += 1) sum += fittedScale(Math.abs(index - step), squeeze);
+        for (const index of visibleIndices(count, step, mode)) sum += fittedScale(Math.abs(index - step), squeeze);
         widest = Math.max(widest, sum);
       }
       return widest;
@@ -122,15 +139,23 @@ export function mountShowcase(root: HTMLElement): void {
       squeeze = low;
     }
     const phonePx = `${phone.toFixed(2)}px`;
+    const shown = new Set(visibleIndices(count, indexFloat, mode));
     const distances = slides.map((_, index) => Math.abs(index - indexFloat));
-    const widths = distances.map((distance) => phone * fittedScale(distance, squeeze));
+    const widths = distances.map((distance, index) => (shown.has(index) ? phone * fittedScale(distance, squeeze) : 0));
     const centers: number[] = [];
     let cursor = 0;
-    widths.forEach((width) => {
+    let seen = false;
+    widths.forEach((width, index) => {
+      if (!shown.has(index)) {
+        centers.push(cursor);
+        return;
+      }
+      if (seen) cursor += gap;
       centers.push(cursor + width / 2);
-      cursor += width + gap;
+      cursor += width;
+      seen = true;
     });
-    const total = Math.max(0, cursor - gap);
+    const total = cursor;
     const startIndex = Math.floor(indexFloat);
     const endIndex = Math.min(count - 1, startIndex + 1);
     const blend = indexFloat - startIndex;
@@ -142,6 +167,18 @@ export function mountShowcase(root: HTMLElement): void {
     slides.forEach((slide, index) => {
       const distance = distances[index] ?? 0;
       const scale = fittedScale(distance, squeeze);
+      const link = slide.querySelector<HTMLElement>('a');
+      if (!shown.has(index)) {
+        slide.style.width = '0px';
+        slide.style.opacity = '0';
+        slide.style.pointerEvents = 'none';
+        slide.style.zIndex = '0';
+        slide.style.transform = 'translate3d(-50%, -50%, 0) scale(0.5)';
+        slide.setAttribute('aria-hidden', 'true');
+        if (link) link.tabIndex = -1;
+        return;
+      }
+      slide.removeAttribute('aria-hidden');
       if (slide.style.width !== phonePx) slide.style.width = phonePx;
       slide.style.opacity = '1';
       slide.style.pointerEvents = '';
@@ -151,7 +188,6 @@ export function mountShowcase(root: HTMLElement): void {
       const dx = centerX - stageWidth / 2;
       const dy = Math.min(distance, 2) * 6;
       slide.style.transform = `translate3d(calc(-50% + ${dx.toFixed(2)}px), calc(-50% + ${dy.toFixed(2)}px), 0) scale(${scale.toFixed(4)})`;
-      const link = slide.querySelector<HTMLElement>('a');
       if (link) link.tabIndex = 0;
     });
     announce(Math.min(count - 1, Math.max(0, Math.round(indexFloat))));
@@ -230,6 +266,7 @@ export function mountShowcase(root: HTMLElement): void {
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onResize);
   snapQuery.addEventListener('change', onResize);
+  threeQuery.addEventListener('change', onResize);
 
   if (readMode() === 'snap') {
     root.dataset.mode = 'snap';

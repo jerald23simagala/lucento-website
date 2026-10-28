@@ -6,8 +6,8 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 
-// The production domain is not decided yet. Set SITE_URL to enable canonical
-// URLs and the sitemap; until then neither is emitted rather than pointing at a guess.
+// Public origin, including scheme. Production is https://www.lucentoapp.com.
+// Unset, canonical URLs and the sitemap are omitted rather than guessed.
 const site = process.env.SITE_URL || undefined;
 
 /** Astro writes page HTML itself, so defer the stylesheets after the build. */
