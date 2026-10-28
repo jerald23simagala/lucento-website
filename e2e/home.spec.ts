@@ -44,10 +44,24 @@ test.describe('app showcase', () => {
     expect(ordered[1].width).toBeGreaterThan(ordered[0].width);
     expect(ordered[3].width).toBeGreaterThan(ordered[4].width);
 
-    await scrollPin(page, 1);
-    await expect(page.locator('[data-sync-title]')).toHaveText('Assets minus debts');
     await scrollPin(page, 0);
     await expect(page.locator('[data-sync-title]')).toHaveText('Check the rows, then save');
+    await scrollPin(page, 1);
+    await expect(page.locator('[data-sync-title]')).toHaveText('Assets minus debts');
+    for (const amount of [0, 1]) {
+      await scrollPin(page, amount);
+      const fitted = await page.evaluate(() => {
+        const stage = document.querySelector('[data-stage]');
+        if (!stage) return false;
+        const bounds = stage.getBoundingClientRect();
+        return [...document.querySelectorAll('[data-slide]')].every((node) => {
+          const box = node.getBoundingClientRect();
+          const opacity = Number(getComputedStyle(node).opacity);
+          return opacity > 0.9 && box.width > 48 && box.left >= bounds.left - 2 && box.right <= bounds.right + 2;
+        });
+      });
+      expect(fitted).toBe(true);
+    }
     expect(errors).toEqual([]);
   });
 
@@ -65,17 +79,23 @@ test.describe('app showcase', () => {
     await expect(page.locator('[data-sync-title]')).not.toHaveText('Check the rows, then save');
   });
 
-  test('tablet shows three phones between the five-up and the snap layouts', async ({ page }) => {
-    for (const width of [1024, 768]) {
+  test('tablet and desktop keep five phones visible at the ends of the scroll', async ({ page }) => {
+    for (const width of [1280, 1024, 768]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto('/');
-      await scrollPin(page, 0.5);
-      await expect(page.locator('[data-showcase]')).toHaveAttribute('data-mode', 'three');
-      const visible = await page.locator('[data-slide]').evaluateAll((nodes) => (
-        nodes.filter((node) => Number(getComputedStyle(node).opacity) > 0.4).length
-      ));
-      expect(visible).toBe(3);
-      await expect(page.locator('[data-sync-title]')).toHaveText('The month, and its light');
+      for (const amount of [0, 0.5, 1]) {
+        await scrollPin(page, amount);
+        await expect(page.locator('[data-showcase]')).toHaveAttribute('data-mode', 'five');
+        const visible = await page.locator('[data-slide]').evaluateAll((nodes) => {
+          const stage = document.querySelector('[data-stage]')?.getBoundingClientRect();
+          if (!stage) return 0;
+          return nodes.filter((node) => {
+            const box = node.getBoundingClientRect();
+            return Number(getComputedStyle(node).opacity) > 0.9 && box.width > 40 && box.left >= stage.left - 2 && box.right <= stage.right + 2;
+          }).length;
+        });
+        expect(visible, `${width}px at ${amount}`).toBe(5);
+      }
     }
   });
 
@@ -128,10 +148,19 @@ test('full demo still logs a day and stays quiet in the console', async ({ page 
   });
   await page.goto('/#try');
   await page.getByRole('button', { name: 'Add transaction' }).click();
+  await page.locator('#ls-text').fill('Lunch 45');
+  await page.locator('#ls-text').press('Enter');
+  await expect(page.locator('#try .ld-step.is-now')).toContainText('Check the rows');
+  await page.getByRole('button', { name: 'Start this guide again' }).click();
+  await page.getByRole('button', { name: 'Add transaction' }).click();
   await page.getByRole('button', { name: 'Lunch 45, groceries 120, parking 15' }).click();
   await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.locator('#try .ld-step.is-now')).toContainText('Check the rows');
+  const cash = page.locator('#try').getByRole('radio', { name: 'Cash' });
+  await cash.click();
+  await expect(cash).toHaveAttribute('aria-checked', 'true');
   await page.getByLabel('Category for Parking').selectOption({ label: 'Transport' });
-  await page.getByRole('button', { name: 'Save 3' }).click();
+  await page.getByRole('button', { name: 'Save 3 transactions' }).click();
   await expect(page.locator('.ld-step.is-finale')).toContainText('Home updated at once');
   expect(errors).toEqual([]);
 });

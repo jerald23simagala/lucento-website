@@ -46,8 +46,16 @@ export function mountComposer(root: HTMLElement): void {
   show('empty');
 
   root.addEventListener('click', (event) => {
-    const target = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-pick], [data-reset], [data-save]');
+    const target = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-pick], [data-reset], [data-save], [data-wallet]');
     if (!target || !root.contains(target)) return;
+
+    if (target.dataset.wallet) {
+      root.querySelectorAll<HTMLButtonElement>('[data-wallet]').forEach((button) => {
+        const on = button.dataset.wallet === target.dataset.wallet;
+        button.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+      return;
+    }
 
     if (target.dataset.pick) {
       const example = examples.get(target.dataset.pick);

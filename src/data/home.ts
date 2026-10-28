@@ -172,7 +172,10 @@ export const lightTiers: LightTier[] = [
 
 export const answers = [
   { q: 'Does it connect to my bank?', a: 'No, and that’s by design. You record what you spend; Lucento never asks for a bank login.' },
-  { q: 'Do I need an account?', a: 'Only for sync. Everything else works without one, offline.' },
+  {
+    q: 'Do I need an account?',
+    a: 'Only for sync, and for the optional Read messages with Gemini setting. What you type is stored on the phone and works offline. Speech recognition asks to run on the device, but that isn’t guaranteed.',
+  },
   { q: 'Can I move to a new phone?', a: 'Yes, if you use sync: sign in on the new phone during setup and restore your records. Signing out never deletes anything on the old one.' },
   { q: 'Why does Spent include uncategorised things?', a: 'Because the money is gone either way. Leaving it out would make the month look better than it is.' },
   { q: 'When is it out, and what will it cost?', a: 'It’s coming to Google Play. A date and pricing haven’t been announced.' },
@@ -184,5 +187,5 @@ export const limits = [
   'Calendar-month budgets only',
   'No phone notifications yet — the in-app bell only',
   'Interest is entered by hand',
-  'Smarter reading needs a sync account and has a daily limit',
+  'Read messages with Gemini needs a sync account and has a daily limit',
 ];

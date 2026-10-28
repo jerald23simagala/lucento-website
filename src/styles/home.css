@@ -658,7 +658,7 @@
 
 .lx-synced {
   max-width: 42rem;
-  min-height: 8.5rem;
+  min-height: 13rem;
   margin: 18px auto 0;
   padding-inline: clamp(20px, 5vw, 64px);
   text-align: center;
@@ -878,6 +878,10 @@ html.js-motion .lx-dots {
 .lx-facts a,
 .lx-answers a {
   font-weight: 600;
+}
+
+.lx-privacy a {
+  color: #2f56e0;
 }
 
 .lx-faq {
@@ -1195,13 +1199,21 @@ html.js-motion .lx-dots {
   white-space: nowrap;
 }
 
+.cmp-wallets button,
 .cmp-wallets span {
   padding: 6px 10px;
   border: 1px solid #d8dde7;
   border-radius: 999px;
   background: #fff;
+  font: inherit;
   font-size: 12px;
   font-weight: 600;
+}
+
+.cmp-wallets button {
+  min-height: 44px;
+  color: #17233f;
+  cursor: pointer;
 }
 
 .cmp-wallets span:first-child {
@@ -1213,13 +1225,13 @@ html.js-motion .lx-dots {
   letter-spacing: 0.08em;
 }
 
-.cmp-wallets span.is-on {
+.cmp-wallets button[aria-checked='true'] {
   border-color: transparent;
   background: #17233f;
   color: #fff;
 }
 
-.cmp-wallets span.is-on b {
+.cmp-wallets button[aria-checked='true'] b {
   color: #ffc928;
   font-weight: 700;
 }

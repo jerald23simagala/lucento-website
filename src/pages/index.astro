@@ -15,7 +15,7 @@ const shot = '(min-width: 700px) 340px, 100vw';
 
 <BaseLayout
   title="Lucento — a little light for your money"
-  description="Type a day’s spending the way you’d text it. Lucento turns the sentence into rows you check before anything is saved. Offline, on your phone, with no bank login."
+  description="Type a day’s spending the way you’d text it. Lucento turns the sentence into rows you check before anything is saved. Records work offline, on your phone, with no bank login. Speech only requests on-device recognition, which isn’t guaranteed."
   theme="light"
 >
   <section class="lx-wrap lx-hero" id="write" aria-labelledby="h-hero">
@@ -30,7 +30,8 @@ const shot = '(min-width: 700px) 340px, 100vw';
         <h1 class="lx-display" id="h-hero">Say what you spent. <span class="lx-soft">Lucento does the sums.</span></h1>
         <p class="lx-lede">
           Type a day’s spending the way you’d text it. Lucento turns the sentence into rows you check before anything
-          is saved, then tells you whether the month is on pace. Offline, on your phone, with no bank login.
+          is saved, then tells you whether the month is on pace. On your phone, with no bank login. What you type
+          works offline. Speech only asks the recogniser to stay on the device, and that isn’t guaranteed.
         </p>
         <div class="lx-actions">
           <a class="lx-btn" href="#try">Open the full demo</a>
@@ -59,11 +60,15 @@ const shot = '(min-width: 700px) 340px, 100vw';
       </div>
     </div>
     <ul class="lx-promises">
-      <li>Works offline</li>
+      <li>Works offline for what you type</li>
       <li>No bank login</li>
-      <li>Nothing leaves your phone unless you sync</li>
+      <li>Nothing you type leaves your phone unless you sync</li>
       <li>Message, receipt or voice</li>
     </ul>
+    <p class="lx-fine">
+      Speech recognition only requests offline mode. Your phone’s recogniser may still use the network. Receipts are
+      read on the device.
+    </p>
   </section>
 
   <section class="lx-wrap lx-section" id="check" aria-labelledby="h-check">
@@ -189,7 +194,10 @@ const shot = '(min-width: 700px) 340px, 100vw';
         <li><strong>No bank login. No ads.</strong> You record what you choose to record.</li>
         <li><strong>Your data lives on the device.</strong> Sync is optional, and signing out deletes nothing on your phone.</li>
         <li><strong>Receipts are read on your phone.</strong> With an on-device model. Always.</li>
-        <li><strong>Smarter reading is opt-in.</strong> If you turn it on, only the typed message is sent to be read.</li>
+        <li>
+          <strong>Read messages with Gemini is optional.</strong> It’s a cloud service under Settings › Smarter
+          reading, and it needs a sync account. With it off, messages are read on the phone.
+        </li>
         <li><a href="/privacy">How Lucento handles your data</a></li>
       </ul>
     </div>

@@ -38,11 +38,11 @@ import { composerExamples, icons } from '../data/home';
         </div>
       </div>
 
-      <div class="cmp-wallets" aria-hidden="true">
+      <div class="cmp-wallets" role="radiogroup" aria-label="Wallet these transactions go into">
         <span>INTO</span>
-        <span class="is-on">✓ Everyday bank <b>★</b></span>
-        <span>Cash</span>
-        <span>Savings</span>
+        <button type="button" role="radio" data-wallet="bank" aria-checked="true">Everyday bank <b>★</b></button>
+        <button type="button" role="radio" data-wallet="cash" aria-checked="false">Cash</button>
+        <button type="button" role="radio" data-wallet="savings" aria-checked="false">Savings</button>
       </div>
 
       <div class="cmp-scroll">
@@ -53,7 +53,10 @@ import { composerExamples, icons } from '../data/home';
               <button type="button" class="cmp-sugg" data-pick={example.id}>“{example.message}”</button>
             ))
           }
-          <p class="cmp-hint">Read on this phone — nothing is sent anywhere.</p>
+          <p class="cmp-hint">
+            Typed in this preview, on this phone — nothing you type is sent. In the app, speech only requests offline
+            recognition, which isn’t guaranteed.
+          </p>
         </div>
 
         {

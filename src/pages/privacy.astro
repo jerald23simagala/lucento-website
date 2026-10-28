@@ -23,8 +23,8 @@ const sections = [
   {
     title: 'Smarter reading (optional)',
     items: [
-      'Off unless you turn it on in Settings, which first explains what is sent and asks for your consent. It needs a sync account.',
-      'When it’s on, the composer sends your message, today’s date, your main currency and the names of your categories and accounts to Lucento’s server, which asks Google’s Gemini to read it. Your balances and history are never sent.',
+      'Off unless you turn on Settings › Smarter reading › Read messages with Gemini. That control first explains what is sent and asks for your consent. It is a cloud service and needs a sync account.',
+      'When it’s on, the composer sends the message you type or speak, today’s date, your main currency and the names of your categories and accounts to Lucento’s server, which asks Google’s Gemini to read it. Your balances and history are never sent.',
       'Lucento’s server doesn’t store the messages; it keeps a count of requests per account per day to apply the daily allowance.',
       'You can turn it off at any time; reading then happens on the phone again.',
     ],
@@ -32,7 +32,7 @@ const sections = [
   {
     title: 'Speech',
     items: [
-      'Speaking a transaction uses your phone’s own speech recogniser. Lucento asks it to work on the device; whether it can depends on your phone.',
+      'Speaking a transaction uses your phone’s own speech recogniser. Lucento only requests offline recognition. That isn’t guaranteed, so the recogniser may still use the network. The text is then read on the phone, unless Read messages with Gemini is on.',
     ],
   },
   {
