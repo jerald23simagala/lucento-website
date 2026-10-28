@@ -17,7 +17,7 @@
 
 @media (min-width: 768px) {
   :root {
-    --phone-width: min(360px, calc(100vw - 80px), calc((100svh - 340px) * 360 / 740));
+    --phone-width: min(360px, calc(100vw - 80px), calc((100svh - 340px) * 9 / 16));
   }
 }
 
@@ -244,26 +244,26 @@ svg {
   width: var(--phone-width);
   max-width: 100%;
   height: auto;
-  aspect-ratio: 360 / 740;
+  aspect-ratio: 9 / 16;
   overflow: hidden;
 }
 
 .lx-front .phone {
   width: 100%;
   height: auto;
-  aspect-ratio: 360 / 740;
+  aspect-ratio: 9 / 16;
 }
 
 .lx-back .phone {
   width: calc(var(--phone-width) * 0.62);
   height: auto;
-  aspect-ratio: 360 / 740;
+  aspect-ratio: 9 / 16;
 }
 
 .phone.is-mini {
   width: min(168px, 42vw);
   height: auto;
-  aspect-ratio: 360 / 740;
+  aspect-ratio: 9 / 16;
 }
 
 .phone-screen {

@@ -237,7 +237,7 @@ test('hero, showcase, and demo phones share one frame', async ({ page }) => {
     expect(Math.abs(hero.width - demo.width), `${width} hero/demo width`).toBeLessThanOrEqual(2);
     expect(Math.abs(hero.width - showcase.width), `${width} hero/showcase width`).toBeLessThanOrEqual(2);
     const ratio = (item: { width: number; height: number }) => item.width / item.height;
-    expect(Math.abs(ratio(hero) - 360 / 740), `${width} hero ratio`).toBeLessThan(0.02);
+    expect(Math.abs(ratio(hero) - 9 / 16), `${width} hero ratio`).toBeLessThan(0.02);
     expect(Math.abs(ratio(demo) - ratio(hero)), `${width} demo ratio`).toBeLessThan(0.02);
     expect(Math.abs(ratio(showcase) - ratio(hero)), `${width} showcase ratio`).toBeLessThan(0.02);
     if (width === 360) expect(sizes.fontSize).toBeGreaterThanOrEqual(12);
@@ -250,8 +250,8 @@ test('hero, showcase, and demo phones share one frame', async ({ page }) => {
       }));
       expect(minis.length).toBeGreaterThan(0);
       for (const mini of minis) {
-        expect(Math.abs(mini.width / mini.height - 360 / 740), 'mini phone ratio').toBeLessThan(0.01);
-        expect(mini.fit).toBe('cover');
+        expect(Math.abs(mini.width / mini.height - 9 / 16), 'mini phone ratio').toBeLessThan(0.01);
+        expect(mini.fit).toBe('contain');
       }
     }
   }

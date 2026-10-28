@@ -200,7 +200,7 @@
 .lx-front .phone {
   width: 100%;
   height: auto;
-  aspect-ratio: 360 / 740;
+  aspect-ratio: 9 / 16;
 }
 
 .lx-caption {
@@ -748,7 +748,7 @@ html.js-motion .lx-sticky {
 
 html.js-motion .lx-stage {
   position: relative;
-  height: calc(var(--phone-width) * 740 / 360 + 24px);
+  height: calc(var(--phone-width) * 16 / 9 + 24px);
   min-height: 0;
   overflow: hidden;
 }
