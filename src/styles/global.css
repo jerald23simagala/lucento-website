@@ -4,8 +4,8 @@
 :root {
   --font-sans: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --measure: 38rem;
-  --page-max: 72rem;
-  --page-gutter: clamp(var(--space-lg), 5vw, var(--space-xxxl));
+  --page-max: 77.5rem;
+  --page-gutter: clamp(20px, 5vw, 64px);
 }
 
 *,

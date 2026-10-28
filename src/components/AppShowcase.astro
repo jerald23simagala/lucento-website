@@ -1,0 +1,106 @@
+---
+import PhoneShot from './PhoneShot.astro';
+import { showcaseScreens } from '../data/showcase';
+
+const sizes = '(min-width: 1100px) 300px, (min-width: 768px) 260px, 78vw';
+---
+
+<script is:inline>
+  (function () {
+    try {
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('js-motion');
+      }
+    } catch {
+      /* static list remains readable */
+    }
+  })();
+</script>
+
+<section class="lx-block lx-showcase" id="app" aria-roledescription="carousel" aria-labelledby="h-app" data-showcase>
+  <div class="lx-wrap">
+    <h2 class="lx-title" id="h-app">Everything a budget needs. <span class="lx-soft">Nothing it doesn’t.</span></h2>
+    <p class="lx-lede">
+      Real screens from the current Android build, filled with demo data. Five tabs at the bottom; the blue + is the
+      one way in for new transactions.
+    </p>
+    <p class="visually-hidden">
+      On a wide screen, scroll the page to move between the five phones. Page Down and Space move forward. The
+      description follows the phone in the centre.
+    </p>
+  </div>
+
+  <div class="lx-pin" data-pin>
+    <div class="lx-sticky">
+      <div class="lx-stage" data-stage>
+        <ol class="lx-track" data-track>
+          {
+            showcaseScreens.map((screen, index) => (
+              <li
+                class="lx-slide"
+                id={`screen-${screen.id}`}
+                data-slide
+                data-index={index}
+                data-kicker={screen.kicker}
+                data-title={screen.title}
+                data-body={screen.body}
+                aria-current={index === 0 ? 'true' : undefined}
+              >
+                <a class="lx-open" href={`#screen-${screen.id}`} data-goto={index} aria-label={screen.title}>
+                  <PhoneShot
+                    id={screen.id}
+                    source={screen.file}
+                    alt={screen.alt}
+                    sizes={sizes}
+                    fallback={`${screen.title}. ${screen.body}`}
+                  />
+                </a>
+                <div class="lx-copy">
+                  <p>{screen.kicker}</p>
+                  <h3>{screen.title}</h3>
+                  <p>{screen.body}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="lx-synced">
+        <p class="lx-step"><span data-step>1</span> of {showcaseScreens.length}</p>
+        <p class="lx-kicker" data-sync-kicker>{showcaseScreens[0].kicker}</p>
+        <h3 data-sync-title>{showcaseScreens[0].title}</h3>
+        <p data-sync-body>{showcaseScreens[0].body}</p>
+      </div>
+      <p class="visually-hidden" data-live aria-live="polite" aria-atomic="true"></p>
+
+      <div class="lx-dots" role="group" aria-label="Choose a screen">
+        {
+          showcaseScreens.map((screen, index) => (
+            <a
+              class="lx-dot"
+              href={`#screen-${screen.id}`}
+              data-goto={index}
+              data-dot
+              aria-current={index === 0 ? 'true' : undefined}
+            >
+              <span class="visually-hidden">{screen.title}</span>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="lx-also">
+        <p>Also: savings goals, receipt scan and voice, debt payments split into principal and interest, CSV export, optional sync.</p>
+        <a href="/how-to">Learn each one by doing it</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { mountShowcase } from '../scripts/showcase';
+
+  const root = document.querySelector<HTMLElement>('[data-showcase]');
+  if (root) mountShowcase(root);
+</script>

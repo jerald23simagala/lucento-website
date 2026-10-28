@@ -62,7 +62,11 @@ const first = STORIES[stories[0]];
     <div class="ld-phone-wrap">
       <div class="ld-phone">
         <div class="ld-notch" aria-hidden="true"></div>
-        <div class="ld-screen" data-sim="screen" role="region" aria-label="Lucento app simulation"></div>
+        <div class="ld-screen" data-sim="screen" role="region" aria-label="Lucento app simulation">
+          <noscript>
+            <p class="ld-noscript">This simulation needs JavaScript. The same tasks are written out in the <a href="/how-to">guides</a>.</p>
+          </noscript>
+        </div>
       </div>
       <p class="ld-note">Fictional data · simulation of the Android app</p>
     </div>
@@ -122,8 +126,12 @@ const first = STORIES[stories[0]];
   .ld-note { margin: 0; font-size: 0.8125rem; color: var(--on-surface-variant); }
 
   /* ---------------------------------------------------------------- the phone */
-  .ld-phone { position: relative; width: 360px; height: 740px; padding: 12px; border-radius: 48px; background: #0b1222; box-shadow: 0 30px 60px -20px rgba(16, 24, 43, 0.45), inset 0 0 0 2px #2a3550; }
-  .ld-notch { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 18px; height: 18px; border-radius: 50%; background: #0b1222; z-index: 5; }
+  .ld-phone { position: relative; width: 360px; height: 740px; padding: 11px; border-radius: 46px; background: linear-gradient(155deg, #454c5c 0%, #1b202b 30%, #0d1119 100%); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.10), inset 0 0 0 4px #0b0e15, 0 0 0 1px rgba(23,35,63,0.30), 0 30px 50px -28px rgba(23,35,63,0.55); }
+  .ld-phone::before, .ld-phone::after { content: ""; position: absolute; right: 0; width: 3px; border-radius: 2px; background: linear-gradient(90deg, #1b202b, #3a4150); }
+  .ld-phone::before { top: 19%; height: 8%; }
+  .ld-phone::after { top: 31%; height: 14%; }
+  .ld-notch { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #2b3346 0 22%, #05070c 30%); box-shadow: 0 0 0 1.5px rgba(0,0,0,0.6); z-index: 5; }
+  .ld-noscript { margin: 0; padding: 28px 16px; color: var(--on-surface-variant); }
   .ld-screen { position: relative; width: 100%; height: 100%; border-radius: 38px; overflow: hidden; display: flex; flex-direction: column; background: var(--background); color: var(--on-surface); font-family: 'Plus Jakarta Sans', var(--font-sans, sans-serif); font-size: 13px; line-height: 1.35; }
   .ld-screen button, .ld-screen input, .ld-screen select { font: inherit; color: inherit; }
   .ld-screen b { font-weight: 700; }

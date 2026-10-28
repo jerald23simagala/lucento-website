@@ -8,15 +8,17 @@ interface Props {
   title: string;
   description: string;
   noindex?: boolean;
+  /** Lock the page to the light palette. The homepage does this so its night band stays intentional. */
+  theme?: 'light';
 }
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, theme } = Astro.props;
 // Only emit a canonical URL when the real site origin is configured (SITE_URL).
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme={theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -35,6 +37,18 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     {Astro.site && <link rel="sitemap" href="/sitemap-index.xml" />}
   </head>
   <body>
+    <script is:inline>
+      window.addEventListener(
+        'error',
+        function (event) {
+          const target = event.target;
+          if (!target || target.tagName !== 'IMG' || !target.closest) return;
+          const frame = target.closest('picture') && target.closest('.device-scr');
+          if (frame) frame.classList.add('is-missing');
+        },
+        true,
+      );
+    </script>
     <a class="skip-link" href="#main">Skip to content</a>
     <SiteHeader />
     <main id="main" tabindex="-1">

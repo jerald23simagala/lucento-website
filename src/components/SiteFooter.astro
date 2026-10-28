@@ -6,18 +6,18 @@ const columns = [
   {
     title: 'Product',
     links: [
-      { href: '/#how-it-works', label: 'How it works' },
-      { href: '/#features', label: 'Features' },
+      { href: '/#write', label: 'How it works' },
+      { href: '/#light', label: 'The light' },
+      { href: '/#app', label: 'The app' },
       { href: '/#try', label: 'Interactive demo' },
-      { href: '/#pace', label: 'Pace calculator' },
     ],
   },
   {
     title: 'Learn',
     links: [
-      { href: '/how-to', label: 'Interactive guides' },
-      { href: '/#faq', label: 'FAQ' },
-      { href: '/#good-to-know', label: 'Current limitations' },
+      { href: '/how-to', label: 'Guides' },
+      { href: '/#answers', label: 'Questions' },
+      { href: '/#answers', label: 'Current limitations' },
     ],
   },
   {
@@ -33,102 +33,98 @@ const columns = [
 <footer class="site-footer">
   <div class="inner">
     <div class="brand">
-      <a href="/" aria-label="Lucento home"><Logo /></a>
+      <a href="/" aria-label="Lucento home"><Logo tone="light" /></a>
       <p>Financial clarity without the complexity. A budget tracker for Android, in development.</p>
     </div>
     {
-      columns.map((c) => (
-        <nav aria-label={c.title}>
-          <p class="col-title">{c.title}</p>
+      columns.map((column) => (
+        <nav aria-label={column.title}>
+          <p class="col-title">{column.title}</p>
           <ul>
-            {c.links.map((l) => (
+            {column.links.map((link) => (
               <li>
-                <a href={l.href}>{l.label}</a>
+                <a href={link.href}>{link.label}</a>
               </li>
             ))}
           </ul>
         </nav>
       ))
     }
-  </div>
-  <div class="base">
-    <p>© {year} Lucento · The interactive demo uses fictional data and simulates the Android app.</p>
+    <p class="base">© {year} Lucento. Screens show the app’s demo data; figures on this page are fictional.</p>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    margin-top: var(--space-xxl);
-    border-top: 1px solid var(--outline-variant);
-    background: var(--surface-container-low);
-    color: var(--on-surface-variant);
-    font-size: 0.9375rem;
+    background: #10182b;
+    color: #b8c5dc;
+    font-size: 15px;
   }
 
   .inner {
     max-width: var(--page-max);
     margin: 0 auto;
-    padding: var(--space-xxl) var(--page-gutter) var(--space-xl);
-    display: grid;
-    grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
-    gap: var(--space-xl);
+    padding: 56px var(--page-gutter) 40px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px 64px;
+  }
+
+  .brand {
+    flex: 1 1 280px;
   }
 
   .brand p {
-    max-width: 22rem;
-    margin: var(--space-md) 0 0;
+    max-width: 32ch;
+    margin: 14px 0 0;
   }
 
-  .brand a {
-    display: inline-flex;
-    min-height: var(--min-touch);
-    align-items: center;
+  nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 9rem;
   }
 
   .col-title {
     margin: 0;
-    color: var(--on-surface);
+    color: #8a97b0;
+    font-size: 12px;
     font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   ul {
-    margin: var(--space-xs) 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
+    display: grid;
   }
 
-  li a {
+  a {
     display: inline-flex;
     align-items: center;
-    min-height: 2.5rem;
-    color: var(--on-surface-variant);
+    min-height: 44px;
+    color: #b8c5dc;
     text-decoration: none;
   }
 
-  li a:hover {
-    color: var(--primary);
-    text-decoration: underline;
+  a:hover {
+    color: #fff;
   }
 
   .base {
-    max-width: var(--page-max);
-    margin: 0 auto;
-    padding: var(--space-lg) var(--page-gutter) var(--space-xl);
-    border-top: 1px solid var(--outline-variant);
-    font-size: 0.8125rem;
-  }
-
-  .base p {
+    flex: 1 1 100%;
     margin: 0;
+    padding-top: 24px;
+    border-top: 1px solid #26365c;
+    font-size: 13px;
   }
 
-  @media (max-width: 760px) {
+  @media (max-width: 640px) {
     .inner {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .brand {
-      grid-column: 1 / -1;
+      gap: 28px 32px;
     }
   }
 </style>
