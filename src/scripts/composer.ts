@@ -45,15 +45,40 @@ export function mountComposer(root: HTMLElement): void {
 
   show('empty');
 
+  const walletButtons = (): HTMLButtonElement[] => [...root.querySelectorAll<HTMLButtonElement>('[data-wallet]')];
+
+  const selectWallet = (chosen: HTMLButtonElement, moveFocus: boolean): void => {
+    walletButtons().forEach((button) => {
+      const on = button === chosen;
+      button.setAttribute('aria-checked', on ? 'true' : 'false');
+      button.tabIndex = on ? 0 : -1;
+    });
+    if (moveFocus) chosen.focus();
+  };
+
+  root.addEventListener('keydown', (event) => {
+    const current = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>('[data-wallet]');
+    if (!current || !root.contains(current)) return;
+    const items = walletButtons();
+    const index = items.indexOf(current);
+    if (index < 0) return;
+    let next = index;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % items.length;
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index - 1 + items.length) % items.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = items.length - 1;
+    else return;
+    event.preventDefault();
+    const choice = items[next];
+    if (choice) selectWallet(choice, true);
+  });
+
   root.addEventListener('click', (event) => {
     const target = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-pick], [data-reset], [data-save], [data-wallet]');
     if (!target || !root.contains(target)) return;
 
-    if (target.dataset.wallet) {
-      root.querySelectorAll<HTMLButtonElement>('[data-wallet]').forEach((button) => {
-        const on = button.dataset.wallet === target.dataset.wallet;
-        button.setAttribute('aria-checked', on ? 'true' : 'false');
-      });
+    if (target.dataset.wallet && target instanceof HTMLButtonElement) {
+      selectWallet(target, false);
       return;
     }
 

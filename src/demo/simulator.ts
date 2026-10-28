@@ -350,7 +350,7 @@ export const STORIES: Record<string, Story> = {
   sync: {
     kicker: 'Cloud sync',
     title: 'Back up and sync your phones',
-    text: 'Optional: keep your data the same on every phone. Nothing leaves this one until you connect an account.',
+    text: 'Optional: keep your data the same on every phone. Nothing leaves this one unless you turn on sync or Gemini reading.',
     steps: [
       { title: 'Open Settings from your profile', body: 'Tap the round profile button, then Settings.', target: 'profile', done: (s) => s.sheet === 'profile' || onSettings(s) || s.syncEmail !== null || s.disconnected },
       { title: 'Tap Settings', body: 'Cloud sync is near the top.', target: 'open-settings', done: (s) => onSettings(s) || s.syncEmail !== null || s.disconnected },
@@ -501,7 +501,7 @@ function composer(s: State): string {
     ? missing === 1 ? 'Fix 1 highlighted to save' : `Fix ${missing} highlighted to save`
     : rows.length === 1 ? 'Save 1 transaction' : `Save ${rows.length} transactions`;
   return `${topbar('Add transactions')}
-  <div class="ls-walletbar" role="radiogroup" aria-label="Wallet these transactions go into"><small>INTO</small>${into.map((w) => `<button type="button" class="ls-wpill${s.entryWallet === w.id ? ' is-on' : ''}" role="radio" aria-checked="${s.entryWallet === w.id}" data-action="into-${w.id}">${s.entryWallet === w.id ? icon(P.check, 14) : ''}${w.name}${w.star ? ' ★' : ''}</button>`).join('')}</div>
+  <div class="ls-walletbar" role="radiogroup" aria-label="Wallet these transactions go into"><small>INTO</small>${into.map((w) => `<button type="button" class="ls-wpill${s.entryWallet === w.id ? ' is-on' : ''}" role="radio" aria-checked="${s.entryWallet === w.id}" tabindex="${s.entryWallet === w.id ? 0 : -1}" data-action="into-${w.id}">${s.entryWallet === w.id ? icon(P.check, 14) : ''}${w.name}${w.star ? ' ★' : ''}</button>`).join('')}</div>
   <div class="ls-scroll ls-convo">${convo}</div>
   ${s.sent && rows.length ? `<div class="ls-savebar"><small>${rows.length} expenses · ${signed(-total)}</small><button type="button" class="ls-primary" data-action="save-rows" ${ready ? '' : 'disabled'}>${saveLabel}</button></div>` : ''}
   <form class="ls-input" data-form="composer">
@@ -677,7 +677,7 @@ function onboarding(s: State): string {
     case 'onb-sync':
       return `<div class="ls-onb ls-left">
         <b class="ls-onb-title">Back up and sync?</b>
-        <small>Optional. Nothing leaves this phone unless you connect an account and keep sync on.</small>
+        <small>Optional. Nothing leaves this phone unless you turn on sync or Gemini reading.</small>
         <button type="button" class="ls-primary ls-google" data-action="soon" data-label="Connecting an account during setup">${icon(P.google, 18)}Continue with Google</button>
         <span class="ls-grow"></span>
         <button type="button" class="ls-text" data-action="setup-sync-skip">Not now — keep it on this phone</button>
@@ -918,7 +918,11 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
       go('composer');
     } else if (action === 'home') go('home');
     else if (action === 'example') s.draft = EXAMPLE;
-    else if (action.startsWith('into-')) s.entryWallet = action.slice(5);
+    else if (action.startsWith('into-')) {
+      s.entryWallet = action.slice(5);
+      render(`[data-action="into-${s.entryWallet}"]`);
+      return;
+    }
     else if (action === 'save-rows') {
       if (s.rows.length && s.rows.every((r) => r.amount !== null)) {
         s.rows.forEach((r, i) => s.txs.push({ id: 101 + s.saved * 10 + i, desc: r.desc, amount: r.amount as number, cat: r.cat, date: 'Oct 20', wallet: s.entryWallet }));
@@ -1027,6 +1031,22 @@ export function mountSimulator(root: HTMLElement, options: Options): void {
     render();
   }
 
+  screenEl.addEventListener('keydown', (e) => {
+    const current = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-action^="into-"]');
+    if (!current) return;
+    const items = [...screenEl.querySelectorAll<HTMLButtonElement>('[data-action^="into-"]')];
+    const index = items.indexOf(current);
+    if (index < 0) return;
+    let next = index;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = (index + 1) % items.length;
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = (index - 1 + items.length) % items.length;
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = items.length - 1;
+    else return;
+    e.preventDefault();
+    const choice = items[next];
+    if (choice?.dataset.action) act(choice.dataset.action, choice);
+  });
   screenEl.addEventListener('click', (e) => {
     const el = (e.target as HTMLElement).closest<HTMLElement>('[data-action]');
     if (!el || el.tagName === 'SELECT' || el.getAttribute('type') === 'submit') return;

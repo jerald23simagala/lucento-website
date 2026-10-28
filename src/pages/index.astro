@@ -18,6 +18,18 @@ const shot = '(min-width: 700px) 340px, 100vw';
   description="Type a day’s spending the way you’d text it. Lucento turns the sentence into rows you check before anything is saved. Records work offline, on your phone, with no bank login. Speech only requests on-device recognition, which isn’t guaranteed."
   theme="light"
 >
+  <Fragment slot="head">
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      href="/screens/06-home-within-budget-540.avif"
+      imagesrcset="/screens/06-home-within-budget-540.avif 540w, /screens/06-home-within-budget-720.avif 720w, /screens/06-home-within-budget-1080.avif 1080w"
+      imagesizes="270px"
+      media="(min-width: 640px)"
+      fetchpriority="high"
+    />
+  </Fragment>
   <section class="lx-wrap lx-hero" id="write" aria-labelledby="h-hero">
     <DayMarks day={5} />
     <div class="lx-kicker-row">
@@ -47,7 +59,6 @@ const shot = '(min-width: 700px) 340px, 100vw';
               alt=""
               sizes="(min-width: 640px) 270px, 1px"
               fallback="Home, with the month on pace."
-              eager
             />
           </div>
           <div class="lx-front">
@@ -62,7 +73,7 @@ const shot = '(min-width: 700px) 340px, 100vw';
     <ul class="lx-promises">
       <li>Works offline for what you type</li>
       <li>No bank login</li>
-      <li>Nothing you type leaves your phone unless you sync</li>
+      <li>Nothing you type leaves your phone unless you turn on sync or Gemini reading</li>
       <li>Message, receipt or voice</li>
     </ul>
     <p class="lx-fine">

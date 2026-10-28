@@ -134,6 +134,12 @@ test.describe('app showcase', () => {
 test('hero composer reviews rows and saves explicitly', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.cmp-wallets').getByRole('radio')).toHaveText([/Everyday bank/, 'Cash', 'Visa card']);
+  const heroBank = page.locator('.cmp-wallets').getByRole('radio', { name: /Everyday bank/ });
+  await heroBank.focus();
+  await page.keyboard.press('ArrowRight');
+  const heroCash = page.locator('.cmp-wallets').getByRole('radio', { name: 'Cash' });
+  await expect(heroCash).toBeFocused();
+  await expect(heroCash).toHaveAttribute('aria-checked', 'true');
   await page.getByRole('button', { name: /Lunch 250, groceries 800/ }).click();
   await expect(page.getByRole('button', { name: 'Save 3 transactions' })).toBeVisible();
   await expect(page.locator('[data-view="lunch"] li')).toHaveCount(3);
