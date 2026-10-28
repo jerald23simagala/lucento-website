@@ -13,6 +13,10 @@
 :root {
   --page-gutter: clamp(20px, 5vw, 64px);
   --phone-width: min(360px, calc(100vw - 2 * var(--page-gutter)));
+  /* Even bezel (fraction of the phone width) around a 9:16 screen.
+     Outer ratio = 9 / (16 - 14 * bezel). 0.030556 * 14 = 0.427784. */
+  --phone-bezel: 0.030556;
+  --phone-aspect: 0.577952;
 }
 
 @media (min-width: 768px) {
@@ -220,6 +224,26 @@ svg {
   align-items: center;
 }
 
+.lx-caption {
+  margin: 18px 0 0;
+  max-width: 36ch;
+  font-size: 13px;
+  text-align: center;
+}
+
+.lx-promises {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 32px;
+  margin: clamp(48px, 6vw, 80px) 0 0;
+  padding: 18px 0 0;
+  list-style: none;
+}
+
+.lx-fine {
+  margin: 24px 0 0;
+}
+
 .lx-phones {
   display: flex;
   align-items: flex-end;
@@ -244,32 +268,70 @@ svg {
   width: var(--phone-width);
   max-width: 100%;
   height: auto;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: var(--phone-aspect);
   overflow: hidden;
+  container-type: inline-size;
 }
 
 .lx-front .phone {
   width: 100%;
   height: auto;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: var(--phone-aspect);
 }
 
 .lx-back .phone {
   width: calc(var(--phone-width) * 0.62);
   height: auto;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: var(--phone-aspect);
 }
 
 .phone.is-mini {
   width: min(168px, 42vw);
   height: auto;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: var(--phone-aspect);
 }
 
 .phone-screen {
   position: absolute;
-  inset: 3.0556%;
+  top: calc(var(--phone-bezel) * 100cqw);
+  right: calc(var(--phone-bezel) * 100cqw);
+  bottom: calc(var(--phone-bezel) * 100cqw);
+  left: calc(var(--phone-bezel) * 100cqw);
   overflow: hidden;
+}
+
+/* The composer fills the screen on first paint. Deferred CSS used to move
+   .cmp-live from a clipped sliver up to this height. */
+.phone.is-live .phone-screen {
+  display: flex;
+  flex-direction: column;
+}
+
+.cmp {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.cmp-static {
+  position: absolute;
+  inset: 0;
+}
+
+.cmp-live {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  /* 0 lets the column take the screen's free space instead of the content height. */
+  min-height: 0;
+}
+
+.cmp-chrome {
+  display: block;
+  flex: none;
+  width: 100%;
+  height: auto;
 }
 
 @media (min-width: 641px) {

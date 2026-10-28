@@ -65,6 +65,44 @@ test.describe('app showcase', () => {
     expect(errors).toEqual([]);
   });
 
+  test('below 1100px the showcase shows three phones and the description follows', async ({ page }) => {
+    for (const width of [1099, 1024, 768]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto('/');
+      await expect(page.locator('[data-showcase]')).toHaveAttribute('data-mode', 'three');
+      for (const amount of [0, 0.5, 1]) {
+        await scrollPin(page, amount);
+        const result = await page.evaluate(() => {
+          const stage = document.querySelector('[data-stage]')?.getBoundingClientRect();
+          const slides = [...document.querySelectorAll('[data-slide]')].map((node) => {
+            const box = node.getBoundingClientRect();
+            return {
+              title: (node as HTMLElement).dataset.title ?? '',
+              width: box.width,
+              opacity: Number(getComputedStyle(node).opacity),
+              left: box.left,
+              right: box.right,
+            };
+          });
+          const visible = !stage
+            ? []
+            : slides.filter((slide) => slide.opacity > 0.9 && slide.width > 40 && slide.left >= stage.left - 2 && slide.right <= stage.right + 2);
+          const title = document.querySelector('[data-sync-title]')?.textContent ?? '';
+          const widest = visible.reduce((best, slide) => (slide.width > best.width ? slide : best), visible[0]);
+          return {
+            count: visible.length,
+            min: visible.length ? Math.min(...visible.map((slide) => slide.width)) : 0,
+            widest: widest?.title ?? '',
+            title,
+          };
+        });
+        expect(result.count, `${width}px at ${amount}`).toBe(3);
+        expect(result.min, `${width}px at ${amount} side width`).toBeGreaterThanOrEqual(110);
+        expect(result.widest, `${width}px at ${amount} description`).toBe(result.title);
+      }
+    }
+  });
+
   test('page down and space scroll the page and the caption follows', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
@@ -80,7 +118,7 @@ test.describe('app showcase', () => {
   });
 
   test('tablet and desktop keep five phones visible at the ends of the scroll', async ({ page }) => {
-    for (const width of [1280, 1024, 768]) {
+    for (const width of [1440, 1280, 1100]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto('/');
       for (const amount of [0, 0.5, 1]) {
@@ -131,8 +169,30 @@ test.describe('app showcase', () => {
   });
 });
 
-test('hero composer reviews rows and saves explicitly', async ({ page }) => {
+test('feature strip can be scrolled from the keyboard', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
+  const strip = page.locator('.lx-feature-row');
+  await expect(strip).toHaveAttribute('tabindex', '0');
+  await expect(strip).toHaveAttribute('role', 'region');
+  await expect(strip).toHaveAttribute('aria-label', 'Feature screens');
+  await strip.focus();
+  await expect(strip).toBeFocused();
+  const before = await strip.evaluate((el) => el.scrollLeft);
+  await page.keyboard.press('ArrowRight');
+  await expect.poll(() => strip.evaluate((el) => el.scrollLeft)).toBeGreaterThan(before + 20);
+});
+
+test('hero composer reviews rows and saves explicitly', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const hintClearance = await page.evaluate(() => {
+    const hint = document.querySelector('.cmp-hint')?.getBoundingClientRect();
+    const input = document.querySelector('.cmp-input')?.getBoundingClientRect();
+    if (!hint || !input || hint.height === 0) return -1;
+    return input.top - hint.bottom;
+  });
+  expect(hintClearance).toBeGreaterThanOrEqual(0);
   await expect(page.locator('.cmp-wallets').getByRole('radio')).toHaveText([/Everyday bank/, 'Cash', 'Visa card']);
   const heroBank = page.locator('.cmp-wallets').getByRole('radio', { name: /Everyday bank/ });
   await heroBank.focus();
@@ -145,6 +205,35 @@ test('hero composer reviews rows and saves explicitly', async ({ page }) => {
   await expect(page.locator('[data-view="lunch"] li')).toHaveCount(3);
   await page.getByRole('button', { name: 'Save 3 transactions' }).click();
   await expect(page.locator('[data-composer-live]')).toHaveText('Saved all 3.');
+});
+
+test('narrow demo dock keeps the Transactions label off the add button', async ({ page }) => {
+  await page.setViewportSize({ width: 315, height: 700 });
+  await page.goto('/#try');
+  const gap = await page.locator('#try .ls-dock').evaluate((dock) => {
+    const plus = dock.querySelector('.ls-plus')?.getBoundingClientRect();
+    const labels = [...dock.querySelectorAll('.ls-tab small')].map((label) => {
+      const range = document.createRange();
+      range.selectNodeContents(label);
+      const box = range.getBoundingClientRect();
+      const clipped = label.scrollWidth - label.clientWidth > 1;
+      return { text: label.textContent ?? '', right: box.right, left: box.left, clipped };
+    });
+    return {
+      plusLeft: plus?.left ?? 0,
+      plusRight: plus?.right ?? 0,
+      labels,
+    };
+  });
+  const transactions = gap.labels.find((label) => label.text === 'Transactions');
+  expect(transactions).toBeTruthy();
+  expect(transactions!.clipped).toBe(false);
+  expect(gap.plusLeft - transactions!.right).toBeGreaterThanOrEqual(4);
+  for (const label of gap.labels) {
+    const overlapsPlus = label.right > gap.plusLeft + 0.5 && label.left < gap.plusRight - 0.5;
+    expect(overlapsPlus, label.text).toBe(false);
+    expect(label.clipped, label.text).toBe(false);
+  }
 });
 
 test('full demo still logs a day and stays quiet in the console', async ({ page }) => {
@@ -241,17 +330,42 @@ test('hero, showcase, and demo phones share one frame', async ({ page }) => {
     expect(Math.abs(ratio(demo) - ratio(hero)), `${width} demo ratio`).toBeLessThan(0.02);
     expect(Math.abs(ratio(showcase) - ratio(hero)), `${width} showcase ratio`).toBeLessThan(0.02);
     if (width === 360) expect(sizes.fontSize).toBeGreaterThanOrEqual(12);
+    const bezel = await page.locator('.lx-front .phone').evaluate((phone) => {
+      const box = phone.getBoundingClientRect();
+      const screen = phone.querySelector('.phone-screen')?.getBoundingClientRect();
+      if (!screen) return null;
+      return {
+        left: screen.left - box.left,
+        right: box.right - screen.right,
+        top: screen.top - box.top,
+        bottom: box.bottom - screen.bottom,
+        ratio: screen.width / screen.height,
+      };
+    });
+    expect(bezel, `${width} bezel`).not.toBeNull();
+    expect(Math.abs(bezel!.left - bezel!.right), `${width} side bezel`).toBeLessThan(0.75);
+    expect(Math.abs(bezel!.top - bezel!.bottom), `${width} end bezel`).toBeLessThan(0.75);
+    expect(Math.abs(bezel!.left - bezel!.top), `${width} even bezel`).toBeLessThan(0.75);
+    expect(Math.abs(bezel!.ratio - 9 / 16), `${width} screen ratio`).toBeLessThan(0.01);
     if (width === 1440) {
-      const minis = await page.locator('.phone.is-mini').evaluateAll((nodes) => nodes.map((node) => {
-        const rect = node.getBoundingClientRect();
+      const shots = await page.locator('.lx-back .phone, .phone.is-mini').evaluateAll((nodes) => nodes.map((node) => {
+        const screen = node.querySelector('.phone-screen')?.getBoundingClientRect();
         const image = node.querySelector('img');
+        const imageBox = image?.getBoundingClientRect();
         const fit = image ? getComputedStyle(image).objectFit : '';
-        return { width: rect.width, height: rect.height, fit };
+        return {
+          fit,
+          screenRatio: screen ? screen.width / screen.height : 0,
+          widthDelta: screen && imageBox ? Math.abs(imageBox.width - screen.width) : 99,
+          heightDelta: screen && imageBox ? Math.abs(imageBox.height - screen.height) : 99,
+        };
       }));
-      expect(minis.length).toBeGreaterThan(0);
-      for (const mini of minis) {
-        expect(Math.abs(mini.width / mini.height - 9 / 16), 'mini phone ratio').toBeLessThan(0.01);
-        expect(mini.fit).toBe('contain');
+      expect(shots.length).toBeGreaterThan(0);
+      for (const shot of shots) {
+        expect(shot.fit).toBe('contain');
+        expect(Math.abs(shot.screenRatio - 9 / 16), 'screenshot screen ratio').toBeLessThan(0.01);
+        expect(shot.widthDelta, 'screenshot width').toBeLessThan(2);
+        expect(shot.heightDelta, 'screenshot height').toBeLessThan(2);
       }
     }
   }

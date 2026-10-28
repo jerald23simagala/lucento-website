@@ -200,7 +200,7 @@
 .lx-front .phone {
   width: 100%;
   height: auto;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: var(--phone-aspect, 0.577952);
 }
 
 .lx-caption {
@@ -657,7 +657,7 @@
   max-width: 100%;
   color: inherit;
   text-decoration: none;
-  border-radius: 12.78% / 6.22%;
+  border-radius: 12.7778% / 7.3849%;
 }
 
 .lx-synced,
@@ -748,7 +748,7 @@ html.js-motion .lx-sticky {
 
 html.js-motion .lx-stage {
   position: relative;
-  height: calc(var(--phone-width) * 16 / 9 + 24px);
+  height: calc(var(--phone-width) / var(--phone-aspect, 0.577952) + 24px);
   min-height: 0;
   overflow: hidden;
 }
@@ -1045,9 +1045,13 @@ html.js-motion .lx-dots {
   font-size: 12.5px;
 }
 
+.cmp-hint {
+  margin: 4px 0 0;
+}
+
 .cmp-live {
   display: none;
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   flex-direction: column;
 }
