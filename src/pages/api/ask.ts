@@ -112,8 +112,9 @@ function parseRequest(body: unknown): AskRequest | null {
 
 export const POST: APIRoute = async ({ request }) => {
   const geminiKey = process.env.GEMINI_API_KEY;
-  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, '');
-  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY;
+  // Either name: Vercel's production variables carry the LUCENTO_ prefix the app's CI uses (renamed 2026-11-02).
+  const supabaseUrl = (process.env.SUPABASE_URL || process.env.LUCENTO_SUPABASE_URL)?.replace(/\/$/, '');
+  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY || process.env.LUCENTO_SUPABASE_PUBLISHABLE_KEY;
   if (!geminiKey || !supabaseUrl || !publishableKey) return json(503, { error: 'not_configured' });
 
   const auth = request.headers.get('authorization') ?? '';

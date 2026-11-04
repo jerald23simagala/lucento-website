@@ -8,7 +8,8 @@ import vercel from '@astrojs/vercel';
 
 // The production domain is not decided yet. Set SITE_URL to enable canonical
 // URLs and the sitemap; until then neither is emitted rather than pointing at a guess.
-const site = process.env.SITE_URL || undefined;
+// LUCENTO_SITE_URL is the name set on Vercel; SITE_URL still works.
+const site = process.env.SITE_URL || process.env.LUCENTO_SITE_URL || undefined;
 
 /** Astro writes page HTML itself, so defer the stylesheets after the build. */
 /**
