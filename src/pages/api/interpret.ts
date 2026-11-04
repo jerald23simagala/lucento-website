@@ -169,6 +169,8 @@ export const POST: APIRoute = async ({ request }) => {
       generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: SCHEMA },
     },
     'interpret',
+    // No new model is tried after 8 s: the app waits 15 s for the whole answer.
+    8_000,
   );
   if (!gemini.ok) return json(502, { error: 'model_unavailable', status: gemini.status });
   const text = gemini.text;
