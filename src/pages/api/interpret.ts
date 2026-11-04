@@ -13,10 +13,11 @@
  *   SUPABASE_URL              https://<project>.supabase.co
  *   SUPABASE_PUBLISHABLE_KEY  the same publishable key the app ships with
  *   AI_DAILY_LIMIT            optional, requests per user per UTC day (default 50)
- *   GEMINI_MODEL              optional (default gemini-2.5-flash)
+ *   GEMINI_MODEL              optional; unset, the newest stable Flash model the key can use (src/server/gemini.ts)
  */
 
 import type { APIRoute } from 'astro';
+import { generate } from '../../server/gemini';
 
 declare const process: { env: Record<string, string | undefined> };
 
@@ -149,7 +150,6 @@ export const POST: APIRoute = async ({ request }) => {
   if (used > limit) return json(429, { error: 'daily_limit', limit });
 
   // 3. Gemini reads the note into structured rows.
-  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
   const prompt = JSON.stringify({
     note: parsed.text,
     today: parsed.today,
@@ -159,24 +159,19 @@ export const POST: APIRoute = async ({ request }) => {
     categories: parsed.categories,
     wallets: parsed.wallets,
   });
-  const gemini = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': geminiKey },
-    body: JSON.stringify({
+  // Thinking is kept low (generate): a short note doesn't need it, and a long pass can outlast the app's 15 s wait,
+  // which the app reports as "couldn't be reached".
+  const gemini = await generate(
+    geminiKey,
+    {
       systemInstruction: { parts: [{ text: SYSTEM }] },
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      // No "thinking" pass: reading a short note doesn't need it, and on 2.5 models it can take longer than the app
-      // waits (15 s), which the app reports as "couldn't be reached".
-      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: SCHEMA, thinkingConfig: { thinkingBudget: 0 } },
-    }),
-  });
-  if (!gemini.ok) {
-    // Status only — never the request or response body, which carry the user's note.
-    console.error(`interpret: Gemini answered HTTP ${gemini.status} for model ${model}`);
-    return json(502, { error: 'model_unavailable', status: gemini.status });
-  }
-  const reply = (await gemini.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  const text = reply.candidates?.[0]?.content?.parts?.[0]?.text;
+      generationConfig: { temperature: 0, responseMimeType: 'application/json', responseSchema: SCHEMA },
+    },
+    'interpret',
+  );
+  if (!gemini.ok) return json(502, { error: 'model_unavailable', status: gemini.status });
+  const text = gemini.text;
   let items: unknown[] = [];
   try {
     const out = JSON.parse(text ?? '{}') as { items?: unknown };
