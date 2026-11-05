@@ -5,9 +5,13 @@
  * Candidates: GEMINI_MODEL when set, then this key's Flash models from Gemini's models list (cached per function
  * instance) — the newest stable "gemini-X.Y-flash" first, then older ones, the "gemini-flash-latest" alias, other Flash
  * text models, and Flash-Lite last. A call that fails with 404 (retired), 429, 500, 503 or 504 (no capacity right now)
- * moves to the next candidate, within the caller's time budget (the app gives up after 15–30 s). Thinking is kept low:
- * Gemini 2.x takes a thinking budget, later models a thinking level; if a model refuses the setting (400) the call is
- * retried once without it. Nothing here logs prompts or answers — only statuses and model names.
+ * moves to the next candidate, within the caller's time budget (the app gives up after 15–30 s). A model that just had
+ * no capacity is tried last for the next two minutes (per function instance), so later requests start with one that
+ * answers instead of spending seconds on the same busy models (owner round 9: Ask Lucento answers failed while the
+ * newest Flash models answered 429/503). Each call has a hard timeout, so one slow model can't outlast the app's wait.
+ * Thinking is kept low: Gemini 2.x takes a thinking budget, later models a thinking level; if a model refuses the
+ * setting (400) the call is retried once without it. Nothing here logs prompts or answers — only statuses and model
+ * names.
  */
 
 declare const process: { env: Record<string, string | undefined> };
@@ -17,9 +21,28 @@ const CACHE_MS = 6 * 60 * 60 * 1000;
 const FALLBACK_MODEL = 'gemini-flash-latest';
 /** Statuses that mean "try another model", not "this request is wrong". */
 const TRY_NEXT = new Set([404, 429, 500, 503, 504]);
+/** Statuses that mean "no capacity right now" (504 also stands for a call that timed out here). */
+const BUSY = new Set([429, 500, 503, 504]);
 const MAX_MODELS = 4;
+/** How long a model that had no capacity is tried last. */
+const BUSY_MS = 2 * 60 * 1000;
+/** A call may run this long past the caller's budget for trying new models, and never less than MIN_CALL_MS. */
+const CALL_GRACE_MS = 4_000;
+const MIN_CALL_MS = 3_000;
 
 let cached: { models: string[]; at: number } | null = null;
+/** Model → until when it is tried last. Per function instance, like the models list. */
+const busyUntil = new Map<string, number>();
+
+/** [models] with the ones that had no capacity in the last two minutes moved to the end, each group in its own order. */
+export function preferAvailable(models: string[], now: number, busy: Map<string, number> = busyUntil): string[] {
+  const isBusy = (m: string) => (busy.get(m) ?? 0) > now;
+  return [...models.filter((m) => !isBusy(m)), ...models.filter(isBusy)];
+}
+
+function markBusy(model: string): void {
+  busyUntil.set(model, Date.now() + BUSY_MS);
+}
 
 /** "3.10" → [3, 10]: versions compare number by number, so 3.10 is newer than 3.8. */
 function version(v: string): number[] {
@@ -113,7 +136,9 @@ export type GenerateResult = { ok: true; text: string | undefined; model: string
  */
 export async function generate(key: string, request: GenerateRequest, label: string, budgetMs = 20_000): Promise<GenerateResult> {
   const started = Date.now();
-  let models = await candidates(key, false);
+  // Past this no call may still be running: the app stops waiting soon after.
+  const deadline = started + budgetMs + CALL_GRACE_MS;
+  let models = preferAvailable(await candidates(key, false), started);
   let refreshed = false;
   let last: GenerateResult = { ok: false, status: 502, model: models[0] ?? FALLBACK_MODEL };
   let tried = 0;
@@ -130,11 +155,21 @@ export async function generate(key: string, request: GenerateRequest, label: str
         ...(legacy && temperature !== undefined ? { temperature } : {}),
         ...(thinking ? { thinkingConfig: lowThinking(model) } : {}),
       };
-      const res = await fetch(`${API}/models/${encodeURIComponent(model)}:generateContent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-        body: JSON.stringify({ systemInstruction: request.systemInstruction, contents: request.contents, generationConfig }),
-      });
+      let res: Response;
+      try {
+        res = await fetch(`${API}/models/${encodeURIComponent(model)}:generateContent`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+          body: JSON.stringify({ systemInstruction: request.systemInstruction, contents: request.contents, generationConfig }),
+          signal: AbortSignal.timeout(Math.max(MIN_CALL_MS, deadline - Date.now())),
+        });
+      } catch {
+        // Timed out here, or the connection failed: no answer from this model in time.
+        console.error(`${label}: Gemini call timed out or failed for model ${model}`);
+        last = { ok: false, status: 504, model };
+        markBusy(model);
+        break;
+      }
       if (res.ok) {
         const reply = (await res.json()) as { candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] } }[] };
         const text = reply.candidates?.[0]?.content?.parts?.find((p) => typeof p.text === 'string' && !p.thought)?.text;
@@ -144,6 +179,7 @@ export async function generate(key: string, request: GenerateRequest, label: str
       // Status only — never the request or response body, which carry the user's words or figures.
       console.error(`${label}: Gemini answered HTTP ${res.status} for model ${model}`);
       last = { ok: false, status: res.status, model };
+      if (BUSY.has(res.status)) markBusy(model);
       if (res.status === 400 && thinking) {
         thinking = false;
         continue;
@@ -155,7 +191,7 @@ export async function generate(key: string, request: GenerateRequest, label: str
     if (last.status === 404 && !refreshed) {
       refreshed = true;
       const done = new Set(models.slice(0, i + 1));
-      models = [...models.slice(0, i + 1), ...(await candidates(key, true)).filter((m) => !done.has(m))];
+      models = [...models.slice(0, i + 1), ...preferAvailable((await candidates(key, true)).filter((m) => !done.has(m)), Date.now())];
     }
   }
   return last;
