@@ -59,8 +59,11 @@ design/tokens.json        Design-system export (source of truth for tokens)
 scripts/build-tokens.mjs  tokens.json -> src/styles/tokens.css
 src/styles/               tokens.css (generated) and global.css
 src/layouts/              BaseLayout: metadata, skip link, header, footer
-src/components/           SiteHeader, SiteFooter
-src/pages/                index, 404, robots.txt
+src/components/           SiteHeader, SiteFooter, ContentPage + LegalBody (reading pages), MoreFeatures, phone demos
+src/data/                 site.ts (contact, Play link, playListed), plans.ts (pricing), guides, home copy,
+                          legal.ts (generated from the app: lucento-android tools/legal/export_legal.py — don't edit)
+src/pages/                index, pricing, privacy, terms, delete-account (Play's account-deletion page), how-to,
+                          auth/confirmed, api/* (AI proxy, billing), 404, robots.txt
 brand/logo/               Rising Crest logo: symbol, wordmark, lockups, Android
 brand/logo-concepts/      Earlier logo explorations
 public/                   Static files (favicon)

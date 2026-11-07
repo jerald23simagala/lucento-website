@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContentPage from '../components/ContentPage.astro';
+import LegalBody from '../components/LegalBody.astro';
+import { terms, UPDATED, VERSION } from '../data/legal';
+import { mailto, site } from '../data/site';
+---
+
+<BaseLayout
+  title="Terms of Use — Lucento"
+  description="The terms for using Lucento, its optional online services and Lucento Pro: subscriptions, Lifetime, cancelling and refunds through Google Play."
+>
+  <ContentPage eyebrow="Terms" title={terms.title} lede={terms.intro}>
+    <p class="content-meta" slot="meta">
+      Updated {UPDATED} (version {VERSION}). The app shows the same terms when you create an account. Questions:
+      <a href={mailto('Question about the Terms of Use')}>{site.contactEmail}</a>.
+    </p>
+    <LegalBody sections={terms.sections} />
+  </ContentPage>
+</BaseLayout>

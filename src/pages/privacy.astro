@@ -1,114 +1,31 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ContentPage from '../components/ContentPage.astro';
+import LegalBody from '../components/LegalBody.astro';
+import { privacy, UPDATED, VERSION } from '../data/legal';
+import { mailto, site } from '../data/site';
 
-const sections = [
-  {
-    title: 'What stays on your phone',
-    items: [
-      'Your wallets, transactions, budgets, goals, scheduled payments and settings are stored in a database on your phone. Every core feature works without a connection.',
-      'Receipt scanning reads the photo on your phone (Google ML Kit’s on-device text recognition). The photo isn’t uploaded.',
-      'Lucento doesn’t take part in Android’s automatic cloud backup, so your data isn’t copied to a backup you didn’t choose.',
-      'There are no ads, no analytics and no crash-reporting services in the app.',
-    ],
-  },
-  {
-    title: 'Cloud sync (optional)',
-    items: [
-      'Nothing is sent anywhere until you connect a Google or email account in onboarding or Settings, and keep sync on.',
-      'With sync on, a copy of your records is stored in Lucento’s cloud database (Supabase). Database rules allow each row to be read and changed only by the signed-in account that owns it.',
-      'Disconnecting stops sync and signs the phone out. It doesn’t delete anything on the phone or in the cloud copy.',
-      'Deleting your cloud account from inside the app isn’t available yet.',
-    ],
-  },
-  {
-    title: 'Smarter reading (optional)',
-    items: [
-      'Off unless you turn on Settings › Smarter reading › Read messages with Gemini. That control first explains what is sent and asks for your consent. It is a cloud service and needs a sync account.',
-      'When it’s on, the composer sends the message you type or speak, today’s date, your main currency and the names of your categories and accounts to Lucento’s server, which asks Google’s Gemini to read it. Your balances and history are never sent.',
-      'Lucento’s server doesn’t store the messages; it keeps a count of requests per account per day to apply the daily allowance.',
-      'You can turn it off at any time; reading then happens on the phone again.',
-    ],
-  },
-  {
-    title: 'Speech',
-    items: [
-      'Speaking a transaction uses your phone’s own speech recogniser. Lucento only requests offline recognition. That isn’t guaranteed, so the recogniser may still use the network. The text is then read on the phone, unless Read messages with Gemini is on.',
-    ],
-  },
-  {
-    title: 'This website',
-    items: [
-      'The interactive demo runs entirely in your browser with fictional data. Nothing you type in it is saved or sent.',
-      'The site is hosted on Vercel and doesn’t use advertising or tracking cookies.',
-    ],
-  },
-];
+// The app's Privacy Policy covers the app. This website adds only what the site itself does.
+const website = {
+  title: 'This website',
+  items: [
+    'The interactive demo runs entirely in your browser with fictional money. Nothing you type in it is saved or sent.',
+    'The site is hosted on Vercel and uses no advertising or tracking cookies.',
+    'Lucento’s server runs on this site’s domain for the app’s online features (the AI features you turn on and Google Play purchase checks). It keeps no copy of the messages it is sent.',
+  ],
+};
 ---
 
 <BaseLayout
-  title="How Lucento handles your data"
-  description="What stays on your phone, what cloud sync and Smarter reading send, and what the Lucento website does with your data."
+  title="Privacy Policy — Lucento"
+  description="What stays on your phone, what leaves it and when: accounts, cloud sync, Lucento Shared, purchases, exchange rates, the AI features, and how to delete your account."
 >
-  <article class="page">
-    <p class="eyebrow">Privacy</p>
-    <h1>How Lucento handles your data</h1>
-    <p class="lede">
-      A plain description of how the app works today. Lucento is in development; a formal privacy policy will be
-      published before it’s available on Google Play.
+  <ContentPage eyebrow="Privacy" title={privacy.title} lede={privacy.intro}>
+    <p class="content-meta" slot="meta">
+      Updated {UPDATED} (version {VERSION}). The app shows the same policy in Settings › Privacy &amp; security.
+      Questions or data requests: <a href={mailto('Privacy question')}>{site.contactEmail}</a>. To delete your account,
+      see <a href="/delete-account">Delete your account</a>.
     </p>
-    {
-      sections.map((s) => (
-        <section aria-labelledby={s.title.replace(/\W+/g, '-').toLowerCase()}>
-          <h2 id={s.title.replace(/\W+/g, '-').toLowerCase()}>{s.title}</h2>
-          <ul>
-            {s.items.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
-        </section>
-      ))
-    }
-  </article>
+    <LegalBody sections={[...privacy.sections, website]} />
+  </ContentPage>
 </BaseLayout>
-
-<style>
-  .page {
-    max-width: 46rem;
-    margin: 0 auto;
-    padding: clamp(var(--space-xxl), 6vw, 5rem) var(--page-gutter) var(--space-xxl);
-  }
-
-  .eyebrow {
-    margin: 0;
-    color: var(--primary);
-    font-weight: 700;
-    font-size: 0.875rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  h1 {
-    margin: var(--space-xs) 0 0;
-    font-size: clamp(2rem, 3vw + 1rem, 3rem);
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-  }
-
-  .lede {
-    margin: var(--space-lg) 0 0;
-    color: var(--on-surface-variant);
-    font-size: 1.125rem;
-  }
-
-  h2 {
-    margin: var(--space-xxl) 0 0;
-    font-size: 1.375rem;
-  }
-
-  ul {
-    margin: var(--space-md) 0 0;
-    padding-left: 1.25rem;
-    display: grid;
-    gap: var(--space-sm);
-  }
-</style>

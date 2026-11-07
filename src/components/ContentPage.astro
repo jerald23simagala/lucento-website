@@ -1,0 +1,86 @@
+---
+/**
+ * A reading page: eyebrow, title, lede, then whatever the page puts in the slot. Used by Privacy, Terms, Delete
+ * account and Pricing so long-form pages share one measure, one type scale and one spacing rhythm.
+ */
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  wide?: boolean;
+}
+
+const { eyebrow, title, lede, wide = false } = Astro.props;
+---
+
+<article class:list={['content', wide && 'is-wide']}>
+  <header class="content-head">
+    <p class="content-eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    {lede && <p class="content-lede">{lede}</p>}
+    <slot name="meta" />
+  </header>
+  <slot />
+</article>
+
+<style>
+  .content {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: clamp(var(--space-xxl), 6vw, 5rem) var(--page-gutter, 20px) var(--space-xxl);
+  }
+
+  .content.is-wide {
+    max-width: 72rem;
+  }
+
+  .content-head {
+    max-width: 46rem;
+  }
+
+  .content-eyebrow {
+    margin: 0;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    margin: var(--space-xs) 0 0;
+    font-size: clamp(2rem, 3vw + 1rem, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .content-lede {
+    margin: var(--space-lg) 0 0;
+    color: var(--on-surface-variant);
+    font-size: 1.125rem;
+  }
+
+  .content :global(h2) {
+    margin: var(--space-xxl) 0 0;
+    font-size: 1.375rem;
+    line-height: 1.25;
+  }
+
+  .content :global(.content-list) {
+    margin: var(--space-md) 0 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .content :global(.content-meta) {
+    margin: var(--space-md) 0 0;
+    color: var(--on-surface-variant);
+    font-size: 0.9375rem;
+  }
+
+  .content :global(a) {
+    color: var(--primary);
+    text-underline-offset: 3px;
+  }
+</style>

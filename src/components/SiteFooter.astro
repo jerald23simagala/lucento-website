@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import { mailto, site } from '../data/site';
 
 const year = new Date().getFullYear();
 const columns = [
@@ -9,6 +10,7 @@ const columns = [
       { href: '/#write', label: 'How it works' },
       { href: '/#light', label: 'The light' },
       { href: '/#app', label: 'The app' },
+      { href: '/pricing', label: 'Pricing' },
       { href: '/#try', label: 'Interactive demo' },
     ],
   },
@@ -21,10 +23,12 @@ const columns = [
     ],
   },
   {
-    title: 'Trust',
+    title: 'Privacy & terms',
     links: [
-      { href: '/#privacy', label: 'Privacy at a glance' },
-      { href: '/privacy', label: 'How we handle your data' },
+      { href: '/privacy', label: 'Privacy Policy' },
+      { href: '/terms', label: 'Terms of Use' },
+      { href: '/delete-account', label: 'Delete your account' },
+      { href: mailto('Lucento'), label: site.contactEmail },
     ],
   },
 ];
@@ -34,7 +38,7 @@ const columns = [
   <div class="inner">
     <div class="brand">
       <a href="/" aria-label="Lucento home"><Logo tone="light" /></a>
-      <p>Financial clarity without the complexity. A budget tracker for Android, in development.</p>
+      <p>Financial clarity without the complexity. A personal finance app for Android.</p>
     </div>
     {
       columns.map((column) => (

@@ -2,18 +2,22 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PhoneDemo from '../components/PhoneDemo.astro';
 import { guides } from '../data/guides';
+import { STORIES } from '../demo/simulator';
+
+// Newer guides are written out only; the phone demo offers the ones it can play.
+const playable = guides.filter((g) => g.id in STORIES);
 ---
 
 <BaseLayout
   title="How to use Lucento — interactive guides"
-  description="Interactive, step-by-step guides for Lucento: try each task on a simulated phone — setting up, adding transactions, budgets, wallets, bills, debts, goals, a new phone, sync, Smarter reading and export."
+  description="Interactive, step-by-step guides for Lucento: try each task on a simulated phone — setting up, adding transactions, budgets, wallets, bills, debts, goals, a new phone, sync, Smarter reading, sharing, other currencies, deleting your account and export."
 >
   <PhoneDemo
     id="guide"
     eyebrow="How to"
     heading="Learn Lucento by using it"
     intro="Pick a guide and do it yourself on the phone: each step completes when you do it. Fictional money; nothing is saved or sent. Prefer reading? Every guide is written out below."
-    stories={guides.map((g) => g.id)}
+    stories={playable.map((g) => g.id)}
     picker="list"
   />
 
@@ -33,9 +37,11 @@ import { guides } from '../data/guides';
               ))}
             </ol>
             {g.tip && <p class="tip">{g.tip}</p>}
-            <a class="try" href={`#guide-${g.id}`}>
-              Try it on the phone
-            </a>
+            {g.id in STORIES && (
+              <a class="try" href={`#guide-${g.id}`}>
+                Try it on the phone
+              </a>
+            )}
           </section>
         ))
       }

@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import { site } from '../data/site';
 ---
 
 <header class="site-header">
@@ -9,13 +10,13 @@ import Logo from './Logo.astro';
     </a>
     <nav class="links" aria-label="Site">
       <a href="/#write">How it works</a>
-      <a href="/#light">The light</a>
       <a href="/#app">The app</a>
+      <a href="/pricing">Pricing</a>
       <a href="/#privacy">Privacy</a>
       <a href="/how-to">Guides</a>
     </nav>
     <div class="end">
-      <p class="status">Android · in development</p>
+      <p class="status">{site.playListed ? 'Android · on Google Play' : 'Android · coming soon'}</p>
       <a class="cta" href="/#try">Try the demo</a>
     </div>
   </div>

@@ -2,7 +2,7 @@
  * The Lucento phone simulation used on the home page and the how-to guides: a small, faithful mock of the Android
  * app with fictional data. Stories are guided tasks; each step completes when the visitor does it on the phone.
  * Money is whole cents and follows the app's rules: the budget is the sum of category amounts, Spent is every expense,
- * days left include today, transfers are never spending, and currencies are never converted.
+ * days left include today, transfers are never spending, and the demo uses a single currency.
  */
 
 // ------------------------------------------------------------------ money
@@ -247,7 +247,7 @@ export const STORIES: Record<string, Story> = {
       { title: 'Tap Get started', body: 'In the app you’re also asked what you care about and which modules to show; both can be skipped.', target: 'setup-start', done: (s) => s.screen !== 'welcome' },
       { title: 'Choose your spending categories', body: 'Tap to add or remove. At least one is required: your budget is built from them. Add “Health”.', target: 'pick-Health', done: (s) => s.picks.includes('Health') || s.onboarded || !['welcome', 'onb-cats'].includes(s.screen) },
       { title: 'Continue', body: 'You can add, rename or archive categories later.', target: 'setup-cats-next', done: (s) => !['welcome', 'onb-cats'].includes(s.screen) },
-      { title: 'Pick your main currency', body: 'Lucento never converts between currencies; each one has its own totals.', target: 'setup-currency-next', done: (s) => ['onb-sync', 'onb-done', 'home'].includes(s.screen) },
+      { title: 'Pick your main currency', body: 'Every total is shown in it, and it’s chosen once. With Pro, wallets in other currencies count in it at their average rate.', target: 'setup-currency-next', done: (s) => ['onb-sync', 'onb-done', 'home'].includes(s.screen) },
       { title: 'Decide on sync', body: 'Optional. “Not now” keeps everything on this phone; you can connect later in Settings.', target: 'setup-sync-skip', done: (s) => ['onb-done', 'home'].includes(s.screen) },
       { title: 'Finish', body: 'A short guided setup follows in the app: your accounts, any cards or loans, two budget amounts, a goal and first transactions.', target: 'setup-finish', done: (s) => s.onboarded },
     ],
@@ -296,7 +296,7 @@ export const STORIES: Record<string, Story> = {
       { title: 'Open Wallets in the dock', body: 'Every account in one place, with net worth as assets minus debts.', target: 'tab-wallets', done: (s) => ['wallets', 'wallet'].includes(s.screen) || s.moves.length > 0 },
       { title: 'Open Everyday bank', body: 'Each wallet has its balance, recent activity and actions.', target: 'wallet-bank', done: (s) => s.screen === 'wallet' || s.moves.length > 0 },
       { title: 'Tap Transfer', body: 'Transfers use two linked records, so the money is never counted twice.', target: 'transfer', done: (s) => s.sheet === 'transfer' || s.moves.length > 0 },
-      { title: 'Choose Savings and enter 200', body: 'Both accounts must use the same currency: Lucento never converts.', target: 'transfer-to-savings', done: (s) => (s.transferTo === 'savings' && parseMoney(s.transferText) !== null) || s.moves.length > 0 },
+      { title: 'Choose Savings and enter 200', body: 'In this demo both accounts use the same currency; in the app a transfer can also move money between currencies.', target: 'transfer-to-savings', done: (s) => (s.transferTo === 'savings' && parseMoney(s.transferText) !== null) || s.moves.length > 0 },
       { title: 'Save the transfer', body: 'One atomic save writes both sides.', target: 'transfer-save', done: (s) => s.moves.length > 0 },
     ],
     finale: 'Everyday bank went down by $200, Savings went up by $200 — and your net worth and your budget’s Spent didn’t change.',
@@ -356,9 +356,9 @@ export const STORIES: Record<string, Story> = {
       { title: 'Tap Settings', body: 'Cloud sync is near the top.', target: 'open-settings', done: (s) => onSettings(s) || s.syncEmail !== null || s.disconnected },
       { title: 'Connect with Google', body: 'Or create an email account. This turns sync on.', target: 'connect-google', done: (s) => s.syncEmail !== null || s.disconnected },
       { title: 'Tap Sync now', body: 'Sync also runs in the background about every half hour.', target: 'sync-now', done: (s) => s.synced > 0 || s.disconnected },
-      { title: 'Disconnect', body: 'Sync stops and the phone signs out. Your data stays on the phone and in your account.', target: 'disconnect', done: (s) => s.disconnected },
+      { title: 'Disconnect', body: 'Sync stops and the phone signs out. The account’s records leave this phone and stay safe in your account.', target: 'disconnect', done: (s) => s.disconnected },
     ],
-    finale: 'Disconnected. Nothing on the phone was deleted; sign in with the same account to carry on syncing.',
+    finale: 'Disconnected. The account’s records were removed from this phone, so the next person to sign in never sees them; sign in again to bring them back.',
   },
   'smarter-reading': {
     kicker: 'Smarter reading',
@@ -631,7 +631,7 @@ function settings(s: State): string {
   const sync = s.syncEmail
     ? `<div class="ls-sched"><span class="ls-tile">${icon(P.cloud, 18)}</span><span class="ls-grow"><b>${esc(s.syncEmail)}</b><small>${s.synced ? `Synced just now — ${s.synced} sent, 0 received` : 'Not synced yet'}</small></span></div>
        <div class="ls-actions-row"><button type="button" class="ls-outline" data-action="sync-now">Sync now</button><button type="button" class="ls-outline" data-action="disconnect">Disconnect</button></div>`
-    : `<small>${s.disconnected ? 'Not connected. Your data stays on this phone; sign in again to keep syncing.' : 'Back up and keep your data the same on every phone. Nothing is sent until you connect an account.'}</small>
+    : `<small>${s.disconnected ? 'Not connected. This account’s records left the phone and are safe in your account; sign in again to bring them back.' : 'Back up and keep your data the same on every phone. Nothing is sent until you connect an account.'}</small>
        <button type="button" class="ls-primary ls-google" data-action="connect-google">${icon(P.google, 18)}Continue with Google</button>`;
   return `${topbar('Settings')}
   <div class="ls-scroll">

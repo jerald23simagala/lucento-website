@@ -10,6 +10,8 @@ import LightStates from '../components/LightStates.astro';
 import AppShowcase from '../components/AppShowcase.astro';
 import FeatureStrip from '../components/FeatureStrip.astro';
 import SampleWallets from '../components/SampleWallets.astro';
+import MoreFeatures from '../components/MoreFeatures.astro';
+import { site } from '../data/site';
 import { answers, checkRows, icons, limits } from '../data/home';
 
 const shot = '(min-width: 700px) 360px, calc(100vw - 40px)';
@@ -200,6 +202,7 @@ const shot = '(min-width: 700px) 360px, calc(100vw - 40px)';
   <SampleWallets />
 
   <FeatureStrip />
+  <MoreFeatures />
 
   <section class="lx-privacy lx-section" id="privacy" aria-labelledby="h-privacy">
     <div class="lx-wrap lx-privacy-grid">
@@ -209,13 +212,17 @@ const shot = '(min-width: 700px) 360px, calc(100vw - 40px)';
       </div>
       <ul class="lx-facts">
         <li><strong>No bank login. No ads.</strong> You record what you choose to record.</li>
-        <li><strong>Your data lives on the device.</strong> Sync is optional, and signing out deletes nothing on your phone.</li>
+        <li>
+          <strong>Your data lives on the device.</strong> Sync is optional. Signing out takes the account’s records off
+          that phone; they stay safe in your account.
+        </li>
         <li><strong>Receipts are read on your phone.</strong> With an on-device model. Always.</li>
         <li>
-          <strong>Read messages with Gemini is optional.</strong> It’s a cloud service under Settings › Smarter
-          reading, and it needs a sync account. With it off, messages are read on the phone.
+          <strong>The AI features are optional.</strong> Smarter reading and the AI adviser are cloud services you
+          turn on in Settings, after reading what is sent. With them off, everything is read on the phone.
         </li>
-        <li><a href="/privacy">How Lucento handles your data</a></li>
+        <li><strong>Delete your account any time.</strong> In Settings, or <a href="/delete-account">without the app</a>.</li>
+        <li><a href="/privacy">Read the Privacy Policy</a></li>
       </ul>
     </div>
   </section>
@@ -251,13 +258,26 @@ const shot = '(min-width: 700px) 360px, calc(100vw - 40px)';
       </div>
       <div class="lx-close-grid">
         <div class="lx-close-copy">
-          <h2 class="lx-title" id="h-close">Coming to <span class="lx-nowrap">Google Play.</span></h2>
+          {
+            site.playListed ? (
+              <h2 class="lx-title" id="h-close">Get Lucento on <span class="lx-nowrap">Google Play.</span></h2>
+            ) : (
+              <h2 class="lx-title" id="h-close">Coming soon to <span class="lx-nowrap">Google Play.</span></h2>
+            )
+          }
           <p class="lx-lede">
-            Lucento is still in development. Until it ships, the whole composer runs in your browser with made-up money
-            — no install, nothing to sign up for.
+            Free to start, with no ads and no account. Lucento Pro adds more wallets and goals, other currencies, sync
+            and sharing when you want them. Meanwhile, the whole composer runs in your browser with made-up money.
           </p>
           <div class="lx-actions">
-            <a class="lx-btn" href="#try">Try Lucento in your browser</a>
+            {
+              site.playListed ? (
+                <a class="lx-btn" href={site.playUrl}>Get it on Google Play</a>
+              ) : (
+                <a class="lx-btn" href="#try">Try Lucento in your browser</a>
+              )
+            }
+            <a class="lx-textlink" href="/pricing">See plans and pricing</a>
             <a class="lx-textlink" href="/how-to">Open the guides</a>
           </div>
         </div>
