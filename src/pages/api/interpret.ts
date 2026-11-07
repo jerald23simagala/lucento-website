@@ -47,6 +47,18 @@ const MAX_REFS = 300;
 const json = (status: number, body: unknown): Response =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 
+/** What public.consume_ai_request answers, checked field by field (it is data from the database, not trusted blindly). */
+type Allowance = { plan: 'FREE' | 'PRO'; allowed: boolean; limitedBy: 'day' | 'month' | null; remaining: number };
+const readAllowance = (raw: unknown): Allowance | null => {
+  if (!raw || typeof raw !== 'object') return null;
+  const r = raw as Record<string, unknown>;
+  const plan = r.plan === 'PRO' ? 'PRO' : r.plan === 'FREE' ? 'FREE' : null;
+  const remaining = typeof r.remaining === 'number' && Number.isFinite(r.remaining) ? Math.max(0, r.remaining) : null;
+  if (plan === null || typeof r.allowed !== 'boolean' || remaining === null) return null;
+  const limitedBy = r.limited_by === 'day' || r.limited_by === 'month' ? r.limited_by : null;
+  return { plan, allowed: r.allowed, limitedBy, remaining };
+};
+
 const SYSTEM = `You read short notes about personal money movements and return transactions as JSON.
 Rules:
 - One item per transaction the note describes. Ignore chatter.
@@ -135,19 +147,25 @@ export const POST: APIRoute = async ({ request }) => {
   if (!parsed) return json(400, { error: 'bad_request' });
 
   // 2. Today's allowance, counted in the user's own row by a database function they can't use to lower it.
-  const limit = Number.parseInt(process.env.AI_DAILY_LIMIT ?? '', 10) || 50;
-  const quota = await fetch(`${supabaseUrl}/rest/v1/rpc/consume_ai_quota`, {
+  // The allowance follows the plan (Lucento Pro, supabase/migrations/20261107090000_entitlements.sql): Free accounts get
+  // ai_free_monthly a month, AI_PRO accounts ai_pro_daily a day under ai_pro_monthly_ceiling. The function counts the
+  // request (a refused one too) and decides; this proxy only relays its answer. AI_DAILY_LIMIT is no longer read.
+  const quota = await fetch(`${supabaseUrl}/rest/v1/rpc/consume_ai_request`, {
     method: 'POST',
     headers: { apikey: publishableKey, Authorization: auth, 'Content-Type': 'application/json' },
     body: '{}',
   });
   if (!quota.ok) {
-    console.error(`interpret: consume_ai_quota answered HTTP ${quota.status}`);
+    console.error(`interpret: consume_ai_request answered HTTP ${quota.status}`);
     return json(502, { error: 'quota_unavailable' });
   }
-  const used = Number(await quota.json());
-  if (!Number.isFinite(used)) return json(502, { error: 'quota_unavailable' });
-  if (used > limit) return json(429, { error: 'daily_limit', limit });
+  const allowance = readAllowance(await quota.json());
+  if (!allowance) return json(502, { error: 'quota_unavailable' });
+  // Smarter reading is a Pro feature; the free allowance covers Ask Lucento only (docs/MONETIZATION.md §3.6).
+  if (allowance.plan !== 'PRO') return json(403, { error: 'pro_required', plan: allowance.plan });
+  if (!allowance.allowed) {
+    return json(429, { error: 'allowance', limited_by: allowance.limitedBy, remaining: allowance.remaining, plan: allowance.plan });
+  }
 
   // 3. Gemini reads the note into structured rows.
   const prompt = JSON.stringify({
@@ -181,7 +199,7 @@ export const POST: APIRoute = async ({ request }) => {
   } catch {
     return json(502, { error: 'model_unreadable' });
   }
-  return json(200, { items, remaining: Math.max(0, limit - used) });
+  return json(200, { items, remaining: allowance.remaining, plan: allowance.plan });
 };
 
 export const GET: APIRoute = () => json(405, { error: 'method_not_allowed' });
