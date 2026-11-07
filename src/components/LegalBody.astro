@@ -1,0 +1,24 @@
+---
+/** The sections of one legal document, as the app shows them (src/data/legal.ts is generated from the app). */
+import type { LegalSection } from '../data/legal';
+
+interface Props {
+  sections: LegalSection[];
+}
+
+const { sections } = Astro.props;
+const slug = (title: string) => title.replace(/\W+/g, '-').replace(/^-|-$/g, '').toLowerCase();
+---
+
+{
+  sections.map((section) => (
+    <section aria-labelledby={slug(section.title)}>
+      <h2 id={slug(section.title)}>{section.title}</h2>
+      <ul class="content-list">
+        {section.items.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </section>
+  ))
+}

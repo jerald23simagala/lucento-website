@@ -176,16 +176,17 @@ export const answers = [
     q: 'Do I need an account?',
     a: 'Only for sync, and for the optional Read messages with Gemini setting. What you type is stored on the phone and works offline. Speech recognition asks to run on the device, but that isn’t guaranteed.',
   },
-  { q: 'Can I move to a new phone?', a: 'Yes, if you use sync: sign in on the new phone during setup and restore your records. Signing out never deletes anything on the old one.' },
+  { q: 'Can I move to a new phone?', a: 'Yes. With cloud sync, sign in on the new phone and your records come across. Without it, carry a backup file over — that’s free on every plan.' },
   { q: 'Why does Spent include uncategorised things?', a: 'Because the money is gone either way. Leaving it out would make the month look better than it is.' },
-  { q: 'When is it out, and what will it cost?', a: 'It’s coming to Google Play. A date and pricing haven’t been announced.' },
+  { q: 'What does it cost?', a: 'Lucento is free, with no ads. Lucento Pro adds unlimited wallets, other currencies, cloud sync, Lucento Shared and more, as a subscription or a one-time Lifetime purchase. See the pricing page.' },
+  { q: 'Can I delete my account?', a: 'Yes, any time: Settings › Cloud sync › Delete account. It deletes the account and everything stored with it on our servers. Without the app, see lucentoapp.com/delete-account.' },
 ];
 
 export const limits = [
   'Android only, in English for now',
-  'No currency conversion',
+  'Foreign-currency wallets aren’t revalued at month end yet',
   'Calendar-month budgets only',
   'No phone notifications yet — the in-app bell only',
   'Interest is entered by hand',
-  'Read messages with Gemini needs a sync account and has a daily limit',
+  'AI features need an account and have an allowance that depends on your plan',
 ];

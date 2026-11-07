@@ -1,0 +1,122 @@
+---
+/**
+ * Google Play's account-deletion web resource ("Delete account URL" in Play Console › Data safety). It must name the
+ * app, give the steps, say what is deleted and what is kept and for how long, and work without the app installed.
+ * Mirrors lucento-android docs/ACCOUNT_DELETION.md.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContentPage from '../components/ContentPage.astro';
+import { mailto, site } from '../data/site';
+
+const requestLink = mailto('Delete my Lucento account');
+---
+
+<BaseLayout
+  title="Delete your Lucento account"
+  description="How to delete your Lucento account and the data stored with it — in the app, or by email without the app — and what is deleted and what is kept."
+>
+  <ContentPage
+    eyebrow="Your account"
+    title="Delete your Lucento account"
+    lede="You can delete your Lucento account, and everything stored with it on Lucento’s servers, at any time. This page is for Lucento, the personal finance app for Android by Lucento."
+  >
+    <section aria-labelledby="in-app">
+      <h2 id="in-app">In the app — immediate</h2>
+      <ol class="content-list">
+        <li>Open Lucento and tap the round profile button, then <strong>Settings</strong>.</li>
+        <li>Open <strong>Cloud sync</strong> and tap <strong>Delete account</strong>.</li>
+        <li>Read what will be deleted, tick <strong>I understand this can’t be undone</strong>, and tap <strong>Delete account</strong>.</li>
+      </ol>
+      <p>
+        The account and its data are deleted from Lucento’s servers straight away, and the records on that phone are
+        erased. Save a backup file first (Settings › Your data) if you want to keep a copy for yourself.
+      </p>
+    </section>
+
+    <section aria-labelledby="by-email">
+      <h2 id="by-email">Without the app — by email</h2>
+      <p>
+        No longer have the app? Email <a href={requestLink}>{site.contactEmail}</a> from the email address of your
+        Lucento account (for a Google sign-in, your Google address), with the subject “Delete my Lucento account”. We
+        reply to that address to confirm it’s yours, delete the account within 30 days, and tell you when it’s done.
+      </p>
+      <p><a class="request" href={requestLink}>Email a deletion request</a></p>
+    </section>
+
+    <section aria-labelledby="deleted">
+      <h2 id="deleted">What is deleted</h2>
+      <ul class="content-list">
+        <li>Your account: email address, sign-in details and the terms you agreed to.</li>
+        <li>
+          The cloud copy of your records: wallets, transactions, categories, budgets, goals and contributions, debts,
+          scheduled payments and money settings.
+        </li>
+        <li>Lucento Pro records kept with your account: your plan, order numbers and scrambled purchase tokens.</li>
+        <li>Your AI request counts.</li>
+        <li>
+          Lucento Shared: if you own a Shared Space, the space, its invitations and your Partner’s access. If you joined
+          someone’s space, your membership — what you added stays in its owner’s records.
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="kept">
+      <h2 id="kept">What is kept, and for how long</h2>
+      <ul class="content-list">
+        <li>
+          <strong>Google Play purchases and subscriptions.</strong> Deleting your account doesn’t cancel a subscription.
+          Cancel it first in <a href={site.manageSubscriptionsUrl}>Google Play › Subscriptions</a>. Google keeps its own
+          purchase records under Google’s privacy policy; a Lifetime purchase stays with your Google account and can be
+          restored on a new Lucento account.
+        </li>
+        <li>
+          <strong>Routine backups.</strong> Copies in our database provider’s routine backups expire on their own, within
+          30 days.
+        </li>
+        <li>
+          <strong>Usage counts</strong>, if you turned them on: they aren’t linked to your account and are deleted after
+          90 days (or as soon as you turn them off).
+        </li>
+        <li>
+          <strong>Your own copies.</strong> Backup files and CSV exports you saved are yours; records on a phone used
+          without an account stay there until you delete them or the app.
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="questions">
+      <h2 id="questions">Questions</h2>
+      <p>
+        Email <a href={mailto('Question about deleting my account')}>{site.contactEmail}</a>. The
+        <a href="/privacy">Privacy Policy</a> explains everything Lucento stores and why.
+      </p>
+    </section>
+  </ContentPage>
+</BaseLayout>
+
+<style>
+  p {
+    margin: var(--space-md) 0 0;
+  }
+
+  .request {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 var(--space-lg);
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: var(--on-primary) !important;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .request:hover {
+    filter: brightness(0.92);
+  }
+
+  .request:focus-visible {
+    outline: 3px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+</style>

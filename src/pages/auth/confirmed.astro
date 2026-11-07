@@ -8,11 +8,12 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   app. Supabase appends tokens to the URL fragment: they are never read, sent or stored here, and the fragment is
   cleared from the address bar. Only an error code is read, to explain an expired or reused link.
 -->
-<BaseLayout title="Email confirmed · Lucento" description="Your Lucento sync account is confirmed." noindex>
+<BaseLayout title="Email confirmed · Lucento" description="Your Lucento account is confirmed." noindex>
   <section class="confirm" aria-labelledby="confirm-title">
     <div data-state="ok">
       <h1 id="confirm-title">Your email is confirmed</h1>
-      <p>Go back to Lucento on your phone and sign in with the same email and password to turn on sync.</p>
+      <p>Go back to Lucento on your phone: it notices the confirmation and carries on by itself.</p>
+      <p>If you closed it, open Lucento and sign in with the same email and password.</p>
       <p class="muted">You can close this page. Nothing else is needed here.</p>
     </div>
     <div data-state="error" hidden>

@@ -1,0 +1,119 @@
+---
+/**
+ * The rest of Lucento in one scan: what the budget sections above don't show. Plain rows, not cards; a "Pro" tag only
+ * where the feature needs Lucento Pro (lucento-android docs/monetization/CUSTOMER_COPY.md §A).
+ */
+const items = [
+  {
+    title: 'Lucento Shared',
+    body: 'Invite one Partner to see and record in your ledger from their own phone. Label each wallet Shared or Personal; the budget stays yours.',
+    pro: true,
+  },
+  {
+    title: 'Wallets in other currencies',
+    body: 'Spend in dollars or yen and still see one honest total in your main currency, with exchange gains and losses worked out for you.',
+    pro: true,
+  },
+  {
+    title: 'Ask Lucento',
+    body: 'Ask about net worth, cash flow or your top categories and get answers from your own figures, on the phone. An optional AI adviser goes further when you agree to it.',
+    pro: false,
+  },
+  {
+    title: 'Cards and loans',
+    body: 'Interest, instalments, statement and due dates — and a reminder that opens the payment ready to record, split into principal and interest.',
+    pro: false,
+  },
+  {
+    title: 'Goals and scheduled payments',
+    body: 'Save toward a target with a projected finish date. Schedule bills and salary, and confirm each one when it happens.',
+    pro: false,
+  },
+  {
+    title: 'Statements as PDF',
+    body: 'Save or share a clean statement of any period — for yourself, your partner or your accountant.',
+    pro: true,
+  },
+  {
+    title: 'Backup and sync',
+    body: 'A backup file you can restore on any phone, on every plan. Cloud sync keeps your phones on the same ledger with Pro.',
+    pro: false,
+  },
+  {
+    title: 'Private by design',
+    body: 'App lock with your fingerprint or screen lock, hidden amounts, and a blank preview in recent apps. No ads, ever.',
+    pro: false,
+  },
+];
+---
+
+<section class="lx-wrap lx-section more" id="more" aria-labelledby="h-more">
+  <p class="lx-eyebrow">And the rest</p>
+  <h2 class="lx-title" id="h-more">More than a budget.</h2>
+  <ul class="more-list">
+    {
+      items.map((item) => (
+        <li>
+          <h3>
+            {item.title}
+            {item.pro && <span class="pro">Pro</span>}
+          </h3>
+          <p>{item.body}</p>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="more-link"><a href="/pricing">Compare Free and Pro</a></p>
+</section>
+
+<style>
+  .more-list {
+    list-style: none;
+    margin: var(--space-xl) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    column-gap: var(--space-xxl);
+  }
+
+  .more-list li {
+    padding: var(--space-lg) 0;
+    border-top: 1px solid var(--outline-variant);
+  }
+
+  h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 1.125rem;
+  }
+
+  .pro {
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  p {
+    margin: var(--space-xs) 0 0;
+    color: var(--on-surface-variant);
+  }
+
+  .more-link {
+    margin-top: var(--space-lg);
+  }
+
+  .more-link a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    font-weight: 600;
+    color: var(--primary);
+    text-underline-offset: 4px;
+  }
+</style>

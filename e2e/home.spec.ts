@@ -173,10 +173,26 @@ test('full demo still logs a day and stays quiet in the console', async ({ page 
   expect(errors).toEqual([]);
 });
 
-test('guides and privacy pages still respond', async ({ page }) => {
-  for (const path of ['/how-to', '/privacy', '/auth/confirmed']) {
+test('guides, legal, pricing and deletion pages still respond', async ({ page }) => {
+  for (const path of ['/how-to', '/privacy', '/terms', '/pricing', '/delete-account', '/auth/confirmed']) {
     const response = await page.goto(path);
     expect(response?.status()).toBeLessThan(400);
+  }
+});
+
+test('the deletion page works without the app: steps, an email request, and what is kept', async ({ page }) => {
+  await page.goto('/delete-account');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Delete your Lucento account');
+  await expect(page.getByRole('link', { name: 'Email a deletion request' })).toHaveAttribute('href', /^mailto:lucentoapp@gmail\.com/);
+  await expect(page.getByRole('heading', { name: 'What is kept, and for how long' })).toBeVisible();
+});
+
+test('the pricing table names every cell for screen readers', async ({ page }) => {
+  await page.goto('/pricing');
+  const marks = page.locator('td.mark');
+  expect(await marks.count()).toBeGreaterThan(10);
+  for (const cell of await marks.all()) {
+    await expect(cell.locator('.visually-hidden')).toHaveText(/^(Included|Not included)$/);
   }
 });
 
