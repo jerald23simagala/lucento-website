@@ -25,8 +25,8 @@ export const featureCards: FeatureCard[] = [
   {
     id: '06-home-within-budget',
     file: '06-home-within-budget.png',
-    title: 'Pace, and the light',
-    body: 'Home sets what you’ve spent against how much of the month has passed. On pace, the torch is bright.',
+    title: 'Budget pace',
+    body: 'Home sets what you’ve spent against how much of the month has passed.',
     alt: 'Home with the monthly budget, spending in step with the month, and the mascot holding a lit torch.',
   },
   {

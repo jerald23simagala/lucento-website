@@ -152,24 +152,6 @@ export const checkRows: CheckRow[] = [
   },
 ];
 
-export interface LightTier {
-  id: string;
-  name: string;
-  when: string;
-  glow: number;
-  line: string;
-  /** Baseline mascot art, copied into public/mascot. */
-  image: string;
-}
-
-export const lightTiers: LightTier[] = [
-  { id: 'thriving', name: 'Thriving', when: 'Spending right at the month’s pace', glow: 100, line: 'In step with the month. About $58.40 a day keeps you within budget.', image: 'thriving' },
-  { id: 'steady', name: 'Steady', when: 'Ahead of pace, or no budget yet', glow: 80, line: 'A little ahead of the month. Room to breathe.', image: 'steady' },
-  { id: 'getting-tight', name: 'Getting tight', when: '80% or more of the budget used', glow: 60, line: 'Getting close — $40 a day keeps you on budget.', image: 'getting-tight' },
-  { id: 'concerned', name: 'Concerned', when: '10% or less left', glow: 42, line: '$120 left for 9 days. Smaller days will carry you through.', image: 'concerned' },
-  { id: 'over-plan', name: 'Over plan', when: 'More spent than budgeted', glow: 28, line: 'Over by $85 this month. Here’s where it went.', image: 'over-plan' },
-];
-
 export const answers = [
   { q: 'Does it connect to my bank?', a: 'No, and that’s by design. You record what you spend; Lucento never asks for a bank login.' },
   {
