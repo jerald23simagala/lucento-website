@@ -10,7 +10,10 @@ const sizes = '168px';
   <p class="lx-lede">
     Real screens from this Android build, filled with demo data. Nothing here is a bank connection.
   </p>
-  <ul class="lx-feature-row">
+  {/* A named list that scrolls sideways must take keyboard focus, or it can't be scrolled without a mouse
+      (WCAG 2.1.1; axe "scrollable-region-focusable"). Same pattern as the plan table on /pricing. */}
+  {/* eslint-disable-next-line astro/jsx-a11y/no-noninteractive-tabindex */}
+  <ul class="lx-feature-row" tabindex="0" aria-label="App screens, scroll sideways for more">
     {
       featureCards.map((card) => (
         <li>

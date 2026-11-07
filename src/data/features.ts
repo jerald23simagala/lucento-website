@@ -75,7 +75,7 @@ export const featureCards: FeatureCard[] = [
     id: '04a-onboarding-sync',
     file: '04a-onboarding-sync.png',
     title: 'Sync, if you want it',
-    body: 'Nothing leaves the phone unless you turn on sync or Gemini reading. Signing out never deletes what’s on the device.',
+    body: 'Your entries stay on the phone unless you turn on sync or Gemini reading. Signing out removes that account’s data from the phone; the cloud copy waits for your next sign-in.',
     alt: 'Back up and sync, marked optional, with a choice to keep everything on the phone.',
   },
 ];
