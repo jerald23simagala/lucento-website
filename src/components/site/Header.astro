@@ -1,11 +1,11 @@
 ---
-/** Site header: logo, the homepage's sections in page order, and the interactive demo. On small screens the sections fold into a menu. */
+/** Site header: logo, the homepage's sections in page order, and the Google Play status. On small screens the sections fold into a menu. */
 import Lockup from './Lockup.astro';
+import PlayCta from './PlayCta.astro';
 
 const onHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
 const at = (hash: string) => (onHome ? hash : `/${hash}`);
 const links = [
-  { href: at('#how'), label: 'How it works' },
   { href: at('#features'), label: 'Features' },
   { href: at('#multicurrency'), label: 'Currencies' },
   { href: at('#shared'), label: 'Shared' },
@@ -21,12 +21,11 @@ const links = [
     <nav class="nav" aria-label="Sections">
       {links.map((link) => <a href={link.href}>{link.label}</a>)}
     </nav>
-    <a class="btn btn-primary header-cta" href="/demo" aria-current={Astro.url.pathname.startsWith('/demo') ? 'page' : undefined}>Try the demo</a>
+    <div class="header-cta"><PlayCta compact /></div>
     <details class="menu" data-menu>
       <summary aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="menu-word">Menu</span></summary>
       <nav class="menu-panel" aria-label="Sections">
         {links.map((link) => <a href={link.href}>{link.label}</a>)}
-        <a href="/demo">Interactive demo</a>
       </nav>
     </details>
   </div>

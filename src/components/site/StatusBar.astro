@@ -1,0 +1,31 @@
+---
+/**
+ * The phone template's status bar (owner, 2026-11-08): a fixed 9:41, signal, Wi-Fi and a full battery, with the
+ * camera hole, in the colour of the screen's own top edge (src/data/screen-tops.json, from scripts/screen-tops.mjs),
+ * so every phone on the site looks the same and no capture's real clock or notification icons show. Decorative.
+ */
+import tops from '../../data/screen-tops.json';
+
+interface Props {
+  /** Screen file stem, to pick the colour; or pass bg/dark directly (the theme switcher sets them by CSS). */
+  file?: string;
+  bg?: string;
+  dark?: boolean;
+}
+
+const { file, bg, dark } = Astro.props;
+const top = file ? (tops as Record<string, { bg: string; dark: boolean }>)[file] : undefined;
+const colour = bg ?? top?.bg;
+const isDark = dark ?? top?.dark ?? true;
+const style = colour ? `--sb-bg:${colour};--sb-ink:${isDark ? '#F4F6FC' : '#17233F'}` : undefined;
+---
+
+<div class="statusbar" style={style} aria-hidden="true">
+  <span class="sb-time"></span>
+  <span class="sb-cam"></span>
+  <span class="sb-icons">
+    <svg viewBox="0 0 18 12" class="sb-signal"><rect x="0" y="8" width="3" height="4" rx="1" /><rect x="5" y="5.5" width="3" height="6.5" rx="1" /><rect x="10" y="3" width="3" height="9" rx="1" /><rect x="15" y="0" width="3" height="12" rx="1" /></svg>
+    <svg viewBox="0 0 16 12" class="sb-wifi"><path d="M8 11.5 5.6 8.9a3.4 3.4 0 0 1 4.8 0Z" /><path d="M2.9 6.2a7.3 7.3 0 0 1 10.2 0l-1.4 1.5a5.3 5.3 0 0 0-7.4 0Z" /><path d="M0 3.3a11.4 11.4 0 0 1 16 0l-1.4 1.5a9.4 9.4 0 0 0-13.2 0Z" /></svg>
+    <svg viewBox="0 0 26 12" class="sb-battery"><rect x="0.6" y="0.6" width="22" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5" /><rect x="2.4" y="2.4" width="18.4" height="7.2" rx="1.6" /><rect x="23.8" y="4" width="1.8" height="4" rx="0.9" opacity="0.5" /></svg>
+  </span>
+</div>

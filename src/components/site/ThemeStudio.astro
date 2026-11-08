@@ -6,6 +6,7 @@
  * JavaScript. Midnight is always dark, as in the app. Grove, Mono and Aurora are Pro (ProGates.PRO_THEME_IDS).
  */
 import { looks, SCREEN_H, SCREEN_W } from '../../data/content';
+import StatusBar from './StatusBar.astro';
 
 const set = (file: string, format: 'avif' | 'webp') => [400, 560, 720].map((w) => `/screens/${file}-${w}.${format} ${w}w`).join(', ');
 const sizes = '(min-width: 56em) 330px, 64vw';
@@ -71,6 +72,8 @@ const css =
     </div>
     <div class="studio-stage">
       <div class="device">
+        <div class="device-screen">
+        <StatusBar />
         {
           looks.flatMap((look) =>
             look.modes.map((m) => (
@@ -90,6 +93,7 @@ const css =
             )),
           )
         }
+        </div>
       </div>
       <p class="fine">Sunrise and Midnight are free. Grove, Mono and Aurora come with Pro.</p>
     </div>

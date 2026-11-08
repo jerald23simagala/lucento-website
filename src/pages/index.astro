@@ -7,10 +7,11 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import PlayCta from '../components/site/PlayCta.astro';
 import Phone from '../components/site/Phone.astro';
+import StatusBar from '../components/site/StatusBar.astro';
 import Showcase from '../components/site/Showcase.astro';
 import ThemeStudio from '../components/site/ThemeStudio.astro';
 import Pricing from '../components/site/Pricing.astro';
-import { faq, foreignWallets, netWorthWithForeign, screens } from '../data/content';
+import { faq, foreignWallets, netWorthWithForeign } from '../data/content';
 import { formatMinor } from '../lib/money';
 import { site } from '../data/site';
 
@@ -77,8 +78,8 @@ const jsonLd = [
       <h1 id="h1">Everything about your money, <span class="accent">in one clear view.</span></h1>
       <p class="lede">Wallets, budgets, bills, goals, debts and insights, together in one app. No bank login: you record it, and Lucento keeps it straight, even offline.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary btn-lg" href="/demo">Try the interactive demo <Fragment set:html={arrow} /></a>
         <PlayCta />
+        <a class="link-arrow" href="#features">Explore the features <Fragment set:html={arrow} /></a>
       </div>
       <ul class="hero-facts" aria-label="Good to know">
         <li>No bank login</li>
@@ -90,126 +91,8 @@ const jsonLd = [
     <div class="hero-ground" aria-hidden="true"></div>
   </section>
 
-  <!-- 02 · Everything in one place -->
-  <section class="band" id="how" aria-labelledby="h-how">
-    <div class="wrap">
-      <div class="section-head center">
-        <p class="eyebrow">How it works</p>
-        <h2 id="h-how">Six screens. Your whole financial life.</h2>
-        <p class="lede">Where you stand, what you can spend, what you own and owe, what happened, and what it means. Everything in one place.</p>
-      </div>
-      <div class="chapters">
-        {
-          screens.map((screen) => (
-            <article class="chapter" aria-labelledby={`ch-${screen.id}`}>
-              <figure class:list={['chapter-visual', screen.detail.h > 1400 && 'is-tall']}>
-                <picture>
-                  <source type="image/avif" srcset={`/screens/${screen.detail.file}-600.avif 600w, /screens/${screen.detail.file}-1080.avif 1080w`} sizes="(min-width: 56em) 640px, 92vw" />
-                  <img
-                    src={`/screens/${screen.detail.file}-600.webp`}
-                    srcset={`/screens/${screen.detail.file}-600.webp 600w, /screens/${screen.detail.file}-1080.webp 1080w`}
-                    sizes="(min-width: 56em) 640px, 92vw"
-                    width="1080"
-                    height={screen.detail.h}
-                    alt={screen.detail.alt}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </picture>
-              </figure>
-              <div class="chapter-copy">
-                <p class="chapter-num">{screen.label}</p>
-                <h3 class="title-lg" id={`ch-${screen.id}`}>{screen.title}</h3>
-                <p class="purpose">{screen.purpose}</p>
-                <ul class="ticks">
-                  {screen.points.map((point) => (
-                    <li>{point}</li>
-                  ))}
-                </ul>
-              </div>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- G · Multicurrency (special emphasis) -->
-  <section class="band band-night theme-night fx" id="multicurrency" aria-labelledby="h-fx">
-    <div class="wrap">
-      <div class="fx-grid">
-        <div>
-          <div class="section-head" style="margin-bottom: 0">
-            <p class="eyebrow">Multicurrency wallets <span class="pro-tag">Pro</span></p>
-            <h2 id="h-fx">Every currency you hold. <span class="accent">One total you can trust.</span></h2>
-            <p class="lede">Keep dollars, dirhams and yen in their own wallets. Each shows its own balance and what it’s worth in your main currency, so net worth, budgets and insights all add up in one place.</p>
-          </div>
-          <ul class="fx-ledger">
-            {
-              foreignWallets.map((w) => (
-                <li>
-                  <span class="fx-code" aria-hidden="true">{w.currency}</span>
-                  <span class="fx-name">{w.name}<small>{w.kind} · {w.currency}</small></span>
-                  <span class="fx-value">
-                    <span class="fx-own">{formatMinor(w.minor, { currency: w.currency })}</span>
-                    <span class="fx-peso">≈ <b>{peso(w.pesoMinor)}</b> at {w.currency === 'JPY' ? `¥1 = ₱${w.rate}` : `1 ${w.currency} = ₱${w.rate}`}</span>
-                  </span>
-                </li>
-              ))
-            }
-          </ul>
-          <p class="fx-total"><span class="muted">Net worth, all in pesos</span> <b>{peso(netWorthWithForeign)}</b></p>
-        </div>
-        <div class="fx-art">
-          <Phone file="mc-rows" alt="The Wallets list with wallets in three currencies: Japan trip yen ¥60,000 ≈ ₱22,950.00, Dubai account AED4,200.00 ≈ ₱66,108.00 and Dollar savings $1,850.00 ≈ ₱106,930.00, beside the peso wallets." sizes="(min-width: 56em) 270px, 42vw" />
-          <Phone file="mc-usd" alt="The Dollar savings wallet: current balance $1,850.00, about ₱106,930.00, at an average of 1 USD = 57.8 PHP, with a note that each transaction counts at its own rate and the difference on the way out is an FX gain or loss." sizes="(min-width: 56em) 270px, 42vw" />
-        </div>
-      </div>
-      <ul class="fx-notes">
-        <li><h3>Valued at its own rate</h3><p>Each movement is valued at its day’s rate and the wallet carries the average. What leaves at a different rate becomes an FX gain or loss in Insights.</p></li>
-        <li><h3>Rates without your money</h3><p>Rates come from public exchange-rate services. Only two currency codes and a date are sent, never an amount; turn it off in Settings › Money.</p></li>
-        <li><h3>Works offline too</h3><p>No connection? Type the rate yourself. Lucento keeps what you chose and never silently replaces it later.</p></li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- H · Lucento Shared -->
-  <section class="band" id="shared" aria-labelledby="h-shared">
-    <div class="wrap space">
-      <div class="feature-copy">
-        <p class="eyebrow">Lucento Shared <span class="pro-tag">Pro</span></p>
-        <h2 id="h-shared">Two people. One ledger.</h2>
-        <p class="lede">Invite one person into your Shared Space: a partner, a parent, a housemate. Each of you keeps your own account and phone, sees the same money, and records as it happens.</p>
-        <ul class="ticks">
-          <li>Only the owner needs Pro; the partner needs no plan</li>
-          <li>Label wallets Shared or Personal to stay organised; labels never hide anything</li>
-          <li>Every rule here is enforced by Lucento’s server, not just the app</li>
-        </ul>
-      </div>
-      <div class="stack" style="gap: var(--space-8)">
-        <div class="people" aria-hidden="true">
-          <div class="person"><span class="person-mark">You</span><small>Owner</small></div>
-          <div class="space-core">Shared Space<small>one ledger, two phones</small></div>
-          <div class="person"><span class="person-mark">+1</span><small>Partner</small></div>
-        </div>
-        <table class="matrix">
-          <caption>Who can do what</caption>
-          <thead><tr><th scope="col">In a Shared Space</th><th scope="col">Owner</th><th scope="col">Partner</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">See every wallet, budget, goal, debt and schedule</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
-            <tr><th scope="row">Add, edit or delete any transaction</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
-            <tr><th scope="row">See who added or changed a transaction</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
-            <tr><th scope="row">Manage wallets, budgets, goals, categories and schedules</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></td></tr>
-            <tr><th scope="row">Invite or remove the partner</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></td></tr>
-            <tr><th scope="row">Leave the Space</th><td class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
   <!-- 03 · Features -->
-  <section class="band band-haze" id="features" aria-labelledby="h-features">
+  <section class="band" id="features" aria-labelledby="h-features">
     <div class="wrap">
       <div class="section-head center">
         <p class="eyebrow">Features</p>
@@ -262,6 +145,43 @@ const jsonLd = [
           <Phone file="f-wallet-rows" alt="The Wallets list: net worth ₱62,120.10; Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00 under assets, and the Visa card −₱6,400.00 under liabilities." sizes="(min-width: 56em) 250px, 40vw" />
           <Phone file="f-card" alt="A Visa card wallet at 24% a year: amount owed −₱6,400.00, credit limit ₱50,000.00, ₱43,600.00 available and ₱6,400.00 due by November 13." sizes="(min-width: 56em) 250px, 40vw" />
         </div>
+      </article>
+
+      <!-- G · Multicurrency wallets (special emphasis): a night panel inside Features -->
+      <article class="feature-panel theme-night fx" id="multicurrency" aria-labelledby="h-fx">
+      <div class="fx-grid">
+        <div>
+          <div class="section-head" style="margin-bottom: 0">
+            <p class="eyebrow">Multicurrency wallets <span class="pro-tag">Pro</span></p>
+            <h3 class="headline" id="h-fx">Every currency you hold. <span class="accent">One total you can trust.</span></h3>
+            <p class="lede">Keep dollars, dirhams and yen in their own wallets. Each shows its own balance and what it’s worth in your main currency, so net worth, budgets and insights all add up in one place.</p>
+          </div>
+          <ul class="fx-ledger">
+            {
+              foreignWallets.map((w) => (
+                <li>
+                  <span class="fx-code" aria-hidden="true">{w.currency}</span>
+                  <span class="fx-name">{w.name}<small>{w.kind} · {w.currency}</small></span>
+                  <span class="fx-value">
+                    <span class="fx-own">{formatMinor(w.minor, { currency: w.currency })}</span>
+                    <span class="fx-peso">≈ <b>{peso(w.pesoMinor)}</b> at {w.currency === 'JPY' ? `¥1 = ₱${w.rate}` : `1 ${w.currency} = ₱${w.rate}`}</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+          <p class="fx-total"><span class="muted">Net worth, all in pesos</span> <b>{peso(netWorthWithForeign)}</b></p>
+        </div>
+        <div class="fx-art">
+          <Phone file="mc-rows" alt="The Wallets list with wallets in three currencies: Japan trip yen ¥60,000 ≈ ₱22,950.00, Dubai account AED4,200.00 ≈ ₱66,108.00 and Dollar savings $1,850.00 ≈ ₱106,930.00, beside the peso wallets." sizes="(min-width: 56em) 270px, 42vw" />
+          <Phone file="mc-usd" alt="The Dollar savings wallet: current balance $1,850.00, about ₱106,930.00, at an average of 1 USD = 57.8 PHP, with a note that each transaction counts at its own rate and the difference on the way out is an FX gain or loss." sizes="(min-width: 56em) 270px, 42vw" />
+        </div>
+      </div>
+      <ul class="fx-notes">
+        <li><h4>Valued at its own rate</h4><p>Each movement is valued at its day’s rate and the wallet carries the average. What leaves at a different rate becomes an FX gain or loss in Insights.</p></li>
+        <li><h4>Rates without your money</h4><p>Rates come from public exchange-rate services. Only two currency codes and a date are sent, never an amount; turn it off in Settings › Money.</p></li>
+        <li><h4>Works offline too</h4><p>No connection? Type the rate yourself. Lucento keeps what you chose and never silently replaces it later.</p></li>
+      </ul>
       </article>
 
       <!-- C · Financial intelligence -->
@@ -319,7 +239,7 @@ const jsonLd = [
           </ul>
         </div>
         <div class="feature-art is-pair">
-          <Phone file="f-agenda" alt="Scheduled: upcoming this month, income ₱0.00, expenses −₱15,649.90 and transfers −₱12,744.40; Fibre internet −₱299.90 overdue, then the phone plan, the Visa card payment and the car loan installment." sizes="(min-width: 56em) 250px, 40vw" />
+          <Phone file="f-schedules" alt="All schedules: every repeating bill, salary and loan payment with how often it comes and the next date." sizes="(min-width: 56em) 250px, 40vw" />
           <Phone file="f-bell" alt="The Dashboard’s bell open on upcoming payments due this week, including the overdue fibre internet bill and the Visa card payment." sizes="(min-width: 56em) 250px, 40vw" />
         </div>
       </article>
@@ -340,6 +260,39 @@ const jsonLd = [
           <Phone file="f-presets" alt="Onboarding: choose what you spend on, from ready-made category groups." sizes="(min-width: 56em) 250px, 40vw" />
           <Phone file="f-categories" alt="Manage categories: the chosen spending categories, each of which can be edited or archived." sizes="(min-width: 56em) 250px, 40vw" />
         </div>
+      </article>
+
+      <!-- H · Lucento Shared (special emphasis): a panel inside Features -->
+      <article class="feature-panel space" id="shared" aria-labelledby="h-shared">
+      <div class="feature-copy">
+        <p class="eyebrow">Lucento Shared <span class="pro-tag">Pro</span></p>
+        <h3 class="headline" id="h-shared">Two people. One ledger.</h3>
+        <p class="lede">Invite one person into your Shared Space: a partner, a parent, a housemate. Each of you keeps your own account and phone, sees the same money, and records as it happens.</p>
+        <ul class="ticks">
+          <li>Only the owner needs Pro; the partner needs no plan</li>
+          <li>Label wallets Shared or Personal to stay organised; labels never hide anything</li>
+          <li>Every rule here is enforced by Lucento’s server, not just the app</li>
+        </ul>
+      </div>
+      <div class="stack" style="gap: var(--space-8)">
+        <div class="people" aria-hidden="true">
+          <div class="person"><span class="person-mark">You</span><small>Owner</small></div>
+          <div class="space-core">Shared Space<small>one ledger, two phones</small></div>
+          <div class="person"><span class="person-mark">+1</span><small>Partner</small></div>
+        </div>
+        <table class="matrix">
+          <caption>Who can do what</caption>
+          <thead><tr><th scope="col">In a Shared Space</th><th scope="col">Owner</th><th scope="col">Partner</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">See every wallet, budget, goal, debt and schedule</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
+            <tr><th scope="row">Add, edit or delete any transaction</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
+            <tr><th scope="row">See who added or changed a transaction</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
+            <tr><th scope="row">Manage wallets, budgets, goals, categories and schedules</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></td></tr>
+            <tr><th scope="row">Invite or remove the partner</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></td></tr>
+            <tr><th scope="row">Leave the Space</th><td class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
+          </tbody>
+        </table>
+      </div>
       </article>
 
       <!-- F · Offline or online -->
@@ -391,6 +344,8 @@ const jsonLd = [
         </div>
         <div class="reveal-toggle">
           <div class="device">
+            <div class="device-screen">
+            <StatusBar file="f-shown" />
             <picture class="is-shown">
               <source type="image/avif" srcset="/screens/f-shown-400.avif 400w, /screens/f-shown-560.avif 560w, /screens/f-shown-720.avif 720w" sizes="(min-width: 56em) 290px, 60vw" />
               <img src="/screens/f-shown-560.webp" srcset="/screens/f-shown-400.webp 400w, /screens/f-shown-560.webp 560w, /screens/f-shown-720.webp 720w" sizes="(min-width: 56em) 290px, 60vw" width="720" height="1471" alt="The Dashboard with amounts showing: net wallet balance ₱62,120.10." loading="lazy" decoding="async" />
@@ -399,6 +354,7 @@ const jsonLd = [
               <source type="image/avif" srcset="/screens/f-hidden-400.avif 400w, /screens/f-hidden-560.avif 560w, /screens/f-hidden-720.avif 720w" sizes="(min-width: 56em) 290px, 60vw" />
               <img src="/screens/f-hidden-560.webp" srcset="/screens/f-hidden-400.webp 400w, /screens/f-hidden-560.webp 560w, /screens/f-hidden-720.webp 720w" sizes="(min-width: 56em) 290px, 60vw" width="720" height="1471" alt="The same Dashboard with amounts hidden: every amount is replaced by dots, while percentages and pace stay visible." loading="lazy" data-hidden-view decoding="async" />
             </picture>
+            </div>
           </div>
           <label class="switch"><input type="checkbox" id="hide-amounts" role="switch" /> Hide amounts</label>
           <script>
@@ -475,13 +431,13 @@ const jsonLd = [
   </section>
 
   <!-- 07 · Final call to action -->
-  <section class="finale theme-night" aria-label="Get Lucento">
+  <section class="finale theme-night" aria-labelledby="h-finale">
     <div class="wrap finale-inner">
-      <h2 id="h-finale" class="display">See it for yourself, <span class="accent">right in your browser.</span></h2>
-      <p class="lede">Try the interactive demo now. When Lucento reaches Google Play it’s free to start, with no account and no bank login.</p>
+      <h2 id="h-finale" class="display">Coming soon <span class="accent">to Google Play.</span></h2>
+      <p class="lede">Free to start, with no account and no bank login. Pro when you want more.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary btn-lg" href="/demo">Try the interactive demo <Fragment set:html={arrow} /></a>
         <PlayCta />
+        <a class="link-arrow" href="#pricing">Compare the plans <Fragment set:html={arrow} /></a>
       </div>
     </div>
     <div class="hero-ground" aria-hidden="true"></div>

@@ -1,34 +1,47 @@
 ---
 /**
- * The hero's six real screens in a horizontal scroll-snap track: swipe on a phone, click a tab or use the arrow keys
- * on a computer. The centred screen is full size and its neighbours sit back on either side. Without JavaScript the
- * track still scrolls and every tab still jumps to its screen; the script only keeps the tabs, the caption and the
- * emphasis in step with the scroll position.
+ * The hero carousel: eight real screens (owner's order) in a horizontal scroll-snap track that opens centred on the
+ * Dashboard. Previous / next arrows, the tabs, a click on a neighbouring screen, swiping and the arrow keys all move
+ * it. Without JavaScript the track still scrolls (and opens on the Dashboard where `scroll-initial-target` is
+ * supported); the script keeps the tabs, the caption, the arrows and the emphasis in step with the scroll position.
  */
 import Phone from './Phone.astro';
-import { screens } from '../../data/content';
+import { screens, START_SCREEN } from '../../data/content';
 
-const first = screens[0];
+const start = Math.max(0, screens.findIndex((s) => s.id === START_SCREEN));
+const first = screens[start];
+const chevron = (d: string) =>
+  `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`;
 ---
 
-<div class="showcase" data-showcase>
-  {/* A region that scrolls sideways must take keyboard focus, or it can't be scrolled without a mouse
-      (WCAG 2.1.1; axe "scrollable-region-focusable"). The arrow keys then move between screens. */}
-  {/* eslint-disable-next-line astro/jsx-a11y/no-noninteractive-tabindex */}
-  <div class="showcase-track" data-track tabindex="0" role="region" aria-label="Six Lucento screens. Scroll sideways or use the buttons below.">
-    {
-      screens.map((screen, i) => (
-        <figure class:list={['slide', i === 0 && 'is-active', i === 1 && 'is-near']} id={`screen-${screen.id}`} data-slide={screen.id} data-title={screen.title} data-text={screen.caption}>
-          <Phone file={screen.file} alt={screen.alt} eager={i === 0} sizes="(min-width: 64em) 330px, (min-width: 48em) 300px, 66vw" />
-          <figcaption class="sr-only">{screen.label}</figcaption>
-        </figure>
-      ))
-    }
+<div class="showcase" data-showcase data-start={start}>
+  <div class="showcase-stage">
+    <button type="button" class="showcase-arrow is-prev" data-prev aria-label="Previous screen"><Fragment set:html={chevron('M15 5l-7 7 7 7')} /></button>
+    {/* A region that scrolls sideways must take keyboard focus, or it can't be scrolled without a mouse
+        (WCAG 2.1.1; axe "scrollable-region-focusable"). The arrow keys then move between screens. */}
+    {/* eslint-disable-next-line astro/jsx-a11y/no-noninteractive-tabindex */}
+    <div class="showcase-track" data-track tabindex="0" role="region" aria-label="Lucento screens. Use the arrows, the buttons below, or scroll sideways.">
+      {
+        screens.map((screen, i) => (
+          <figure
+            class:list={['slide', i === start && 'is-active is-start', Math.abs(i - start) === 1 && 'is-near']}
+            id={`screen-${screen.id}`}
+            data-slide={screen.id}
+            data-title={screen.title}
+            data-text={screen.caption}
+          >
+            <Phone file={screen.file} alt={screen.alt} eager={i === start} sizes="(min-width: 64em) 330px, (min-width: 48em) 300px, 66vw" />
+            <figcaption class="sr-only">{screen.label}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+    <button type="button" class="showcase-arrow is-next" data-next aria-label="Next screen"><Fragment set:html={chevron('M9 5l7 7-7 7')} /></button>
   </div>
   <nav class="showcase-tabs" aria-label="Choose a screen">
     {
       screens.map((screen, i) => (
-        <a href={`#screen-${screen.id}`} data-tab={screen.id} aria-current={i === 0 ? 'true' : 'false'}>
+        <a href={`#screen-${screen.id}`} data-tab={screen.id} aria-current={i === start ? 'true' : 'false'}>
           {screen.label}
         </a>
       ))
@@ -44,17 +57,20 @@ const first = screens[0];
     const slides = [...track.querySelectorAll<HTMLElement>('[data-slide]')];
     const tabs = [...root.querySelectorAll<HTMLAnchorElement>('[data-tab]')];
     const caption = root.querySelector<HTMLElement>('[data-caption]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-next]');
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let active = 0;
+    let active = Number(root.dataset.start ?? 0);
 
     const set = (index: number) => {
-      if (index === active && slides[index].classList.contains('is-active')) return;
       active = index;
       slides.forEach((slide, i) => {
         slide.classList.toggle('is-active', i === index);
         slide.classList.toggle('is-near', Math.abs(i - index) === 1);
       });
       tabs.forEach((tab, i) => tab.setAttribute('aria-current', String(i === index)));
+      if (prev) prev.disabled = index === 0;
+      if (next) next.disabled = index === slides.length - 1;
       const slide = slides[index];
       if (caption) {
         caption.replaceChildren();
@@ -62,12 +78,18 @@ const first = screens[0];
         b.textContent = `${slide.dataset.title}.`;
         caption.append(b, ` ${slide.dataset.text}`);
       }
-      // Keep the chosen tab in view in the scrolling tab row (phones), without moving the page.
+      // Keep the chosen tab in view in the scrolling tab row, without moving the page.
       const tab = tabs[index];
       const row = tab.parentElement;
       if (row && row.scrollWidth > row.clientWidth) {
         row.scrollTo({ left: tab.offsetLeft - (row.clientWidth - tab.offsetWidth) / 2, behavior: reduce.matches ? 'auto' : 'smooth' });
       }
+    };
+
+    const go = (index: number, instant = false) => {
+      const i = Math.max(0, Math.min(slides.length - 1, index));
+      const slide = slides[i];
+      track.scrollTo({ left: slide.offsetLeft - (track.clientWidth - slide.offsetWidth) / 2, behavior: instant || reduce.matches ? 'auto' : 'smooth' });
     };
 
     // The slide nearest the track's centre is the active one.
@@ -85,17 +107,18 @@ const first = screens[0];
           best = i;
         }
       });
-      set(best);
+      if (best !== active) set(best);
     };
+
+    // Open centred on the Dashboard.
+    go(active, true);
+    set(active);
     track.addEventListener('scroll', () => {
       if (!frame) frame = requestAnimationFrame(measure);
     }, { passive: true });
 
-    const go = (index: number, instant = false) => {
-      const slide = slides[Math.max(0, Math.min(slides.length - 1, index))];
-      const left = slide.offsetLeft - (track.clientWidth - slide.offsetWidth) / 2;
-      track.scrollTo({ left, behavior: instant || reduce.matches ? 'auto' : 'smooth' });
-    };
+    prev?.addEventListener('click', () => go(active - 1));
+    next?.addEventListener('click', () => go(active + 1));
     tabs.forEach((tab, i) =>
       tab.addEventListener('click', (event) => {
         event.preventDefault();
@@ -109,7 +132,6 @@ const first = screens[0];
         go(active + (event.key === 'ArrowRight' ? 1 : -1));
       }
     });
-    // A click on a neighbour brings it to the centre.
     slides.forEach((slide, i) => slide.addEventListener('click', () => i !== active && go(i)));
     window.addEventListener('resize', () => go(active, true));
   }

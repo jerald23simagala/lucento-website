@@ -22,8 +22,7 @@ interface Props {
   /** Extra page CSS (raw), inlined after site.css. */
   css?: string;
   /**
-   * Pages whose content still uses the app's own palette (the interactive demo simulates the app; the reading pages'
-   * components): src/styles/tokens.css, scoped to the page content so it never reaches the header or footer.
+   * Pages whose content still uses the app's own palette (the reading pages' components): src/styles/tokens.css, scoped to the page content so it never reaches the header or footer.
    */
   appTokens?: boolean;
 }
@@ -35,8 +34,11 @@ const ogImage = new URL('/og-lucento.png', Astro.site ?? 'https://www.lucentoapp
 
 const LATIN =
   'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+// Reading pages (appTokens: privacy, terms, deletion, confirmation) are long text: `optional` keeps the fallback for a
+// view where Inter arrives after first paint, so the text never rewraps (CLS). The homepage swaps, for its headings.
+const display = appTokens ? 'optional' : 'swap';
 const face = (url: string, range: string) =>
-  `@font-face{font-family:"Inter";font-style:normal;font-display:swap;font-weight:100 900;src:url("${url}") format("woff2-variations"),url("${url}") format("woff2");unicode-range:${range}}`;
+  `@font-face{font-family:"Inter";font-style:normal;font-display:${display};font-weight:100 900;src:url("${url}") format("woff2-variations"),url("${url}") format("woff2");unicode-range:${range}}`;
 // Metric overrides (design/horizon.tokens.json › type.fallback): the swap from Arial or Roboto barely moves text.
 const fallback = (name: string, src: string, size: string, ascent: string, descent: string) =>
   `@font-face{font-family:"${name}";src:local("${src}");size-adjust:${size};ascent-override:${ascent};descent-override:${descent};line-gap-override:0%}`;

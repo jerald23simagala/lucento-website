@@ -6,7 +6,8 @@ Lucento's marketing website (Astro on Vercel) for the Android app in `../lucento
 ## Design rules (summary of docs/WEBSITE_DESIGN.md)
 
 - Typography first: Inter at 800, tight tracking, uppercase eyebrows, generous whitespace, editorial hierarchy.
-- The app is the picture: real screenshots and faithful crops before any illustration. Never invent UI.
+- The app is the picture: real screenshots (dark mode, except the theme switcher) in the one phone template
+  (`Phone` + `StatusBar`). Never invent UI. After adding screens run `node scripts/screen-tops.mjs`.
 - No generic SaaS templates, no icon-heading-paragraph card grids, no gratuitous gradients, glows or glass.
 - Every section has one clear job; alternate compositions instead of repeating one.
 - Motion only where it explains the product; always respect reduced motion; never trade performance for animation.
@@ -24,6 +25,7 @@ Lucento's marketing website (Astro on Vercel) for the Android app in `../lucento
 ## Engineering
 
 - Styles live in `src/styles/site.css` (inlined by `SiteLayout`); don't add component `<style>` blocks for site
-  styles. The interactive demo keeps the app palette (`tokens.css`, scoped by `SiteLayout appTokens`).
+  styles. The reading pages keep the app palette (`tokens.css`, scoped by `SiteLayout appTokens`). There is no
+  interactive demo any more (retired 2026-11-08).
 - Before pushing: `npm run verify` and `npx playwright test`. Never claim a check passed without seeing it.
 - Never commit to `main` directly; commits, pushes, merges and deploys need the owner's explicit go-ahead.

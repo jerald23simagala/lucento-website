@@ -1,0 +1,122 @@
+{
+  "f-bell": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "f-card": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "f-categories": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "f-composer": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "f-hidden": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "f-networth": {
+    "bg": "#18233F",
+    "dark": true
+  },
+  "f-presets": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "f-report": {
+    "bg": "#0C101C",
+    "dark": true
+  },
+  "f-schedules": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "f-shown": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "f-wallet-rows": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "mc-rows": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "mc-usd": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "s-ask": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "s-budget": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "s-dashboard": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "s-goals": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "s-insights": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "s-scheduled": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "s-transactions": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "s-wallets": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "t-aurora-dark": {
+    "bg": "#0D0A1B",
+    "dark": true
+  },
+  "t-aurora-light": {
+    "bg": "#F8F7FE",
+    "dark": false
+  },
+  "t-grove-dark": {
+    "bg": "#0F1511",
+    "dark": true
+  },
+  "t-grove-light": {
+    "bg": "#F5F6EE",
+    "dark": false
+  },
+  "t-midnight-dark": {
+    "bg": "#090E1A",
+    "dark": true
+  },
+  "t-mono-dark": {
+    "bg": "#111315",
+    "dark": true
+  },
+  "t-mono-light": {
+    "bg": "#F8F8F8",
+    "dark": false
+  },
+  "t-sunrise-dark": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "t-sunrise-light": {
+    "bg": "#FEFDF5",
+    "dark": false
+  }
+}

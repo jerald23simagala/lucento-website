@@ -65,10 +65,12 @@ function deferBuiltStyles() {
 export default defineConfig({
   site,
   trailingSlash: 'ignore',
-  // One-page site (2026-11-08): pricing lives on the homepage, the guides page is the interactive demo.
+  // One-page site (2026-11-08): pricing lives on the homepage.
   redirects: {
     '/pricing': { status: 308, destination: '/#pricing' },
-    '/how-to': { status: 308, destination: '/demo' },
+    // The interactive demo was retired (owner, 2026-11-08); its old addresses lead home.
+    '/how-to': { status: 308, destination: '/' },
+    '/demo': { status: 308, destination: '/' },
     // Browsers still ask for /favicon.ico; the SVG icon is the only one.
     '/favicon.ico': { status: 308, destination: '/favicon.svg' },
   },

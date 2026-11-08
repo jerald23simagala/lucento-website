@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { faq, foreignWallets, looks, netWorthWithForeign, screens } from '../src/data/content';
+import { faq, foreignWallets, looks, netWorthWithForeign, screens, START_SCREEN } from '../src/data/content';
 import { planCards } from '../src/data/plans';
 
 // The one-page site (2026-11-08). Screens and figures are the app's own (src/data/content.ts names the sources);
@@ -29,7 +29,8 @@ test.describe('homepage', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Everything about your money, in one clear view.');
-    for (const id of ['features', 'how', 'themes', 'pricing', 'faq', 'multicurrency', 'shared', 'privacy']) {
+    await expect(page.locator('#how')).toHaveCount(0);
+    for (const id of ['features', 'themes', 'pricing', 'faq', 'multicurrency', 'shared', 'privacy']) {
       await expect(page.locator(`#${id}`), id).toHaveCount(1);
     }
     await page.locator('.nav').getByRole('link', { name: 'Pricing' }).click();
@@ -38,24 +39,48 @@ test.describe('homepage', () => {
     expect(errors).toEqual([]);
   });
 
-  test('the hero shows six real screens and the tabs move between them', async ({ page }) => {
+  test('the hero carousel opens on the Dashboard and moves with arrows, tabs and keys', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await expect(page.locator('[data-slide]')).toHaveCount(screens.length);
     await expect(page.locator('[data-tab]')).toHaveText(screens.map((s) => s.label));
-    const budgets = page.locator('[data-tab="budgets"]');
-    await budgets.click();
-    await expect(budgets).toHaveAttribute('aria-current', 'true');
-    await expect(page.locator('[data-slide="budgets"]')).toHaveClass(/is-active/);
-    await expect(page.locator('[data-caption]')).toContainText(screens[1].title);
-    // The arrow keys move along the track.
+    expect(screens.map((s) => s.label)).toEqual(['Transactions', 'Insights', 'Budgets', 'Dashboard', 'Wallets', 'Scheduled', 'Goals', 'Ask Lucento']);
+    // Opens centred on the Dashboard.
+    await expect(page.locator(`[data-tab="${START_SCREEN}"]`)).toHaveAttribute('aria-current', 'true');
+    const centred = await page.locator('[data-track]').evaluate((track) => {
+      const slide = track.querySelector('[data-slide="dashboard"]') as HTMLElement;
+      const t = track.getBoundingClientRect();
+      const r = slide.getBoundingClientRect();
+      return Math.abs(r.left + r.width / 2 - (t.left + t.width / 2));
+    });
+    expect(centred).toBeLessThan(4);
+    // Arrows.
+    await page.getByRole('button', { name: 'Next screen' }).click();
+    await expect(page.locator('[data-tab="wallets"]')).toHaveAttribute('aria-current', 'true');
+    await page.getByRole('button', { name: 'Previous screen' }).click();
+    await page.getByRole('button', { name: 'Previous screen' }).click();
+    await expect(page.locator('[data-tab="budgets"]')).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('[data-caption]')).toContainText(screens.find((s) => s.id === 'budgets')!.title);
+    // Tabs and the arrow keys.
+    await page.locator('[data-tab="goals"]').click();
+    await expect(page.locator('[data-slide="goals"]')).toHaveClass(/is-active/);
     await page.locator('[data-track]').focus();
     await page.keyboard.press('ArrowRight');
-    await expect(page.locator('[data-tab="wallets"]')).toHaveAttribute('aria-current', 'true');
-    // Every screen describes its figures.
+    await expect(page.locator('[data-tab="ask"]')).toHaveAttribute('aria-current', 'true');
+    await expect(page.getByRole('button', { name: 'Next screen' })).toBeDisabled();
     for (const screen of screens) {
       await expect(page.locator(`[data-slide="${screen.id}"] img`)).toHaveAttribute('alt', screen.alt);
     }
+  });
+
+  test('every phone uses the one template, with a mock status bar', async ({ page }) => {
+    await page.goto('/');
+    const devices = page.locator('main .device');
+    const count = await devices.count();
+    expect(count).toBeGreaterThan(10);
+    await expect(page.locator('main .device .statusbar')).toHaveCount(count);
+    const time = await page.locator('main .device .statusbar .sb-time').first().evaluate((el) => getComputedStyle(el, '::before').content);
+    expect(time).toBe('"9:41"');
   });
 
   test('a phone swipes through the screens', async ({ page }) => {
@@ -216,25 +241,18 @@ test.describe('homepage', () => {
   });
 });
 
-test('the interactive demo’s phone renders and starts without errors', async ({ page }) => {
-  const errors = collectErrors(page);
-  await page.goto('/demo');
-  await expect(page.locator('[data-sim="steps"] li').first()).toBeVisible();
-  const width = await page.locator('.ld-phone-wrap .phone').evaluate((el) => el.getBoundingClientRect().width);
-  expect(width).toBeGreaterThan(200);
-  expect(errors).toEqual([]);
-});
-
 test('privacy, terms, deletion and confirmation pages respond', async ({ page }) => {
-  for (const path of ['/demo', '/privacy', '/terms', '/delete-account', '/auth/confirmed']) {
+  for (const path of ['/privacy', '/terms', '/delete-account', '/auth/confirmed']) {
     const response = await page.goto(path);
     expect(response?.status(), path).toBeLessThan(400);
   }
 });
 
 test('old addresses lead to their new places', async ({ page }) => {
-  await page.goto('/how-to');
-  await expect(page).toHaveURL(/\/demo\/?$/);
+  for (const old of ['/how-to', '/demo']) {
+    await page.goto(old);
+    await expect(page).toHaveURL(/\/$/);
+  }
   await page.goto('/pricing');
   await expect(page).toHaveURL(/\/#pricing$/);
 });

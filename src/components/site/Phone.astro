@@ -1,9 +1,11 @@
 ---
 /**
- * A real Lucento screen in a phone frame. Screens are API 36 captures (peso demo month) cropped by lucento-studio
- * qa/crop-screen.mjs into 400/560/720 px wide AVIF and WebP files in /public/screens.
+ * A real Lucento screen in the site's one phone template: device frame, mock status bar (StatusBar), then the
+ * capture. Screens are API 36 captures (peso demo month) with the real status bar and navigation bar cropped off by
+ * lucento-studio qa/crop-screen.mjs, at 400/560/720 px wide in AVIF and WebP (/public/screens).
  */
 import { SCREEN_H, SCREEN_W } from '../../data/content';
+import StatusBar from './StatusBar.astro';
 
 interface Props {
   file: string;
@@ -19,18 +21,21 @@ const set = (format: 'avif' | 'webp') => [400, 560, 720].map((w) => `/screens/${
 ---
 
 <div class:list={['device', extra]}>
-  <picture>
-    <source type="image/avif" srcset={set('avif')} sizes={sizes} />
-    <img
-      src={`/screens/${file}-560.webp`}
-      srcset={set('webp')}
-      sizes={sizes}
-      width={SCREEN_W}
-      height={SCREEN_H}
-      alt={alt}
-      decoding="async"
-      loading={eager ? 'eager' : 'lazy'}
-      fetchpriority={eager ? 'high' : 'auto'}
-    />
-  </picture>
+  <div class="device-screen">
+    <StatusBar file={file} />
+    <picture>
+      <source type="image/avif" srcset={set('avif')} sizes={sizes} />
+      <img
+        src={`/screens/${file}-560.webp`}
+        srcset={set('webp')}
+        sizes={sizes}
+        width={SCREEN_W}
+        height={SCREEN_H}
+        alt={alt}
+        decoding="async"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : 'auto'}
+      />
+    </picture>
+  </div>
 </div>

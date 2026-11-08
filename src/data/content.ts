@@ -13,73 +13,23 @@ export interface AppScreen {
   id: string;
   /** Selector label. */
   label: string;
-  /** File stem in /public/screens (…-400|560|720.avif|webp). */
+  /** File stem in /public/screens (…-400|560|720.avif|webp). Sunrise in dark mode (owner, 2026-11-08). */
   file: string;
   title: string;
   /** One line under the phone in the hero. */
   caption: string;
   alt: string;
-  /** "Everything in one place": a detail crop of the same screen (1080 wide at the source). */
-  detail: { file: string; h: number; alt: string };
-  purpose: string;
-  points: string[];
 }
 
+/** The hero carousel, in the owner's order; it opens centred on the Dashboard. */
 export const screens: AppScreen[] = [
   {
-    id: 'dashboard',
-    label: 'Dashboard',
-    file: 's-dashboard',
-    title: 'The whole month on one screen',
-    caption: 'Net wallet balance, wallets against debts, and how the budget is pacing.',
-    alt: 'The Lucento Dashboard: net wallet balance ₱62,120.10, wallets ₱176,520.10, debts and loans −₱114,400.00, shortcuts to goals, insights, milestones, debts and scheduled bills, and the monthly budget 89% spent: ₱22,979.90 of ₱25,900.00.',
-    detail: { file: 'd-dashboard', h: 900, alt: 'The Dashboard’s balance card: net wallet balance ₱62,120.10, wallets ₱176,520.10 and debts and loans −₱114,400.00, above shortcuts to goals, insights, milestones, debts and scheduled bills.' },
-    purpose: 'Open the app and know where you stand before you spend.',
-    points: ['Net wallet balance, with wallets and debts beside it', 'Shortcuts to goals, insights, debts and scheduled bills', 'Hide every amount with one tap'],
-  },
-  {
-    id: 'budgets',
-    label: 'Budgets',
-    file: 's-budget',
-    title: 'A budget that knows what’s coming',
-    caption: 'What’s left, what’s safe to spend after bills, and whether you’re ahead of pace.',
-    alt: 'The Budget screen for November 2026: ₱2,920.10 remaining of a ₱25,900.00 budget, 26% of the month elapsed and 89% of the budget spent, marked “Ahead of pace” because spending is running ahead of the month; ₱22,979.90 spent and ₱0.00 safe to spend because the bills due take what’s left.',
-    detail: { file: 'd-budget', h: 1120, alt: 'The month’s budget card: ₱2,920.10 remaining of ₱25,900.00, 26% of the month elapsed against 89% spent, marked “Ahead of pace” (spending is running ahead of the month), with ₱22,979.90 spent and ₱0.00 safe to spend.' },
-    purpose: 'See whether this month is on track while there’s still time to change it.',
-    points: ['Your total budget is always the sum of your category amounts', 'Pace compares the month elapsed with the budget spent', 'Safe to spend sets the bills due aside first'],
-  },
-  {
-    id: 'wallets',
-    label: 'Wallets',
-    file: 's-wallets',
-    title: 'Every account as a card you recognise',
-    caption: 'Cash, banks, savings, cards and loans as a gallery, with net worth on top.',
-    alt: 'The Wallets gallery: net worth ₱62,120.10, assets ₱176,520.10 and liabilities −₱114,400.00, with cards for Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00.',
-    detail: { file: 'd-wallets', h: 1716, alt: 'The Wallets gallery: net worth ₱62,120.10 above assets ₱176,520.10 and liabilities −₱114,400.00, then cards for Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00.' },
-    purpose: 'Keep cash, banks, e-wallets, savings, cards and loans side by side.',
-    points: ['Assets and liabilities, and the net worth between them', 'A gallery of cards, or a compact list', 'Logos for more than 400 banks and e-wallets, for display only'],
-  },
-  {
-    id: 'wallet',
-    label: 'Wallet details',
-    file: 's-wallet',
-    title: 'Every movement, wallet by wallet',
-    caption: 'One wallet’s history, with transfers and balance adjustments a tap away.',
-    alt: 'An Everyday bank wallet: current balance ₱86,890.10, opening balance ₱32,500.00 and 17 movements, with this month’s purchases listed: shoes −₱890.00, streaming −₱159.90, market −₱1,076.00 and the power bill −₱960.00.',
-    detail: { file: 'd-wallet', h: 742, alt: 'November in the Everyday bank wallet: Shoes −₱890.00, Streaming −₱159.90, Market −₱1,076.00 and Power bill −₱960.00, each with its category.' },
-    purpose: 'Check a statement against what you recorded, one account at a time.',
-    points: ['Each wallet’s history, newest first', 'Transfers between wallets never count twice', 'Adjust a balance to match the bank, recorded as an adjustment'],
-  },
-  {
-    id: 'ask',
-    label: 'Ask Lucento',
-    file: 's-ask',
-    title: 'Ask your money a question',
-    caption: 'Plain-language answers worked out on your phone from your own records.',
-    alt: 'Ask Lucento answering “What are my top 5 spending categories?”: rent leads November at ₱15,000.00 (65%), then groceries ₱3,200.00, restaurants ₱1,450.00, electricity ₱960.00 and clothing and shoes ₱890.00, with ₱22,979.90 spent in November in all, calculated on this phone.',
-    detail: { file: 'd-ask', h: 1220, alt: 'Ask Lucento’s answer: rent leads November’s spending at ₱15,000.00 of ₱22,979.90 spent in November, followed by groceries, restaurants, electricity, and clothing and shoes, with an Open report button.' },
-    purpose: 'Get a straight answer without building a report yourself.',
-    points: ['Answers from your own figures, calculated on the phone', 'Ready-made statements for net worth, cash flow, budget and debts', 'Free on every plan; PDF statements with Pro'],
+    id: 'transactions',
+    label: 'Transactions',
+    file: 's-transactions',
+    title: 'Every transaction, in order',
+    caption: 'Income, expenses and transfers, searchable, with the month’s totals on top.',
+    alt: 'The Transactions screen for this month: income +₱42,000.00, expenses −₱22,979.90 and net inflow +₱19,020.10; today an uncategorised −₱240.00, shoes −₱890.00, streaming −₱159.90 and market −₱1,076.00.',
   },
   {
     id: 'insights',
@@ -88,11 +38,59 @@ export const screens: AppScreen[] = [
     title: 'Where the money went, month by month',
     caption: 'Income against spending over 3, 6 or 12 months.',
     alt: 'Insights over the last 6 months: net +₱60,020.10 from income ₱126,000.00 and expenses −₱65,979.90, with monthly income and expense bars from June to November.',
-    detail: { file: 'd-insights', h: 1080, alt: 'Six months of income and expenses: net +₱60,020.10, income +₱126,000.00 and expenses −₱65,979.90, as monthly bars.' },
-    purpose: 'Spot the trend behind this month’s number.',
-    points: ['Income, expenses and net flow by month', 'What your net worth is made of', 'The last 3 months free; 6 and 12 with Pro'],
+  },
+  {
+    id: 'budgets',
+    label: 'Budgets',
+    file: 's-budget',
+    title: 'A budget that knows what’s coming',
+    caption: 'What’s left, what’s safe to spend after bills, and how the month is pacing.',
+    alt: 'The Budget screen for November 2026: ₱2,920.10 remaining of a ₱25,900.00 budget, 26% of the month elapsed and 89% of the budget spent, marked “Ahead of pace” because spending is running ahead of the month; ₱22,979.90 spent and ₱0.00 safe to spend because the bills due take what’s left.',
+  },
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    file: 's-dashboard',
+    title: 'The whole month on one screen',
+    caption: 'Net wallet balance, wallets against debts, and how the budget is pacing.',
+    alt: 'The Lucento Dashboard: net wallet balance ₱62,120.10, wallets ₱176,520.10, debts and loans −₱114,400.00, shortcuts to goals, insights, milestones, debts and scheduled bills, and the monthly budget 89% spent: ₱22,979.90 of ₱25,900.00.',
+  },
+  {
+    id: 'wallets',
+    label: 'Wallets',
+    file: 's-wallets',
+    title: 'Every account as a card you recognise',
+    caption: 'Cash, banks, savings, cards and loans as a gallery, with net worth on top.',
+    alt: 'The Wallets gallery: net worth ₱62,120.10, assets ₱176,520.10 and liabilities −₱114,400.00, with cards for Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00.',
+  },
+  {
+    id: 'scheduled',
+    label: 'Scheduled',
+    file: 's-scheduled',
+    title: 'What’s coming, before it lands',
+    caption: 'Bills, salary and loan payments lined up by date, with what’s overdue flagged.',
+    alt: 'The Scheduled screen: upcoming this month, expenses −₱15,649.90 and transfers −₱12,744.40; Fibre internet −₱299.90 overdue, then the phone plan −₱350.00, the Visa card payment −₱6,400.00 and the car loan installment −₱6,344.40 in November.',
+  },
+  {
+    id: 'goals',
+    label: 'Goals',
+    file: 's-goals',
+    title: 'Goals with a pace to keep',
+    caption: 'Savings goals with a target, a date and the pace you need.',
+    alt: 'Goals: ₱37,500.00 saved of ₱80,000.00 across 2 goals (47%), ₱42,500.00 still to save; Emergency fund ₱21,000.00 of ₱50,000.00 (42%) and Japan trip ₱16,500.00 of ₱30,000.00 (55%), each with its pace.',
+  },
+  {
+    id: 'ask',
+    label: 'Ask Lucento',
+    file: 's-ask',
+    title: 'Ask your money a question',
+    caption: 'Plain-language answers worked out on your phone from your own records.',
+    alt: 'Ask Lucento answering “What are my top 5 spending categories?”: rent leads November at ₱15,000.00 (65%), then groceries ₱3,200.00, restaurants ₱1,450.00, electricity ₱960.00 and clothing and shoes ₱890.00, with ₱22,979.90 spent in November in all, calculated on this phone.',
   },
 ];
+
+/** The carousel's starting screen. */
+export const START_SCREEN = 'dashboard';
 
 /** The five preset themes (Themes.kt). Colours are the app's own background and primary for each mode. */
 export interface Look {
@@ -107,7 +105,7 @@ export const looks: Look[] = [
   {
     id: 'sunrise', name: 'Sunrise', character: 'The signature. Warm ivory, electric blue and sunlight.', pro: false,
     modes: [
-      { mode: 'light', file: 's-wallets', bg: '#FFFDF5', primary: '#3563F5' },
+      { mode: 'light', file: 't-sunrise-light', bg: '#FFFDF5', primary: '#3563F5' },
       { mode: 'dark', file: 't-sunrise-dark', bg: '#10182B', primary: '#7C9AFF' },
     ],
   },

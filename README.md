@@ -42,8 +42,8 @@ either. Don't edit `tokens.css` by hand; `npm run verify` fails if it is stale.
 
 ### The website's design (2026-11-08)
 
-The site is one page for the whole product plus `/demo`, `/privacy`, `/terms`, `/delete-account` and
-`/auth/confirmed`; `/pricing` and `/how-to` redirect. **Read `docs/WEBSITE_DESIGN.md` first**: it holds the permanent
+The site is one page for the whole product plus `/privacy`, `/terms`, `/delete-account` and `/auth/confirmed`;
+`/pricing`, `/how-to` and `/demo` (the retired interactive demo) redirect. **Read `docs/WEBSITE_DESIGN.md` first**: it holds the permanent
 design principles (typography first, real app screens, no template card grids, purposeful motion, designed mobile
 layouts) and the system. `CLAUDE.md` summarises them for Claude.
 
@@ -53,9 +53,10 @@ layouts) and the system. `CLAUDE.md` summarises them for Claude.
 - `src/components/site/` holds the parts; `src/data/content.ts` the screens, themes and FAQ (each with its source in
   the app); `src/data/plans.ts` the plans. Amounts are formatted by `src/lib/money.ts` (U+2212 minus).
 - `public/screens/` are API 36 captures from lucento-android's `ScreenshotTourTest` and `WebsiteShowcaseTest` in peso
-  mode, cropped with lucento-studio `qa/crop-screen.mjs` and `qa/crop-detail.mjs`. `public/og-lucento.png` is the link
+  mode (dark), cropped with lucento-studio `qa/crop-screen.mjs`; `node scripts/screen-tops.mjs` then records each
+  screen's top colour for the phone template's status bar. `public/og-lucento.png` is the link
   preview, composed from the same screens.
-- The interactive demo keeps the app's own palette (`tokens.css`), scoped to the page content.
+- The reading pages keep the app's own palette (`tokens.css`), scoped to the page content.
 
 ## Site URL, canonical links and sitemap
 
@@ -73,19 +74,19 @@ Earlier explorations stay in `brand/logo-concepts/` for reference.
 ## Structure
 
 ```
-design/tokens.json          The app's design-system export (the demo's palette)
+design/tokens.json          The app's design-system export (the reading pages' palette)
 design/horizon.tokens.json  The website's tokens: Lucento palette, Inter type scale
 scripts/build-tokens.mjs    tokens.json -> tokens.css; horizon.tokens.json -> horizon-tokens.css
 docs/WEBSITE_DESIGN.md      Design principles and system (read first)
-src/styles/                 site.css, tokens.css + horizon-tokens.css (generated), phone*.css (demo)
+src/styles/                 site.css, tokens.css + horizon-tokens.css (generated)
 src/layouts/SiteLayout      Every page: inlined CSS and fonts, header, footer, structured data
-src/components/site/        Header, Footer, PlayCta, Phone, Showcase, ThemeStudio, Pricing
-src/components/             ContentPage + LegalBody (reading pages), PhoneDemo + PhoneFrame (interactive demo)
+src/components/site/        Header, Footer, PlayCta, Phone + StatusBar (phone template), Showcase, ThemeStudio, Pricing
+src/components/             ContentPage + LegalBody (reading pages)
 src/data/                   content.ts (screens, themes, FAQ), plans.ts, site.ts (contact, Play link, playListed),
-                            guides.ts, demo.ts, legal.ts (generated from the app: tools/legal/export_legal.py — don't edit)
-src/pages/                  index, demo, privacy, terms, delete-account (Play's account-deletion page),
+                            screen-tops.json (generated), demo.ts, legal.ts (generated from the app: tools/legal/export_legal.py — don't edit)
+src/pages/                  index, privacy, terms, delete-account (Play's account-deletion page),
                             auth/confirmed, api/* (AI proxy, billing), 404, robots.txt
 e2e/home.spec.ts            Playwright checks
 brand/logo/                 Rising Crest logo: symbol, wordmark, lockups, Android
-public/                     screens/, brand/scenery/, demo/ (simulator art and fonts), og-lucento.png, favicon
+public/                     screens/, brand/scenery/, og-lucento.png, favicon
 ```
