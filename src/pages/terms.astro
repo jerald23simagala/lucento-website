@@ -1,12 +1,12 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
 import ContentPage from '../components/ContentPage.astro';
 import LegalBody from '../components/LegalBody.astro';
 import { terms, UPDATED, VERSION } from '../data/legal';
 import { mailto, site } from '../data/site';
 ---
 
-<BaseLayout
+<SiteLayout appTokens
   title="Terms of Use — Lucento"
   description="The terms for using Lucento, its optional online services and Lucento Pro: subscriptions, Lifetime, cancelling and refunds through Google Play."
 >
@@ -17,4 +17,4 @@ import { mailto, site } from '../data/site';
     </p>
     <LegalBody sections={terms.sections} />
   </ContentPage>
-</BaseLayout>
+</SiteLayout>

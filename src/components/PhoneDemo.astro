@@ -3,13 +3,17 @@
 // app on the phone. Everything runs in the browser with fictional data; nothing is saved or sent.
 import { STORIES } from '../demo/simulator';
 import PhoneFrame from './PhoneFrame.astro';
-import phoneDemoCss from '../styles/phone-demo.css?url';
+// The demo is the page's subject, so its styles are inlined: a deferred stylesheet made the first paint reflow (CLS).
+import phoneDemoCss from '../styles/phone-demo.css?raw';
+import phoneCss from '../styles/phone.css?raw';
 
 interface Props {
   /** Section id and the prefix of story links: #<id>-<story> opens a story here. */
   id?: string;
   eyebrow?: string;
   heading?: string;
+  /** 1 when the demo is the page's main subject (/demo), so its heading is the page's h1. */
+  level?: 1 | 2;
   intro?: string;
   /** Which stories this instance offers, in order; the first is shown first. */
   stories: string[];
@@ -21,6 +25,7 @@ const {
   id = 'try',
   eyebrow = 'Try it here',
   heading = 'Use Lucento right in your browser',
+  level = 2,
   intro = 'Pick a story, then follow the steps on the phone. It is a simulation with fictional money: nothing is saved or sent anywhere.',
   stories,
   picker = 'chips',
@@ -28,14 +33,11 @@ const {
 const first = STORIES[stories[0]];
 ---
 
-<link rel="stylesheet" href={phoneDemoCss} media="print" onload="this.media='all'" />
-<noscript>
-  <link rel="stylesheet" href={phoneDemoCss} />
-</noscript>
+<style is:inline set:html={phoneCss + phoneDemoCss}></style>
 <section class={`ld ld-${picker}`} id={id} aria-labelledby={`${id}-title`} data-simulator data-stories={stories.join(',')} data-prefix={`${id}-`}>
   <div class="ld-head">
     <p class="eyebrow">{eyebrow}</p>
-    <h2 id={`${id}-title`}>{heading}</h2>
+    {level === 1 ? <h1 id={`${id}-title`}>{heading}</h1> : <h2 id={`${id}-title`}>{heading}</h2>}
     <p class="ld-sub">{intro}</p>
   </div>
 
@@ -53,7 +55,7 @@ const first = STORIES[stories[0]];
       </div>
       <div class="ld-card">
         <p class="ld-kicker" data-sim="kicker">{first.kicker}</p>
-        <h3 class="ld-story-title" data-sim="title">{first.title}</h3>
+        {level === 1 ? <h2 class="ld-story-title" data-sim="title">{first.title}</h2> : <h3 class="ld-story-title" data-sim="title">{first.title}</h3>}
         <p class="ld-story-text" data-sim="text">{first.text}</p>
         <ol class="ld-steps" data-sim="steps">
           {first.steps.map((step) => <li class="ld-step is-later"><span class="ld-num">·</span><span><b>{step.title}</b></span></li>)}
@@ -62,18 +64,18 @@ const first = STORIES[stories[0]];
           <button type="button" class="ld-reset" data-sim="reset">Start this guide again</button>
         </div>
       </div>
-      <p class="ld-live" data-sim="live" aria-live="polite"></p>
     </div>
 
     <div class="ld-phone-wrap">
+      <p class="ld-live" data-sim="live" aria-live="polite">Step 1: {first.steps[0].title}</p>
       <PhoneFrame>
         <div class="ld-screen" data-sim="screen" role="region" aria-label="Lucento app simulation">
           <noscript>
-            <p class="ld-noscript">This simulation needs JavaScript. The same tasks are written out in the <a href="/how-to">guides</a>.</p>
+            <p class="ld-noscript">This simulation needs JavaScript. The same tasks are written out <a href="#written-title">below</a>.</p>
           </noscript>
         </div>
       </PhoneFrame>
-      <p class="ld-note">Fictional data · simulation of the Android app</p>
+      <p class="ld-note">A simplified simulation with fictional data: screens and figures differ from the current app.</p>
     </div>
   </div>
 </section>

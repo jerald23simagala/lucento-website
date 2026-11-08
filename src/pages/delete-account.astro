@@ -4,14 +4,14 @@
  * app, give the steps, say what is deleted and what is kept and for how long, and work without the app installed.
  * Mirrors lucento-android docs/ACCOUNT_DELETION.md.
  */
-import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
 import ContentPage from '../components/ContentPage.astro';
 import { mailto, site } from '../data/site';
 
 const requestLink = mailto('Delete my Lucento account');
 ---
 
-<BaseLayout
+<SiteLayout appTokens
   title="Delete your Lucento account"
   description="How to delete your Lucento account and the data stored with it — in the app, or by email without the app — and what is deleted and what is kept."
 >
@@ -92,7 +92,7 @@ const requestLink = mailto('Delete my Lucento account');
       </p>
     </section>
   </ContentPage>
-</BaseLayout>
+</SiteLayout>
 
 <style>
   p {

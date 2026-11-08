@@ -1,0 +1,50 @@
+---
+/** Site header: logo, the homepage's sections in page order, and the interactive demo. On small screens the sections fold into a menu. */
+import Lockup from './Lockup.astro';
+
+const onHome = Astro.url.pathname === '/' || Astro.url.pathname === '';
+const at = (hash: string) => (onHome ? hash : `/${hash}`);
+const links = [
+  { href: at('#how'), label: 'How it works' },
+  { href: at('#features'), label: 'Features' },
+  { href: at('#multicurrency'), label: 'Currencies' },
+  { href: at('#shared'), label: 'Shared' },
+  { href: at('#themes'), label: 'Themes' },
+  { href: at('#pricing'), label: 'Pricing' },
+  { href: at('#faq'), label: 'FAQ' },
+];
+---
+
+<header class="site-header theme-night">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label="Lucento home"><Lockup /></a>
+    <nav class="nav" aria-label="Sections">
+      {links.map((link) => <a href={link.href}>{link.label}</a>)}
+    </nav>
+    <a class="btn btn-primary header-cta" href="/demo" aria-current={Astro.url.pathname.startsWith('/demo') ? 'page' : undefined}>Try the demo</a>
+    <details class="menu" data-menu>
+      <summary aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="menu-word">Menu</span></summary>
+      <nav class="menu-panel" aria-label="Sections">
+        {links.map((link) => <a href={link.href}>{link.label}</a>)}
+        <a href="/demo">Interactive demo</a>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<script>
+  // The phone menu closes when a link is chosen, on Escape, and on a tap outside it.
+  const menu = document.querySelector<HTMLDetailsElement>('[data-menu]');
+  if (menu) {
+    menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => (menu.open = false)));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    });
+    document.addEventListener('click', (event) => {
+      if (menu.open && !menu.contains(event.target as Node)) menu.open = false;
+    });
+  }
+</script>

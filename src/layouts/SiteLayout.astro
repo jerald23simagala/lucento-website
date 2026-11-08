@@ -1,0 +1,97 @@
+---
+/**
+ * Every page of the website (2026-11-08 reimagination). The visual system is inlined — tokens, Inter's font faces
+ * (hashed URLs) and site.css — so the first paint needs no stylesheet request. Inter's latin file is preloaded; text
+ * paints at once in a metric-matched fallback until it arrives. A currency-sign subset (8 KB) carries ₱ and the rest of
+ * U+20A0–20C0, fetched only when a page shows one.
+ */
+import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import interCurrency from '../assets/fonts/inter-currency-wght.woff2?url';
+import tokensCss from '../styles/horizon-tokens.css?raw';
+import siteCss from '../styles/site.css?raw';
+import appTokensCss from '../styles/tokens.css?raw';
+import Header from '../components/site/Header.astro';
+import Footer from '../components/site/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+  /** Structured data objects (schema.org), emitted as JSON-LD. */
+  jsonLd?: object[];
+  /** Extra page CSS (raw), inlined after site.css. */
+  css?: string;
+  /**
+   * Pages whose content still uses the app's own palette (the interactive demo simulates the app; the reading pages'
+   * components): src/styles/tokens.css, scoped to the page content so it never reaches the header or footer.
+   */
+  appTokens?: boolean;
+}
+
+const { title, description, noindex = false, jsonLd = [], css = '', appTokens = false } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+// Link previews need an absolute address; the site's canonical host is used when SITE_URL isn't set.
+const ogImage = new URL('/og-lucento.png', Astro.site ?? 'https://www.lucentoapp.com').href;
+
+const LATIN =
+  'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
+const face = (url: string, range: string) =>
+  `@font-face{font-family:"Inter";font-style:normal;font-display:swap;font-weight:100 900;src:url("${url}") format("woff2-variations"),url("${url}") format("woff2");unicode-range:${range}}`;
+// Metric overrides (design/horizon.tokens.json › type.fallback): the swap from Arial or Roboto barely moves text.
+const fallback = (name: string, src: string, size: string, ascent: string, descent: string) =>
+  `@font-face{font-family:"${name}";src:local("${src}");size-adjust:${size};ascent-override:${ascent};descent-override:${descent};line-gap-override:0%}`;
+const minify = (text: string) =>
+  text
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([{};,>])\s*/g, '$1')
+    .trim();
+const inlineCss =
+  face(interLatin, LATIN) +
+  face(interCurrency, 'U+20A0-20C0') +
+  fallback('Inter Fallback', 'Arial', '107.12%', '90.44%', '22.52%') +
+  fallback('Inter Fallback Roboto', 'Roboto', '107.40%', '90.20%', '22.46%') +
+  minify(tokensCss) +
+  minify(siteCss) +
+  (appTokens ? minify(appTokensCss).replaceAll(':root', '.app-tokens') : '') +
+  minify(css);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#0B1229" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Lucento" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Lucento’s Dashboard and Wallets screens on two phones, with the words: Everything about your money, in one clear view." />
+    <meta name="twitter:card" content="summary_large_image" />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <slot name="head" />
+    <style is:inline set:html={inlineCss}></style>
+    {jsonLd.map((data) => <script type="application/ld+json" is:inline set:html={JSON.stringify(data)} />)}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {Astro.site && <link rel="sitemap" href="/sitemap-index.xml" />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main" tabindex="-1">
+      {appTokens ? <div class="app-tokens"><slot /></div> : <slot />}
+    </main>
+    <Footer />
+  </body>
+</html>

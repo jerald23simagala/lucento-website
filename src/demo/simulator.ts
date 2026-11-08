@@ -248,7 +248,7 @@ export const STORIES: Record<string, Story> = {
       { title: 'Choose your spending categories', body: 'Tap to add or remove. At least one is required: your budget is built from them. Add “Health”.', target: 'pick-Health', done: (s) => s.picks.includes('Health') || s.onboarded || !['welcome', 'onb-cats'].includes(s.screen) },
       { title: 'Continue', body: 'You can add, rename or archive categories later.', target: 'setup-cats-next', done: (s) => !['welcome', 'onb-cats'].includes(s.screen) },
       { title: 'Pick your main currency', body: 'Every total is shown in it, and it’s chosen once. With Pro, wallets in other currencies count in it at their average rate.', target: 'setup-currency-next', done: (s) => ['onb-sync', 'onb-done', 'home'].includes(s.screen) },
-      { title: 'Decide on sync', body: 'Optional. “Not now” keeps everything on this phone; you can connect later in Settings.', target: 'setup-sync-skip', done: (s) => ['onb-done', 'home'].includes(s.screen) },
+      { title: 'Decide on sync', body: 'Optional, and sync is part of Lucento Pro. “Not now” keeps everything on this phone; you can connect later in Settings.', target: 'setup-sync-skip', done: (s) => ['onb-done', 'home'].includes(s.screen) },
       { title: 'Finish', body: 'A short guided setup follows in the app: your accounts, any cards or loans, two budget amounts, a goal and first transactions.', target: 'setup-finish', done: (s) => s.onboarded },
     ],
     finale: 'You’re set up. Home starts empty with one clear next step: add your first wallet.',
@@ -338,7 +338,7 @@ export const STORIES: Record<string, Story> = {
   'new-phone': {
     kicker: 'A new phone',
     title: 'Move to a new phone in a minute',
-    text: 'You got a new phone. Your Lucento account already has your wallets, budget and history from the old one.',
+    text: 'You got a new phone. Your Lucento account already has your wallets, budget and history from the old one (restoring from your account is part of Lucento Pro).',
     steps: [
       { title: 'Tap “I already have an account”', body: 'It skips the setup story for people who already use Lucento.', target: 'restore-start', done: (s) => s.screen !== 'welcome' },
       { title: 'Read the reminder, then continue', body: 'Sync the old phone first: anything not yet synced stays on that phone.', target: 'restore-continue', done: (s) => ['signin', 'restoring', 'home'].includes(s.screen) },
@@ -350,7 +350,7 @@ export const STORIES: Record<string, Story> = {
   sync: {
     kicker: 'Cloud sync',
     title: 'Back up and sync your phones',
-    text: 'Optional: keep your data the same on every phone. Your entries leave this one only for sync or the Gemini features you turn on.',
+    text: 'Optional, with Lucento Pro: keep your data the same on every phone. Your entries leave this one only for sync or the Gemini features you turn on.',
     steps: [
       { title: 'Open Settings from your profile', body: 'Tap the round profile button, then Settings.', target: 'profile', done: (s) => s.sheet === 'profile' || onSettings(s) || s.syncEmail !== null || s.disconnected },
       { title: 'Tap Settings', body: 'Cloud sync is near the top.', target: 'open-settings', done: (s) => onSettings(s) || s.syncEmail !== null || s.disconnected },
@@ -518,7 +518,7 @@ function rowCard(r: Row, i: number): string {
     <span class="ls-grow"><b>${esc(r.desc)}</b>
       <label class="ls-sr" for="ls-cat-${i}">Category for ${esc(r.desc)}</label>
       <select id="ls-cat-${i}" data-row="${i}" data-select="row-cat" class="${r.cat ? '' : 'is-soft'}">
-        <option value="" ${r.cat ? '' : 'selected'}>Choose category</option>
+        <option value="" ${r.cat ? '' : 'selected'}>Category</option>
         ${CATS.map((c) => `<option value="${c.id}" ${c.id === r.cat ? 'selected' : ''}>${c.name}</option>`).join('')}
       </select>
       ${r.amount === null ? '<small class="is-red">Add an amount to save this row</small>' : r.cat ? '' : '<small>No category — it would be saved as uncategorised</small>'}
@@ -653,7 +653,7 @@ function onboarding(s: State): string {
     case 'welcome':
       return `<div class="ls-onb">
         <div class="ls-onb-mid">${SYMBOL_SVG(64)}<b class="ls-onb-word">lucento</b><small>Financial clarity without the complexity.</small>
-        <img class="ls-onb-art" src="${ART}illustration_sunrise_landscape.webp" alt="" /></div>
+        <img class="ls-onb-art" src="${ART}illustration_sunrise_landscape.webp" alt="" width="600" height="357" fetchpriority="high" /></div>
         <button type="button" class="ls-primary" data-action="setup-start">Get started</button>
         <button type="button" class="ls-text" data-action="restore-start">I already have an account</button>
       </div>`;

@@ -65,11 +65,18 @@ function deferBuiltStyles() {
 export default defineConfig({
   site,
   trailingSlash: 'ignore',
+  // One-page site (2026-11-08): pricing lives on the homepage, the guides page is the interactive demo.
+  redirects: {
+    '/pricing': { status: 308, destination: '/#pricing' },
+    '/how-to': { status: 308, destination: '/demo' },
+    // Browsers still ask for /favicon.ico; the SVG icon is the only one.
+    '/favicon.ico': { status: 308, destination: '/favicon.svg' },
+  },
   integrations: [...(site ? [sitemap()] : []), deferBuiltStyles()],
   // Pages stay static; only on-demand routes (src/pages/api/interpret.ts, prerender = false) become Vercel Functions.
   adapter: vercel(),
   build: {
-    // Keep the built stylesheets external. critical.css is the only CSS inlined into the document.
+    // Keep the built stylesheets external (the demo's phone styles). SiteLayout inlines the site's own CSS itself.
     inlineStylesheets: 'never',
   },
 });

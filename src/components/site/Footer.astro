@@ -1,0 +1,57 @@
+---
+import Lockup from './Lockup.astro';
+import { site } from '../../data/site';
+
+const groups = [
+  {
+    title: 'Lucento',
+    links: [
+      { href: '/#features', label: 'Features' },
+      { href: '/#themes', label: 'Themes' },
+      { href: '/#pricing', label: 'Pricing' },
+      { href: '/#faq', label: 'FAQ' },
+      { href: '/demo', label: 'Interactive demo' },
+    ],
+  },
+  {
+    title: 'Your data',
+    links: [
+      { href: '/privacy', label: 'Privacy policy' },
+      { href: '/terms', label: 'Terms of service' },
+      { href: '/delete-account', label: 'Delete your account' },
+      { href: `mailto:${site.contactEmail}`, label: site.contactEmail },
+    ],
+  },
+];
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/" aria-label="Lucento home"><Lockup /></a>
+        <p class="muted">A personal finance app for Android: wallets, budgets, bills, goals, debts and insights in one clear view.</p>
+      </div>
+      <div class="footer-links">
+        {
+          groups.map((group) => (
+            <nav aria-label={group.title}>
+              <h2>{group.title}</h2>
+              <ul>
+                {group.links.map((link) => (
+                  <li>
+                    <a href={link.href} class:list={[link.href.startsWith('mailto:') && 'email']}>{link.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))
+        }
+      </div>
+    </div>
+    <div class="footer-base">
+      <p>© {new Date().getFullYear()} Lucento</p>
+      <p>This site doesn’t track you: no analytics, no cookies.</p>
+    </div>
+  </div>
+</footer>

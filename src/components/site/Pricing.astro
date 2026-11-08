@@ -1,0 +1,114 @@
+---
+/**
+ * Plans and the full Free / Pro / Lifetime comparison, from src/data/plans.ts (approved customer copy; limits mirror
+ * lucento-android PlanCatalog: 3 money wallets and 2 cards or loans free, 2 → 20 goals, 10 AI questions a month free →
+ * 50 a day, 3 → 6 and 12 months of Insights, one Shared partner, two → five themes). Prices are Google Play's
+ * indicative Philippine prices; the app only ever shows Play's own price.
+ */
+import { compareGroups, planCards, priceNote, type Cell } from '../../data/plans';
+
+const split = (price: string) => {
+  const match = /^(\S+)\s*(.*)$/.exec(price);
+  return { figure: match?.[1] ?? price, unit: match?.[2] ?? '' };
+};
+const cell = (value: Cell) =>
+  value === true ? { text: 'Included', cls: 'yes', mark: '✓' } : value === false ? { text: 'Not included', cls: 'no', mark: '—' } : { text: value, cls: '', mark: value };
+const plans = [
+  { key: 'free', label: 'Free' },
+  { key: 'pro', label: 'Pro' },
+  { key: 'lifetime', label: 'Lifetime' },
+] as const;
+---
+
+<div class="plans">
+  {
+    planCards.map((plan) => {
+      const { figure, unit } = split(plan.price);
+      return (
+        <article class:list={['plan', plan.id === 'pro' && 'is-pro']} aria-labelledby={`plan-${plan.id}`}>
+          <div class="stack">
+            <h3 id={`plan-${plan.id}`}>{plan.name}</h3>
+            <p class="muted">{plan.tagline}</p>
+          </div>
+          <div>
+            <p class="plan-price">
+              <b>{figure}</b>
+              {unit && <span>{unit}</span>}
+            </p>
+            <p class="fine">{plan.priceDetail}</p>
+          </div>
+          <ul class="ticks">
+            {plan.highlights.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+          <p class="plan-note">{plan.note}</p>
+        </article>
+      );
+    })
+  }
+</div>
+<p class="fine" style="margin-top: var(--space-4)">{priceNote}</p>
+
+<div class="after">
+  <div>
+    <h3>After you buy</h3>
+    <p>Pro switches on as soon as Google Play confirms the purchase, and comes back automatically on any phone that uses the same Google account. Pro renews monthly or yearly until you cancel in Google Play; Lifetime is one payment, never renewed.</p>
+  </div>
+  <div>
+    <h3>If Pro ends</h3>
+    <p>Nothing is deleted or hidden. Wallets and goals beyond the free limits stay and stay editable; the limits only apply to adding new ones. Cloud sync pauses and picks up again if you come back.</p>
+  </div>
+  <div>
+    <h3>Lifetime, plainly</h3>
+    <p>Every Pro feature that runs on your phone is yours for good, including future ones. Online services (sync, restore, Shared, the AI adviser at the Pro allowance) are included for 12 months, then continue with Lucento Cloud at ₱59 a month or ₱490 a year, or not at all.</p>
+  </div>
+</div>
+
+<details class="compare-wrap" data-compare>
+  <summary><span class="title-lg">Compare every feature, plan by plan</span></summary>
+  <table class="compare">
+    <caption class="sr-only">Every feature on Free, Pro and Lifetime</caption>
+    <thead>
+      <tr>
+        <th scope="col">What you get</th>
+        {plans.map((p) => <th scope="col">{p.label}</th>)}
+      </tr>
+    </thead>
+    {
+      compareGroups.map((group) => (
+        <tbody>
+          <tr>
+            <th scope="rowgroup" colspan="4">{group.title}</th>
+          </tr>
+          {group.rows.map((row) => (
+            <tr>
+              <th scope="row">{row.what}</th>
+              {plans.map((p) => {
+                const c = cell(row[p.key]);
+                return (
+                  <td class={c.cls} data-plan={p.label}>
+                    {c.cls ? (
+                      <>
+                        <span aria-hidden="true">{c.mark}</span>
+                        <span class="sr-only">{c.text}</span>
+                      </>
+                    ) : (
+                      c.text
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      ))
+    }
+  </table>
+</details>
+
+<script>
+  // Open on wide screens, where the table reads at a glance; folded on phones, where it is long.
+  const compare = document.querySelector<HTMLDetailsElement>('[data-compare]');
+  if (compare && window.matchMedia('(min-width: 48em)').matches) compare.open = true;
+</script>

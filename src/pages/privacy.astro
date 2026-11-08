@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
 import ContentPage from '../components/ContentPage.astro';
 import LegalBody from '../components/LegalBody.astro';
 import { privacy, UPDATED, VERSION } from '../data/legal';
@@ -16,7 +16,7 @@ const website = {
 };
 ---
 
-<BaseLayout
+<SiteLayout appTokens
   title="Privacy Policy — Lucento"
   description="What stays on your phone, what leaves it and when: accounts, cloud sync, Lucento Shared, purchases, exchange rates, the AI features, and how to delete your account."
 >
@@ -28,4 +28,4 @@ const website = {
     </p>
     <LegalBody sections={[...privacy.sections, website]} />
   </ContentPage>
-</BaseLayout>
+</SiteLayout>

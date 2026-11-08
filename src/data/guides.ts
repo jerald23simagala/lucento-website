@@ -20,7 +20,7 @@ export const guides: Guide[] = [
       'Say what you care about (everyday spending, saving, paying off debt…) and which modules to show. You can skip both and change them later.',
       'Choose the categories you spend on. This one is required: your budget is built from them.',
       'Pick your main currency and light, dark or system appearance.',
-      'Optionally connect a Google or email account to back up and sync. “Not now” keeps everything on the phone.',
+      'Optionally connect a Google or email account to back up and sync (sync is part of Lucento Pro). “Not now” keeps everything on the phone.',
       'A short guided setup follows: add your accounts, any cards or loans, two budget amounts, a goal and your first transactions.',
     ],
     tip: 'Already use Lucento on another phone? Tap “I already have an account” instead — see Move to a new phone.',
@@ -36,7 +36,7 @@ export const guides: Guide[] = [
       'Fix what needs it: tap the amount, the category, the date or the account on a row.',
       'Tap Save. All rows are saved together.',
     ],
-    tip: 'Use the camera button to read a receipt, or the microphone to speak (English for now). Both are read on your phone. To change a saved transaction, swipe it left in Transactions and tap Edit.',
+    tip: 'Use the camera button to read a receipt, or the microphone to speak (English for now): receipts are read on your phone, and speech goes through your phone’s own speech service. To change a saved transaction, swipe it left in Transactions and tap Edit.',
   },
   {
     id: 'budget',
@@ -100,7 +100,7 @@ export const guides: Guide[] = [
   {
     id: 'new-phone',
     title: 'Move to a new phone',
-    summary: 'Sign in on the new phone and your account comes across — no setup story.',
+    summary: 'With Lucento Pro, sign in on the new phone and your account comes across — no setup story. Without Pro, bring a backup file.',
     steps: [
       'On your old phone, open Settings › Cloud sync and tap Sync now. Anything not synced stays on that phone.',
       'Install Lucento on the new phone and tap “I already have an account”.',
@@ -112,14 +112,14 @@ export const guides: Guide[] = [
   {
     id: 'sync',
     title: 'Back up and sync',
-    summary: 'Optional: keep your data the same on every phone you use.',
+    summary: 'Optional, with Lucento Pro: keep your data the same on every phone you use.',
     steps: [
       'Open Settings from the profile button and go to Cloud sync.',
       'Connect a Google account, or create an email account.',
       'Lucento syncs in the background; Sync now runs it straight away.',
       'Disconnect any time. The account’s records are removed from the phone and stay in your account; sign in again to bring them back.',
     ],
-    tip: 'A phone keeps syncing with the account it first synced with, so two people’s records never mix on one device.',
+    tip: 'Signing in to a different account first removes this phone’s records (Lucento asks if anything hasn’t synced), so two people’s records never mix on one device.',
   },
   {
     id: 'smarter-reading',

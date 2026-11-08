@@ -4,8 +4,14 @@
   "note": "Source of truth for the website's visual system (concept B 'Horizon', chosen by the owner 2026-11-07). Same shape as lucento-website/design/tokens.json so build-tokens.mjs can emit it; that file stays the app's own palette (used by the phone demo). Run `node system/build.mjs` after editing: it writes lab/system/tokens.css, system/CONTRAST.md, the DESIGN.md frontmatter and .impeccable/design.json.",
   "color": {
     "themes": [
-      { "id": "light", "name": "Day" },
-      { "id": "dark", "name": "Night" }
+      {
+        "id": "light",
+        "name": "Day"
+      },
+      {
+        "id": "dark",
+        "name": "Night"
+      }
     ],
     "ramps": {
       "crest-blue": {
@@ -27,129 +33,607 @@
       }
     },
     "tokens": [
-      { "name": "color-paper", "value": { "light": "#FFFDF5", "dark": "#0B1229" }, "usage": "Page ground. Day is the app's Soft Ivory; Night matches the midnight panorama's sky and foot, so the band has no seam." },
-      { "name": "color-sky", "value": { "light": "#FFFDF5", "dark": "#0B1229" }, "usage": "Top of the hero sky gradient." },
-      { "name": "color-haze", "value": { "light": "#FCF5EA", "dark": "#091226" }, "usage": "Bottom of the hero sky; equals the panorama's top row so the scenery rises out of the sky with no edge." },
-      { "name": "color-card", "value": { "light": "#FFFFFF", "dark": "#17233F" }, "usage": "Discrete objects only: plan cards, the horizon chart, tables. Night uses the app's NightSurface." },
-      { "name": "color-raised", "value": { "light": "#FFFFFF", "dark": "#202E4D" }, "usage": "Something on a card: the open disclosure, a table header. Night lifts by tone, not shadow." },
-      { "name": "color-dusk", "value": { "light": "#FFF4D1", "dark": "#151A31" }, "usage": "End of the page's day: the plans band fades paper → dusk. Day is the app's Sunlight Pale; Night is a faint moonlit navy." },
-      { "name": "color-ink", "value": { "light": "#17233F", "dark": "#F8FAFF" }, "usage": "Headings, body text, the horizon line in Day. Midnight Navy / NightInk from the app." },
-      { "name": "color-ink-muted", "value": { "light": "#56607A", "dark": "#B8C5DC" }, "usage": "Supporting text, captions, fine print. ≥ 5.7:1 on every Day surface, ≥ 7.7:1 on every Night surface." },
-      { "name": "color-line", "value": { "light": "#E7E3D6", "dark": "#26365C" }, "usage": "Hairlines that only group: card edges, list dividers. Never the only cue for a control." },
-      { "name": "color-line-strong", "value": { "light": "#767F96", "dark": "#7886A6" }, "usage": "Edges that carry meaning (the secondary button, table rules, the chart's axis notes). ≥ 3:1 on paper and card." },
-      { "name": "color-horizon", "value": { "light": "#17233F", "dark": "#B8C5DC" }, "usage": "The horizon line: the zero line of the chart and the one structural rule of the system." },
-      { "name": "color-action", "value": { "light": "{crest-blue-600}", "dark": "{crest-blue-400}" }, "usage": "Primary button fill, the Pro plan. Blue means 'act' (or 'have' in the chart); nothing else is filled blue." },
-      { "name": "color-action-hover", "value": { "light": "{crest-blue-700}", "dark": "{crest-blue-300}" }, "usage": "Primary button hover." },
-      { "name": "color-action-pressed", "value": { "light": "{crest-blue-800}", "dark": "{crest-blue-200}" }, "usage": "Primary button while pressed." },
-      { "name": "color-on-action", "value": { "light": "#FFFFFF", "dark": "#0B1229" }, "usage": "Text on the action fill: 5.98:1 Day, 6.98:1 Night." },
-      { "name": "color-on-action-muted", "value": { "light": "#E3ECFF", "dark": "#1B2650" }, "usage": "Secondary text on the action fill (the Pro card's details)." },
-      { "name": "color-link", "value": { "light": "{crest-blue-600}", "dark": "{crest-blue-300}" }, "usage": "Text links, the secondary button's label and edge." },
-      { "name": "color-link-hover", "value": { "light": "{crest-blue-800}", "dark": "{crest-blue-200}" }, "usage": "Link hover." },
-      { "name": "color-tint", "value": { "light": "{crest-blue-50}", "dark": "{crest-blue-900}" }, "usage": "A quiet blue surface: hover wash on the secondary button, the highlighted column of the plan table." },
-      { "name": "color-focus", "value": { "light": "{crest-blue-600}", "dark": "{crest-blue-300}" }, "usage": "Focus ring (3px, offset 3px). ≥ 3:1 against paper and card in both themes." },
-      { "name": "color-sun", "value": { "light": "#FFC928", "dark": "#FFC928" }, "usage": "The light: the sun marker (net worth), fact bullets, the Play-status dot. Decorative only; never text, never status." },
-      { "name": "color-dawn", "value": { "light": "#FF8A24", "dark": "#FF8A24" }, "usage": "The sun's halo and warm edges. Decorative only." },
-      { "name": "color-have", "value": { "light": "{crest-blue-600}", "dark": "{crest-blue-400}" }, "usage": "Chart: what you have, above the horizon." },
-      { "name": "color-owe", "value": { "light": "#7D84A5", "dark": "#6A7298" }, "usage": "Chart: what you owe, below the horizon. Calm slate, not alarm red; ≥ 3.3:1 on its card. Position carries the meaning, the label states it." },
-      { "name": "color-positive", "value": { "light": "#137A53", "dark": "#3DD68C" }, "usage": "Money in, as text, always with a + sign. App PositiveText / PositiveNight." },
-      { "name": "color-negative", "value": { "light": "#B83838", "dark": "#FF8A8A" }, "usage": "Money spent (flows), as text, always with a − (U+2212) sign. Balances you owe are written with − in ink, not red. App NegativeText / night error." },
-      { "name": "color-crest-1", "value": { "light": "#154DFD", "dark": "#154DFD" }, "usage": "Logo bar 1. Logo only." },
-      { "name": "color-crest-2", "value": { "light": "#61AEFD", "dark": "#61AEFD" }, "usage": "Logo bar 2. Logo only." },
-      { "name": "color-crest-3", "value": { "light": "#FECA45", "dark": "#FECA45" }, "usage": "Logo bar 3. Logo only." },
-      { "name": "color-crest-sun", "value": { "light": "#FDA81B", "dark": "#FDA81B" }, "usage": "Logo sun. Logo only." },
-      { "name": "color-device", "value": { "light": "#0A0F1E", "dark": "#04070F" }, "usage": "Phone frame bezel." }
+      {
+        "name": "color-paper",
+        "value": {
+          "light": "#FFFDF5",
+          "dark": "#0B1229"
+        },
+        "usage": "Page ground. Day is the app's Soft Ivory; Night matches the midnight panorama's sky and foot, so the band has no seam."
+      },
+      {
+        "name": "color-sky",
+        "value": {
+          "light": "#FFFDF5",
+          "dark": "#0B1229"
+        },
+        "usage": "Top of the hero sky gradient."
+      },
+      {
+        "name": "color-haze",
+        "value": {
+          "light": "#FCF5EA",
+          "dark": "#091226"
+        },
+        "usage": "Bottom of the hero sky; equals the panorama's top row so the scenery rises out of the sky with no edge."
+      },
+      {
+        "name": "color-card",
+        "value": {
+          "light": "#FFFFFF",
+          "dark": "#17233F"
+        },
+        "usage": "Discrete objects only: plan cards, the horizon chart, tables. Night uses the app's NightSurface."
+      },
+      {
+        "name": "color-raised",
+        "value": {
+          "light": "#FFFFFF",
+          "dark": "#202E4D"
+        },
+        "usage": "Something on a card: the open disclosure, a table header. Night lifts by tone, not shadow."
+      },
+      {
+        "name": "color-dusk",
+        "value": {
+          "light": "#FFF4D1",
+          "dark": "#151A31"
+        },
+        "usage": "End of the page's day: the plans band fades paper → dusk. Day is the app's Sunlight Pale; Night is a faint moonlit navy."
+      },
+      {
+        "name": "color-ink",
+        "value": {
+          "light": "#17233F",
+          "dark": "#F8FAFF"
+        },
+        "usage": "Headings, body text, the horizon line in Day. Midnight Navy / NightInk from the app."
+      },
+      {
+        "name": "color-ink-muted",
+        "value": {
+          "light": "#56607A",
+          "dark": "#B8C5DC"
+        },
+        "usage": "Supporting text, captions, fine print. ≥ 5.7:1 on every Day surface, ≥ 7.7:1 on every Night surface."
+      },
+      {
+        "name": "color-line",
+        "value": {
+          "light": "#E7E3D6",
+          "dark": "#26365C"
+        },
+        "usage": "Hairlines that only group: card edges, list dividers. Never the only cue for a control."
+      },
+      {
+        "name": "color-line-strong",
+        "value": {
+          "light": "#767F96",
+          "dark": "#7886A6"
+        },
+        "usage": "Edges that carry meaning (the secondary button, table rules, the chart's axis notes). ≥ 3:1 on paper and card."
+      },
+      {
+        "name": "color-horizon",
+        "value": {
+          "light": "#17233F",
+          "dark": "#B8C5DC"
+        },
+        "usage": "The horizon line: the zero line of the chart and the one structural rule of the system."
+      },
+      {
+        "name": "color-action",
+        "value": {
+          "light": "{crest-blue-600}",
+          "dark": "{crest-blue-400}"
+        },
+        "usage": "Primary button fill, the Pro plan. Blue means 'act' (or 'have' in the chart); nothing else is filled blue."
+      },
+      {
+        "name": "color-action-hover",
+        "value": {
+          "light": "{crest-blue-700}",
+          "dark": "{crest-blue-300}"
+        },
+        "usage": "Primary button hover."
+      },
+      {
+        "name": "color-action-pressed",
+        "value": {
+          "light": "{crest-blue-800}",
+          "dark": "{crest-blue-200}"
+        },
+        "usage": "Primary button while pressed."
+      },
+      {
+        "name": "color-on-action",
+        "value": {
+          "light": "#FFFFFF",
+          "dark": "#0B1229"
+        },
+        "usage": "Text on the action fill: 5.98:1 Day, 6.98:1 Night."
+      },
+      {
+        "name": "color-on-action-muted",
+        "value": {
+          "light": "#E3ECFF",
+          "dark": "#1B2650"
+        },
+        "usage": "Secondary text on the action fill (the Pro card's details)."
+      },
+      {
+        "name": "color-link",
+        "value": {
+          "light": "{crest-blue-600}",
+          "dark": "{crest-blue-300}"
+        },
+        "usage": "Text links, the secondary button's label and edge."
+      },
+      {
+        "name": "color-link-hover",
+        "value": {
+          "light": "{crest-blue-800}",
+          "dark": "{crest-blue-200}"
+        },
+        "usage": "Link hover."
+      },
+      {
+        "name": "color-tint",
+        "value": {
+          "light": "{crest-blue-50}",
+          "dark": "{crest-blue-900}"
+        },
+        "usage": "A quiet blue surface: hover wash on the secondary button, the highlighted column of the plan table."
+      },
+      {
+        "name": "color-focus",
+        "value": {
+          "light": "{crest-blue-600}",
+          "dark": "{crest-blue-300}"
+        },
+        "usage": "Focus ring (3px, offset 3px). ≥ 3:1 against paper and card in both themes."
+      },
+      {
+        "name": "color-sun",
+        "value": {
+          "light": "#FFC928",
+          "dark": "#FFC928"
+        },
+        "usage": "The light: the sun marker (net worth), fact bullets, the Play-status dot. Decorative only; never text, never status."
+      },
+      {
+        "name": "color-dawn",
+        "value": {
+          "light": "#FF8A24",
+          "dark": "#FF8A24"
+        },
+        "usage": "The sun's halo and warm edges. Decorative only."
+      },
+      {
+        "name": "color-have",
+        "value": {
+          "light": "{crest-blue-600}",
+          "dark": "{crest-blue-400}"
+        },
+        "usage": "Chart: what you have, above the horizon."
+      },
+      {
+        "name": "color-owe",
+        "value": {
+          "light": "#7D84A5",
+          "dark": "#6A7298"
+        },
+        "usage": "Chart: what you owe, below the horizon. Calm slate, not alarm red; ≥ 3.3:1 on its card. Position carries the meaning, the label states it."
+      },
+      {
+        "name": "color-positive",
+        "value": {
+          "light": "#137A53",
+          "dark": "#3DD68C"
+        },
+        "usage": "Money in, as text, always with a + sign. App PositiveText / PositiveNight."
+      },
+      {
+        "name": "color-negative",
+        "value": {
+          "light": "#B83838",
+          "dark": "#FF8A8A"
+        },
+        "usage": "Money spent (flows), as text, always with a − (U+2212) sign. Balances you owe are written with − in ink, not red. App NegativeText / night error."
+      },
+      {
+        "name": "color-crest-1",
+        "value": {
+          "light": "#154DFD",
+          "dark": "#154DFD"
+        },
+        "usage": "Logo bar 1. Logo only."
+      },
+      {
+        "name": "color-crest-2",
+        "value": {
+          "light": "#61AEFD",
+          "dark": "#61AEFD"
+        },
+        "usage": "Logo bar 2. Logo only."
+      },
+      {
+        "name": "color-crest-3",
+        "value": {
+          "light": "#FECA45",
+          "dark": "#FECA45"
+        },
+        "usage": "Logo bar 3. Logo only."
+      },
+      {
+        "name": "color-crest-sun",
+        "value": {
+          "light": "#FDA81B",
+          "dark": "#FDA81B"
+        },
+        "usage": "Logo sun. Logo only."
+      },
+      {
+        "name": "color-device",
+        "value": {
+          "light": "#0A0F1E",
+          "dark": "#04070F"
+        },
+        "usage": "Phone frame bezel."
+      }
     ]
   },
   "type": {
     "families": {
-      "sans": "\"Plus Jakarta Sans\", \"Plus Jakarta Sans Fallback\", \"Plus Jakarta Sans Fallback Roboto\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
+      "sans": "\"Inter\", \"Inter Fallback\", \"Inter Fallback Roboto\", ui-sans-serif, system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif"
     },
     "fonts": [
-      { "family": "Plus Jakarta Sans", "file": "fonts/plus-jakarta-sans-latin-wght-normal.woff2", "weight": "200 800", "unicodeRange": "latin", "bytes": 27348, "source": "@fontsource-variable/plus-jakarta-sans 5.3.0 (OFL-1.1)" },
-      { "family": "Plus Jakarta Sans", "file": "fonts/plus-jakarta-sans-latin-ext-wght-normal.woff2", "weight": "200 800", "unicodeRange": "latin-ext (₱ U+20B1 lives here)", "bytes": 21728, "source": "@fontsource-variable/plus-jakarta-sans 5.3.0 (OFL-1.1)" }
+      {
+        "family": "Inter",
+        "file": "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2",
+        "weight": "100 900",
+        "unicodeRange": "latin",
+        "bytes": 48256,
+        "source": "@fontsource-variable/inter 5.3.0 (OFL-1.1)"
+      },
+      {
+        "family": "Inter",
+        "file": "src/assets/fonts/inter-currency-wght.woff2",
+        "weight": "100 900",
+        "unicodeRange": "U+20A0-20C0 (currency signs: ₱ and the rest of the block)",
+        "bytes": 8428,
+        "source": "subset of @fontsource-variable/inter 5.3.0 latin-ext with fontTools (pyftsubset --unicodes=U+20A0-20C0)"
+      }
     ],
     "fallback": {
-      "note": "Metric-matched local fallbacks so the swap barely moves text: one face family per local font (Arial on Windows and Apple, Roboto on Android), each measured on a sample of site copy with fontTools (2026-11-08). The first family whose local font exists wins.",
-      "regular": { "src": "Arial", "sizeAdjust": "104.44%", "ascentOverride": "99.38%", "descentOverride": "21.26%", "lineGapOverride": "0%" },
-      "bold": { "src": "Arial Bold", "sizeAdjust": "102.86%", "ascentOverride": "100.92%", "descentOverride": "21.58%", "lineGapOverride": "0%" },
-      "robotoRegular": { "src": "Roboto", "sizeAdjust": "105.77%", "ascentOverride": "98.14%", "descentOverride": "20.99%", "lineGapOverride": "0%" },
-      "robotoBold": { "src": "Roboto Bold", "sizeAdjust": "108.69%", "ascentOverride": "95.50%", "descentOverride": "20.43%", "lineGapOverride": "0%" }
+      "note": "Metric overrides so the swap from the local font to Inter barely moves text (Arial on Windows and Apple, Roboto on Android). Values follow Inter's published metrics against each face.",
+      "regular": {
+        "src": "Arial",
+        "sizeAdjust": "107.12%",
+        "ascentOverride": "90.44%",
+        "descentOverride": "22.52%",
+        "lineGapOverride": "0%"
+      },
+      "robotoRegular": {
+        "src": "Roboto",
+        "sizeAdjust": "107.40%",
+        "ascentOverride": "90.20%",
+        "descentOverride": "22.46%",
+        "lineGapOverride": "0%"
+      }
     },
     "scale": [
-      { "name": "display", "fontSize": "clamp(2.5rem, 1.667rem + 3.704vw, 5rem)", "lineHeight": "1.02", "fontWeight": 800, "letterSpacing": "-0.04em", "usage": "The page's one statement (h1). 40 px at 360 wide → 80 px at 1440." },
-      { "name": "headline", "fontSize": "clamp(1.75rem, 1.417rem + 1.481vw, 2.75rem)", "lineHeight": "1.1", "fontWeight": 800, "letterSpacing": "-0.03em", "usage": "Section headings (h2). 28 → 44 px." },
-      { "name": "title", "fontSize": "clamp(1.125rem, 1.083rem + 0.185vw, 1.25rem)", "lineHeight": "1.3", "fontWeight": 700, "letterSpacing": "-0.01em", "usage": "Card and group headings (h3). 18 → 20 px." },
-      { "name": "lede", "fontSize": "clamp(1.125rem, 1.0625rem + 0.278vw, 1.3125rem)", "lineHeight": "1.5", "fontWeight": 400, "letterSpacing": "0", "usage": "The paragraph under a display or headline. 18 → 21 px." },
-      { "name": "body", "fontSize": "1rem", "lineHeight": "1.6", "fontWeight": 400, "letterSpacing": "0", "usage": "Running text and legal prose; measure ≤ 36 rem (≈ 70 characters)." },
-      { "name": "body-small", "fontSize": "0.9375rem", "lineHeight": "1.55", "fontWeight": 400, "letterSpacing": "0", "usage": "Supporting copy in cards and columns (15 px)." },
-      { "name": "label", "fontSize": "0.9375rem", "lineHeight": "1.3", "fontWeight": 650, "letterSpacing": "0", "usage": "Navigation, buttons, table headers." },
-      { "name": "button", "fontSize": "0.9375rem", "lineHeight": "1.2", "fontWeight": 700, "letterSpacing": "0", "usage": "Button and arrow-link labels (one step heavier than label so actions read as actions)." },
-      { "name": "caption", "fontSize": "0.8125rem", "lineHeight": "1.4", "fontWeight": 500, "letterSpacing": "0", "usage": "Chart labels, 'example figures' tags, fine print under prices. The floor for running text; only the Axis style (inside charts) is smaller." },
-      { "name": "axis", "fontSize": "0.75rem", "lineHeight": "1.3", "fontWeight": 700, "letterSpacing": "0.06em", "textTransform": "uppercase", "usage": "Inside charts only (e.g. '₱0' on the chart's zero line). Never above a heading." },
-      { "name": "figure", "fontSize": "clamp(1.625rem, 1.5rem + 0.556vw, 2rem)", "lineHeight": "1.1", "fontWeight": 800, "letterSpacing": "-0.02em", "fontFeature": "\"tnum\" 1", "usage": "A price or total that is the point of its card (26 → 32 px). Tabular, never wraps." }
-    ]
+      {
+        "name": "display",
+        "fontSize": "clamp(2.5rem, 1.6rem + 3.4vw, 4.5rem)",
+        "lineHeight": "1.06",
+        "fontWeight": 800,
+        "letterSpacing": "-0.035em",
+        "usage": "The page's one statement (h1). 40 px at 360 wide → 72 px at 1440."
+      },
+      {
+        "name": "headline",
+        "fontSize": "clamp(2rem, 1.55rem + 1.9vw, 3rem)",
+        "lineHeight": "1.1",
+        "fontWeight": 800,
+        "letterSpacing": "-0.03em",
+        "usage": "Section headings (h2). 32 → 48 px, as ApplyFast's 40–46 px h2 at 800."
+      },
+      {
+        "name": "title-lg",
+        "fontSize": "clamp(1.5rem, 1.3rem + 0.85vw, 2rem)",
+        "lineHeight": "1.15",
+        "fontWeight": 800,
+        "letterSpacing": "-0.025em",
+        "usage": "Feature and chapter headings inside a section (h3 that leads a composition)."
+      },
+      {
+        "name": "title",
+        "fontSize": "clamp(1.0625rem, 1.03rem + 0.15vw, 1.1875rem)",
+        "lineHeight": "1.3",
+        "fontWeight": 700,
+        "letterSpacing": "-0.02em",
+        "usage": "Small headings (h3/h4) in lists, plans and the FAQ; ApplyFast's 17 px at 700."
+      },
+      {
+        "name": "eyebrow",
+        "fontSize": "0.8125rem",
+        "lineHeight": "1.4",
+        "fontWeight": 700,
+        "letterSpacing": "0.1em",
+        "usage": "Uppercase label above a heading (13 px, +0.1em), as on ApplyFast."
+      },
+      {
+        "name": "lede",
+        "fontSize": "clamp(1.0625rem, 1rem + 0.3vw, 1.25rem)",
+        "lineHeight": "1.6",
+        "fontWeight": 400,
+        "letterSpacing": "-0.005em",
+        "usage": "The paragraph under a display or headline. 17 → 20 px."
+      },
+      {
+        "name": "body",
+        "fontSize": "1rem",
+        "lineHeight": "1.6",
+        "fontWeight": 400,
+        "letterSpacing": "0",
+        "usage": "Running text; measure ≤ 36 rem."
+      },
+      {
+        "name": "body-small",
+        "fontSize": "0.9375rem",
+        "lineHeight": "1.55",
+        "fontWeight": 400,
+        "letterSpacing": "0",
+        "usage": "Supporting copy (15 px)."
+      },
+      {
+        "name": "label",
+        "fontSize": "0.9375rem",
+        "lineHeight": "1.3",
+        "fontWeight": 600,
+        "letterSpacing": "-0.005em",
+        "usage": "Navigation, tabs, table headers."
+      },
+      {
+        "name": "button",
+        "fontSize": "0.9375rem",
+        "lineHeight": "1.2",
+        "fontWeight": 700,
+        "letterSpacing": "-0.005em",
+        "usage": "Buttons and arrow links."
+      },
+      {
+        "name": "caption",
+        "fontSize": "0.8125rem",
+        "lineHeight": "1.45",
+        "fontWeight": 500,
+        "letterSpacing": "0",
+        "usage": "Fine print, notes under figures."
+      },
+      {
+        "name": "figure",
+        "fontSize": "clamp(1.75rem, 1.5rem + 1vw, 2.5rem)",
+        "lineHeight": "1.05",
+        "fontWeight": 800,
+        "letterSpacing": "-0.03em",
+        "usage": "Prices and large amounts; always tabular figures."
+      }
+    ],
+    "note": "Typography-first, after the owner's ApplyFast site (2026-11-08): Inter at 800 with tight negative tracking for headings, uppercase tracked eyebrows, 1.6 body leading. ApplyFast names Inter but ships no web font; Lucento self-hosts it so every visitor gets the same face."
   },
   "spacing": {
     "note": "4 px grid, numbered by multiples of 4. Two fluid tokens set the page rhythm.",
     "tokens": [
-      { "name": "space-1", "value": "4px", "usage": "Label to value." },
-      { "name": "space-2", "value": "8px", "usage": "Icon to text; tight groups." },
-      { "name": "space-3", "value": "12px", "usage": "Related items in a list." },
-      { "name": "space-4", "value": "16px", "usage": "Inside small groups; legend rows." },
-      { "name": "space-5", "value": "20px", "usage": "Heading to its paragraph." },
-      { "name": "space-6", "value": "24px", "usage": "Card padding." },
-      { "name": "space-8", "value": "32px", "usage": "Between columns; paragraph to actions." },
-      { "name": "space-10", "value": "40px", "usage": "Section heading block to content." },
-      { "name": "space-12", "value": "48px", "usage": "Between major groups inside a section." },
-      { "name": "space-16", "value": "64px", "usage": "Between sub-sections." },
-      { "name": "gutter", "value": "clamp(20px, 4.5vw, 48px)", "usage": "Page side padding (≥ safe-area insets)." },
-      { "name": "section", "value": "clamp(56px, 36px + 4.5vw, 96px)", "usage": "Vertical padding of a section (56 → 96 px; two adjacent sections never leave more than ~190 px of air)." },
-      { "name": "measure", "value": "36rem", "usage": "Longest line for running text: about 70 characters at 16 px (ch units overshoot here because the digits are wide)." },
-      { "name": "container", "value": "76rem", "usage": "Widest content column (1216 px)." }
+      {
+        "name": "space-1",
+        "value": "4px",
+        "usage": "Label to value."
+      },
+      {
+        "name": "space-2",
+        "value": "8px",
+        "usage": "Icon to text; tight groups."
+      },
+      {
+        "name": "space-3",
+        "value": "12px",
+        "usage": "Related items in a list."
+      },
+      {
+        "name": "space-4",
+        "value": "16px",
+        "usage": "Inside small groups; legend rows."
+      },
+      {
+        "name": "space-5",
+        "value": "20px",
+        "usage": "Heading to its paragraph."
+      },
+      {
+        "name": "space-6",
+        "value": "24px",
+        "usage": "Card padding."
+      },
+      {
+        "name": "space-8",
+        "value": "32px",
+        "usage": "Between columns; paragraph to actions."
+      },
+      {
+        "name": "space-10",
+        "value": "40px",
+        "usage": "Section heading block to content."
+      },
+      {
+        "name": "space-12",
+        "value": "48px",
+        "usage": "Between major groups inside a section."
+      },
+      {
+        "name": "space-16",
+        "value": "64px",
+        "usage": "Between sub-sections."
+      },
+      {
+        "name": "gutter",
+        "value": "clamp(20px, 4.5vw, 48px)",
+        "usage": "Page side padding (≥ safe-area insets)."
+      },
+      {
+        "name": "section",
+        "value": "clamp(56px, 36px + 4.5vw, 96px)",
+        "usage": "Vertical padding of a section (56 → 96 px; two adjacent sections never leave more than ~190 px of air)."
+      },
+      {
+        "name": "measure",
+        "value": "36rem",
+        "usage": "Longest line for running text: about 70 characters at 16 px (ch units overshoot here because the digits are wide)."
+      },
+      {
+        "name": "container",
+        "value": "76rem",
+        "usage": "Widest content column (1216 px)."
+      }
     ]
   },
   "radius": {
     "tokens": [
-      { "name": "radius-xs", "value": "6px", "usage": "Legend swatches, small tags (app shapes.extraSmall)." },
-      { "name": "radius-sm", "value": "10px", "usage": "Focus-ring rounding, table cells (app shapes.small)." },
-      { "name": "radius-md", "value": "14px", "usage": "Disclosure rows (app shapes.medium)." },
-      { "name": "radius-lg", "value": "20px", "usage": "Cards and plan cards (app shapes.large)." },
-      { "name": "radius-xl", "value": "28px", "usage": "The horizon chart panel (app shapes.extraLarge)." },
-      { "name": "radius-device", "value": "38px", "usage": "Phone frame outside; the screen inside is 30px." },
-      { "name": "radius-full", "value": "9999px", "usage": "Buttons (pills) and the sun." }
+      {
+        "name": "radius-xs",
+        "value": "6px",
+        "usage": "Legend swatches, small tags (app shapes.extraSmall)."
+      },
+      {
+        "name": "radius-sm",
+        "value": "10px",
+        "usage": "Focus-ring rounding, table cells (app shapes.small)."
+      },
+      {
+        "name": "radius-md",
+        "value": "14px",
+        "usage": "Disclosure rows (app shapes.medium)."
+      },
+      {
+        "name": "radius-lg",
+        "value": "20px",
+        "usage": "Cards and plan cards (app shapes.large)."
+      },
+      {
+        "name": "radius-xl",
+        "value": "28px",
+        "usage": "The horizon chart panel (app shapes.extraLarge)."
+      },
+      {
+        "name": "radius-device",
+        "value": "38px",
+        "usage": "Phone frame outside; the screen inside is 30px."
+      },
+      {
+        "name": "radius-full",
+        "value": "9999px",
+        "usage": "Buttons (pills) and the sun."
+      }
     ]
   },
   "shadow": {
     "note": "Flat by default. Only the phone floats. Night separates by tone (card #17233F on paper #0B1229).",
     "tokens": [
-      { "name": "shadow-device", "value": { "light": "0 30px 60px -24px rgba(23, 35, 63, 0.55)", "dark": "0 0 0 1px rgba(184, 197, 220, 0.22), 0 30px 60px -24px rgba(0, 0, 0, 0.70)" }, "usage": "The phone frame. Nothing else casts a shadow. Night adds a faint 1 px rim so the bezel keeps its edge on the navy page." }
+      {
+        "name": "shadow-device",
+        "value": {
+          "light": "0 30px 60px -24px rgba(23, 35, 63, 0.55)",
+          "dark": "0 0 0 1px rgba(184, 197, 220, 0.22), 0 30px 60px -24px rgba(0, 0, 0, 0.70)"
+        },
+        "usage": "The phone frame. Nothing else casts a shadow. Night adds a faint 1 px rim so the bezel keeps its edge on the navy page."
+      }
     ]
   },
   "size": {
     "tokens": [
-      { "name": "target", "value": "44px", "usage": "Minimum hit area for every link and control (48 in the app)." },
-      { "name": "button", "value": "52px", "usage": "Button height (matches the app's 52dp)." },
-      { "name": "phone", "value": "min(300px, 78vw)", "usage": "Hero phone width on phones. From 900 px wide it also follows the viewport height (see horizon.css) so the whole hero fits above the fold." },
-      { "name": "focus-ring", "value": "3px", "usage": "Focus outline width; offset 3px." }
+      {
+        "name": "target",
+        "value": "44px",
+        "usage": "Minimum hit area for every link and control (48 in the app)."
+      },
+      {
+        "name": "button",
+        "value": "52px",
+        "usage": "Button height (matches the app's 52dp)."
+      },
+      {
+        "name": "phone",
+        "value": "min(300px, 78vw)",
+        "usage": "Hero phone width on phones. From 900 px wide it also follows the viewport height (see horizon.css) so the whole hero fits above the fold."
+      },
+      {
+        "name": "focus-ring",
+        "value": "3px",
+        "usage": "Focus outline width; offset 3px."
+      }
     ]
   },
   "motion": {
     "note": "Mirrors the app (Mascot.kt, ANIMATION_ASSETS.md) via lab/src/motion/tokens.css. Reduced motion sets durations and distances to 0.",
     "tokens": [
-      { "name": "ease-enter", "value": "cubic-bezier(0.33, 0, 0.25, 1)", "usage": "Entrances." },
-      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "usage": "Hover and state changes." },
-      { "name": "ease-emphasised", "value": "cubic-bezier(0.2, 0, 0, 1)", "usage": "Emphasised moments (reserved)." },
-      { "name": "dur-quick", "value": "180ms", "usage": "Hover, press, disclosure chevron." },
-      { "name": "dur-base", "value": "300ms", "usage": "Disclosure open, theme cross-fades." },
-      { "name": "dur-enter", "value": "480ms", "usage": "Section entrances (if any)." },
-      { "name": "dur-hero", "value": "600ms", "usage": "The phone rising onto the ground: once per page load, wide screens only (where it is in view)." },
-      { "name": "stagger", "value": "80ms", "usage": "Delay before the entrance; between items when several enter." }
+      {
+        "name": "ease-enter",
+        "value": "cubic-bezier(0.33, 0, 0.25, 1)",
+        "usage": "Entrances."
+      },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "usage": "Hover and state changes."
+      },
+      {
+        "name": "ease-emphasised",
+        "value": "cubic-bezier(0.2, 0, 0, 1)",
+        "usage": "Emphasised moments (reserved)."
+      },
+      {
+        "name": "dur-quick",
+        "value": "180ms",
+        "usage": "Hover, press, disclosure chevron."
+      },
+      {
+        "name": "dur-base",
+        "value": "300ms",
+        "usage": "Disclosure open, theme cross-fades."
+      },
+      {
+        "name": "dur-enter",
+        "value": "480ms",
+        "usage": "Section entrances (if any)."
+      },
+      {
+        "name": "dur-hero",
+        "value": "600ms",
+        "usage": "The phone rising onto the ground: once per page load, wide screens only (where it is in view)."
+      },
+      {
+        "name": "stagger",
+        "value": "80ms",
+        "usage": "Delay before the entrance; between items when several enter."
+      }
     ]
   },
   "breakpoints": [
-    { "name": "sm", "value": "640px", "usage": "Chart gets taller; two-up legends." },
-    { "name": "md", "value": "900px", "usage": "Two columns: hero copy beside the phone, chart beside its legend, three plan cards and privacy points in a row." },
-    { "name": "lg", "value": "1200px", "usage": "Wide: larger gaps only; no new layout." }
+    {
+      "name": "sm",
+      "value": "640px",
+      "usage": "Chart gets taller; two-up legends."
+    },
+    {
+      "name": "md",
+      "value": "900px",
+      "usage": "Two columns: hero copy beside the phone, chart beside its legend, three plan cards and privacy points in a row."
+    },
+    {
+      "name": "lg",
+      "value": "1200px",
+      "usage": "Wide: larger gaps only; no new layout."
+    }
   ],
   "meta": {
     "source": "lucento-studio system/ (Phase 3, 2026-11-08). App references: Color.kt, Themes.kt (Sunrise light + dark), Type.kt, Dimens.kt; scenery panoramas from res/drawable-nodpi.",

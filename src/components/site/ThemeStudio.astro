@@ -1,0 +1,118 @@
+---
+/**
+ * "Make Lucento yours": the real Wallets gallery in each of the app's five preset themes and both modes (captured by
+ * lucento-android WebsiteShowcaseTest). Two radio groups pick the theme and the mode; CSS :has() shows the matching
+ * screenshot and retints the section with that theme's own background and primary colour, so it works without
+ * JavaScript. Midnight is always dark, as in the app. Grove, Mono and Aurora are Pro (ProGates.PRO_THEME_IDS).
+ */
+import { looks, SCREEN_H, SCREEN_W } from '../../data/content';
+
+const set = (file: string, format: 'avif' | 'webp') => [400, 560, 720].map((w) => `/screens/${file}-${w}.${format} ${w}w`).join(', ');
+const sizes = '(min-width: 56em) 330px, 64vw';
+
+const isDark = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16);
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 128;
+};
+
+// One rule per look and mode: show its screenshot and give the section that theme's colours.
+const rules = looks
+  .flatMap((look) =>
+    look.modes.map((m) => {
+      const when =
+        look.modes.length > 1
+          ? `.studio:has(#look-${look.id}:checked):has(#mode-${m.mode}:checked)`
+          : `.studio:has(#look-${look.id}:checked)`;
+      const ink = isDark(m.bg)
+        ? '--studio-ink:#F4F6FC;--studio-muted:#B9C2D6;--studio-line:rgba(255,255,255,.16);'
+        : '--studio-ink:#17233F;--studio-muted:#56607A;--studio-line:rgba(23,35,63,.14);';
+      return `${when}{--studio-bg:${m.bg};--studio-accent:${m.primary};${ink}}${when} [data-v="${look.id}-${m.mode}"]{display:block}`;
+    }),
+  )
+  .join('');
+const css =
+  `.studio:has([name="look"]:checked) .studio-stage picture{display:none}` +
+  rules +
+  `.studio:has(#look-midnight:checked) .modes .mode{opacity:.5;pointer-events:none}.studio:has(#look-midnight:checked) .mode-note{display:block}.mode-note{display:none}`;
+---
+
+<section class="studio band" id="themes" aria-labelledby="h-themes">
+  <style is:inline set:html={css}></style>
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Make Lucento yours</p>
+      <h2 id="h-themes">Five themes. The same wallets, five ways.</h2>
+      <p class="lede">Pick a theme and the real Wallets screen changes with it. Colours, surfaces and the landscape change; what money means doesn’t, so gains, losses and your wallet cards look the same in every theme.</p>
+    </div>
+  </div>
+  <div class="wrap studio-grid">
+    <div class="studio-controls">
+      <fieldset class="looks">
+        <legend>Theme</legend>
+        {
+          looks.map((look, i) => (
+            <label class="look" style={`--sw-a:${look.modes[0].bg};--sw-b:${look.modes[0].primary}`}>
+              <input type="radio" name="look" id={`look-${look.id}`} value={look.id} checked={i === 0} />
+              <span class="swatch" aria-hidden="true" />
+              <b>{look.name}</b>
+               <span class="look-plan">{look.pro ? 'Pro' : 'Free'}</span>
+              <small>{look.character}</small>
+            </label>
+          ))
+        }
+      </fieldset>
+      <fieldset class="modes">
+        <legend>Mode</legend>
+        <label class="mode"><input type="radio" name="mode" id="mode-light" value="light" checked /> Light</label>
+        <label class="mode"><input type="radio" name="mode" id="mode-dark" value="dark" /> Dark</label>
+        <p class="mode-note">Midnight is always dark.</p>
+      </fieldset>
+    </div>
+    <div class="studio-stage">
+      <div class="device">
+        {
+          looks.flatMap((look) =>
+            look.modes.map((m) => (
+              <picture data-v={`${look.id}-${m.mode}`} class:list={[look.id === 'sunrise' && m.mode === 'light' && 'is-on']}>
+                <source type="image/avif" srcset={set(m.file, 'avif')} sizes={sizes} />
+                <img
+                  src={`/screens/${m.file}-560.webp`}
+                  srcset={set(m.file, 'webp')}
+                  sizes={sizes}
+                  width={SCREEN_W}
+                  height={SCREEN_H}
+                  alt={`The Wallets screen in the ${look.name} theme${look.modes.length > 1 ? `, ${m.mode} mode` : ''}: net worth ₱62,120.10 above cards for Cash, Everyday bank and Savings.`}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+            )),
+          )
+        }
+      </div>
+      <p class="fine">Sunrise and Midnight are free. Grove, Mono and Aurora come with Pro.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Midnight is always dark: the Mode choice has nothing to change, so it is switched off while Midnight is chosen.
+  const looksGroup = document.querySelectorAll<HTMLInputElement>('input[name="look"]');
+  const modes = document.querySelectorAll<HTMLInputElement>('input[name="mode"]');
+  let before: HTMLInputElement | null = null;
+  const sync = () => {
+    const midnight = document.querySelector<HTMLInputElement>('#look-midnight')?.checked ?? false;
+    const dark = document.querySelector<HTMLInputElement>('#mode-dark');
+    if (midnight && dark && !dark.disabled) {
+      before = [...modes].find((m) => m.checked) ?? null;
+      dark.checked = true;
+    } else if (!midnight && before && modes[0]?.disabled) {
+      before.checked = true;
+      before = null;
+    }
+    modes.forEach((m) => (m.disabled = midnight));
+  };
+  looksGroup.forEach((input) => input.addEventListener('change', sync));
+  sync();
+</script>
