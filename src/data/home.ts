@@ -152,29 +152,11 @@ export const checkRows: CheckRow[] = [
   },
 ];
 
-export interface LightTier {
-  id: string;
-  name: string;
-  when: string;
-  glow: number;
-  line: string;
-  /** Baseline mascot art, copied into public/mascot. */
-  image: string;
-}
-
-export const lightTiers: LightTier[] = [
-  { id: 'thriving', name: 'Thriving', when: 'Spending right at the month’s pace', glow: 100, line: 'In step with the month. About $58.40 a day keeps you within budget.', image: 'thriving' },
-  { id: 'steady', name: 'Steady', when: 'Ahead of pace, or no budget yet', glow: 80, line: 'A little ahead of the month. Room to breathe.', image: 'steady' },
-  { id: 'getting-tight', name: 'Getting tight', when: '80% or more of the budget used', glow: 60, line: 'Getting close — $40 a day keeps you on budget.', image: 'getting-tight' },
-  { id: 'concerned', name: 'Concerned', when: '10% or less left', glow: 42, line: '$120 left for 9 days. Smaller days will carry you through.', image: 'concerned' },
-  { id: 'over-plan', name: 'Over plan', when: 'More spent than budgeted', glow: 28, line: 'Over by $85 this month. Here’s where it went.', image: 'over-plan' },
-];
-
 export const answers = [
   { q: 'Does it connect to my bank?', a: 'No, and that’s by design. You record what you spend; Lucento never asks for a bank login.' },
   {
     q: 'Do I need an account?',
-    a: 'Only for sync, and for the optional Read messages with Gemini setting. What you type is stored on the phone and works offline. Speech recognition asks to run on the device, but that isn’t guaranteed.',
+    a: 'Only for the online features: sync, Lucento Shared, and the optional Gemini features (reading your messages, AI answers). What you type is stored on the phone and works offline. Speech recognition asks to run on the device, but that isn’t guaranteed.',
   },
   { q: 'Can I move to a new phone?', a: 'Yes. With cloud sync, sign in on the new phone and your records come across. Without it, carry a backup file over — that’s free on every plan.' },
   { q: 'Why does Spent include uncategorised things?', a: 'Because the money is gone either way. Leaving it out would make the month look better than it is.' },
