@@ -1,0 +1,16 @@
+---
+// Where the page's day ends: availability and the next routes, so the page never stops at a dead end.
+import PlayStatus from './PlayStatus.astro';
+---
+
+<div class="closing">
+  <PlayStatus />
+  <div class="actions">
+    <a class="btn btn--secondary" href="/pricing">Compare plans</a>
+    <a class="link-arrow" href="/how-to"
+      >Read the guides <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        ><path d="M3 8h10M9 4l4 4-4 4"></path></svg
+      ></a
+    >
+  </div>
+</div>

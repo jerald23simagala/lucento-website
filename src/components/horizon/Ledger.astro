@@ -1,0 +1,22 @@
+---
+// Labelled rows for a list that must be complete and easy to scan (what leaves the phone).
+interface Props {
+  rows: { term: string; when?: string; detail: string }[];
+}
+
+const { rows } = Astro.props;
+---
+
+<dl class="ledger">
+  {
+    rows.map((row) => (
+      <div>
+        <dt>
+          {row.term}
+          {row.when && <span>{row.when}</span>}
+        </dt>
+        <dd>{row.detail}</dd>
+      </div>
+    ))
+  }
+</dl>

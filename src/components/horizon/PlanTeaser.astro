@@ -1,0 +1,35 @@
+---
+// The three plans from src/data/plans.ts (the pricing page's own data), as a teaser: name, price, one line.
+import { planCards, priceNote } from '../../data/plans';
+
+// "₱149 a month" → figure "₱149" + "a month"; "₱0" → figure only.
+const split = (price: string) => {
+  const match = /^(\S+)\s*(.*)$/.exec(price);
+  return { figure: match?.[1] ?? price, unit: match?.[2] ?? '' };
+};
+// Keep "7-day" together on narrow screens.
+const parts = (text: string) => text.split('7-day');
+---
+
+<div class="plan-row section-body">
+  {
+    planCards.map((plan) => {
+      const { figure, unit } = split(plan.price);
+      const detail = parts(plan.priceDetail);
+      return (
+        <article class:list={['plan', plan.id === 'pro' && 'plan--pro']}>
+          <h3>{plan.name}</h3>
+          <p class="figure">
+            {figure}
+            {unit && <small>{unit}</small>}
+          </p>
+          <p>{plan.tagline}</p>
+          <p>
+            {detail.map((piece, i) => (i === 0 ? piece : [<span class="nowrap">7-day</span>, piece]))}
+          </p>
+        </article>
+      );
+    })
+  }
+</div>
+<p class="fine" style="margin-top:var(--space-5)">{priceNote}</p>

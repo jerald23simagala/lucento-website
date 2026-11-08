@@ -13,7 +13,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "lint": "eslint .",
-    "test:unit": "node --experimental-strip-types --test src/server/play-state.test.ts src/server/play-api.test.ts",
+    "test:unit": "node --experimental-strip-types --test src/server/play-state.test.ts src/server/play-api.test.ts src/lib/money.test.ts",
     "verify": "npm run tokens -- --check && npm run lint && npm run check && npm run test:unit && npm run build",
     "test:e2e": "playwright test"
   },
@@ -21,6 +21,7 @@
     "@astrojs/sitemap": "3.7.4",
     "@astrojs/vercel": "8.2.11",
     "@fontsource-variable/manrope": "5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "5.3.0",
     "astro": "5.18.2"
   },
   "devDependencies": {

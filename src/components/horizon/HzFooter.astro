@@ -1,0 +1,26 @@
+---
+// Night in both themes: the page's day ends here.
+import HzLogo from './HzLogo.astro';
+
+const links = [
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/how-to', label: 'Guides' },
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/terms', label: 'Terms' },
+  { href: '/delete-account', label: 'Delete your account' },
+];
+---
+
+<footer class="site-footer theme-night">
+  <div class="wrap footer-grid">
+    <div class="stack">
+      <a class="brand" href="/" aria-label="Lucento home"><HzLogo /></a>
+      <p class="small">This site doesn’t track you: no analytics, no cookies.</p>
+    </div>
+    <nav aria-label="Footer">
+      <ul>
+        {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+      </ul>
+    </nav>
+  </div>
+</footer>

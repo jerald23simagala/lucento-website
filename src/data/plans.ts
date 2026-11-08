@@ -40,9 +40,9 @@ export const planCards: PlanCard[] = [
   {
     id: 'pro',
     name: 'Pro',
-    tagline: 'All of Lucento, on every phone you own.',
+    tagline: 'All of Lucento, on every phone you own, while you subscribe.',
     price: '₱149 a month',
-    priceDetail: 'or ₱1,190 a year (about ₱99 a month), with a 7-day free trial.',
+    priceDetail: 'or ₱1,190 a year (about ₱99 a month). Yearly starts with a 7-day free trial.',
     highlights: [
       'Everything in Free, without the wallet, card and loan limits',
       'Wallets in other currencies, with today’s rates and your exchange gains and losses',
@@ -98,7 +98,7 @@ export const compareGroups: CompareGroup[] = [
     title: 'Wallets and net worth',
     rows: [
       { what: 'Money wallets — cash, banks, e-wallets, savings — with logos for 400+ institutions', free: 'Up to 3', pro: 'Unlimited', lifetime: 'Unlimited' },
-      { what: 'Credit cards and loans with interest, instalments, statement and due dates', free: 'Up to 2', pro: 'Unlimited', lifetime: 'Unlimited' },
+      { what: 'Credit cards and loans with interest, installments, statement and due dates', free: 'Up to 2', pro: 'Unlimited', lifetime: 'Unlimited' },
       { what: 'What others owe you (receivables)', free: no, pro: yes, lifetime: yes },
       { what: 'Things you own at a value you set', free: no, pro: yes, lifetime: yes },
       { what: 'Net worth: everything you own minus everything you owe', free: yes, pro: yes, lifetime: yes },
