@@ -1,0 +1,137 @@
+---
+/**
+ * The small picture on each feature card (owner review, 2026-11-08: compact cards with a graphic, not a phone
+ * screenshot; the screenshots live in the card's dialog). Drawn in HTML and CSS from the app's own vocabulary
+ * (wallet cards, currency codes, the agenda, category colours) with names from the demo month and no amounts.
+ * Decorative: the card's heading and text say what it is.
+ */
+import SharedArt from './SharedArt.astro';
+import { foreignWallets } from '../../data/content';
+
+interface Props {
+  kind: 'wallets' | 'fx' | 'intel' | 'ahead' | 'budget' | 'goals' | 'shared' | 'offline';
+}
+const { kind } = Astro.props;
+
+const months = [
+  [62, 40],
+  [70, 46],
+  [66, 58],
+  [74, 44],
+  [68, 52],
+  [80, 50],
+];
+const segments = [
+  ['Rent', 38, '#5D87D7'],
+  ['Groceries', 16, '#D9823C'],
+  ['Restaurants', 8, '#E06A5A'],
+  ['Electricity', 9, '#C9A400'],
+  ['Transport', 6, '#4FB06E'],
+  ['More', 23, '#9A86E6'],
+] as const;
+---
+
+<div class:list={['glyph', `glyph-${kind}`]} aria-hidden="true" data-awake={kind === 'shared' ? '' : undefined}>
+  {
+    kind === 'wallets' && (
+      <>
+        <span class="gw gw-bank"><i></i><b>Everyday bank</b><small>Bank</small></span>
+        <span class="gw gw-cash"><i></i><b>Cash</b><small>Cash</small></span>
+        <span class="gw gw-card"><i></i><b>Visa card</b><small>Credit card</small></span>
+      </>
+    )
+  }
+  {
+    kind === 'fx' && (
+      <>
+        <span class="coins">
+          <span class="coin">USD</span>
+          <span class="coin">AED</span>
+          <span class="coin">JPY</span>
+        </span>
+        <svg class="fx-arrow" viewBox="0 0 48 16"><path d="M2 8h40M36 3l6 5-6 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        <span class="coin is-main">PHP<small>one total</small></span>
+        <span class="fx-rates">
+          {foreignWallets.map((w) => <span>{w.currency === 'JPY' ? `¥1 = ₱${w.rate}` : `1 ${w.currency} = ₱${w.rate}`}</span>)}
+        </span>
+      </>
+    )
+  }
+  {
+    kind === 'intel' && (
+      <>
+        <span class="bars">
+          {months.map(([a, b]) => (
+            <span class="pair">
+              <i style={`--h:${a}%`} />
+              <i style={`--h:${b}%`} />
+            </span>
+          ))}
+        </span>
+        <span class="ask">Where did my money go this month?</span>
+      </>
+    )
+  }
+  {
+    kind === 'ahead' && (
+      <>
+        <span class="agenda">
+          <span class="is-late"><b>Nov 5</b>Fibre internet<i>Overdue</i></span>
+          <span><b>Nov 13</b>Phone plan</span>
+          <span><b>Nov 16</b>Car loan</span>
+        </span>
+        <span class="bell">
+          <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4a1.5 1.5 0 00-3 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor" /></svg>
+          <i>3</i>
+        </span>
+      </>
+    )
+  }
+  {
+    kind === 'budget' && (
+      <>
+        <span class="stackbar">
+          {segments.map(([, w, c]) => (
+            <i style={`--w:${w};--c:${c}`} />
+          ))}
+        </span>
+        <span class="sumline">
+          {segments.slice(0, 3).map(([name, , c]) => (
+            <span>
+              <i style={`--c:${c}`} />
+              {name}
+            </span>
+          ))}
+          <span class="more">+ 6 more</span>
+          <b>= your budget</b>
+        </span>
+      </>
+    )
+  }
+  {
+    kind === 'goals' && (
+      <>
+        <span class="goal" style="--p:42;--c:#3DD68C"><i /><span>Emergency fund</span><b>42%</b><small>No end date</small></span>
+        <span class="goal" style="--p:55;--c:#FFC928"><i /><span>Japan trip</span><b>55%</b><small>Target date in June</small></span>
+      </>
+    )
+  }
+  {kind === 'shared' && <SharedArt />}
+  {
+    kind === 'offline' && (
+      <>
+        <span class="lane-mini is-on">
+          <svg viewBox="0 0 24 24"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14z" fill="currentColor" /></svg>
+          <b>On your phone</b>
+          <small>Always</small>
+        </span>
+        <span class="lane-link" />
+        <span class="lane-mini">
+          <svg viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 3" /></svg>
+          <b>Cloud</b>
+          <small>If you choose</small>
+        </span>
+      </>
+    )
+  }
+</div>

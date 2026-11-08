@@ -61,3 +61,21 @@ export function sumMinor(values: readonly number[]): number {
   }
   return total;
 }
+
+/** A price as people write it: "₱1,190" when there are no centavos, "₱1,190.50" when there are. */
+export function formatPrice(minor: number, options: FormatOptions = {}): string {
+  const text = formatMinor(minor, options);
+  const { digits, separator } = formatterFor(options.currency ?? 'PHP', options.locale ?? 'en-PH');
+  return digits > 0 && Math.abs(minor) % 10 ** digits === 0 ? text.slice(0, -(digits + separator.length)) : text;
+}
+
+/**
+ * What paying yearly saves against twelve monthly payments, in minor units, and as a whole percentage rounded down
+ * (never overstated). Integer arithmetic only.
+ */
+export function yearlySaving(monthlyMinor: number, yearlyMinor: number): { savedMinor: number; percent: number } {
+  const twelve = monthlyMinor * 12;
+  if (!Number.isSafeInteger(twelve) || !Number.isSafeInteger(yearlyMinor)) throw new RangeError('Prices must be safe integers');
+  const savedMinor = twelve - yearlyMinor;
+  return { savedMinor, percent: Math.floor((savedMinor * 100) / twelve) };
+}

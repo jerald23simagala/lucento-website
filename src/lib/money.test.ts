@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatMinor, sumMinor, wholeUnits } from './money.ts';
+import { formatMinor, formatPrice, sumMinor, wholeUnits, yearlySaving } from './money.ts';
 import { demo, haveTotal, netWorth, oweTotal } from '../data/demo.ts';
 
 test('formats pesos with grouping, two decimals and the peso sign', () => {
@@ -36,4 +36,15 @@ test('the demo month reconciles with the app screenshots', () => {
   assert.equal(formatMinor(-oweTotal), '−₱114,400.00'); // Dashboard: Debt & Loans
   assert.equal(formatMinor(netWorth), '₱62,120.10'); // Dashboard: net wallet balance
   assert.equal(sumMinor(demo.composer.rows.map((r) => r.minor)), demo.composer.expensesSoFar); // composer save bar
+});
+
+test('prices drop zero centavos only', () => {
+  assert.equal(formatPrice(119_000), '₱1,190');
+  assert.equal(formatPrice(59_800), '₱598');
+  assert.equal(formatPrice(119_050), '₱1,190.50');
+  assert.equal(formatPrice(60_000, { currency: 'JPY' }), '¥60,000');
+});
+
+test('yearly Pro saves ₱598, 33%, against twelve months at ₱149', () => {
+  assert.deepEqual(yearlySaving(14_900, 119_000), { savedMinor: 59_800, percent: 33 });
 });

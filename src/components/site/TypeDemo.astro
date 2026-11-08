@@ -1,0 +1,468 @@
+---
+/**
+ * "Type your way" (owner review, 2026-11-08): a hands-on replica of the app's Add transactions screen in the phone
+ * template. Press Send and the message becomes rows; the shampoo has no category (the on-phone reader has no keyword
+ * for it), so the save button says "Fix 1 highlighted to save" until one is chosen; Save shows "Saving…" and then the
+ * Transactions screen with the three new rows and "3 transactions saved".
+ *
+ * Faithful to lucento-android feature/capture (TransactionComposerScreen.kt, ComposerRows.kt), domain/capture
+ * (BatchEntryParser splits at line breaks; QuickEntryParser maps "lunch" → Restaurants and "groceries" → Groceries;
+ * BatchReview.summarize totals ready rows only) and the dark Sunrise palette (core/designsystem/theme/Color.kt).
+ * The categories, wallets and the Transactions figures are the demo month's (s-transactions: 11 transactions,
+ * income +₱42,000.00, expenses −₱22,979.90), so the screen after saving adds up with the real capture. It is labelled
+ * as a replica with example figures. Without JavaScript it shows the message and the controls are hidden.
+ */
+import StatusBar from './StatusBar.astro';
+import { formatMinor, sumMinor } from '../../lib/money';
+
+type Icon = string;
+const I: Record<string, Icon> = {
+  back: 'M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z',
+  bank: 'M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z',
+  cash: 'M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z',
+  savings: 'M19.83 7.5l-2.27-2.27c.07-.42.18-.81.32-1.15A1.498 1.498 0 0016.5 2c-1.64 0-3.09.79-4 2h-5C4.46 4 2 6.46 2 9.5S4.5 21 4.5 21H10v-2h2v2h5.5l1.68-5.59 2.82-.94V7.5h-2.17zM13 9H8V7h5v2zm3 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z',
+  star: 'M12 17.27L18.18 21l-1.64-7.19L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.57L5.82 21z',
+  edit: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+  close: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
+  cal: 'M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z',
+  drop: 'M7 10l5 5 5-5z',
+  scan: 'M7 3H4v3H2V1h5v2zm15 3V1h-5v2h3v3h2zM7 21H4v-3H2v5h5v-2zm13-3v3h-3v2h5v-5h-2zM7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z',
+  mic: 'M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z',
+  send: 'M2.01 21L23 12 2.01 3 2 10l15 2-15 2z',
+  search: 'M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
+  person: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z',
+  home: 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
+  receipt: 'M19.5 3.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2v14H3v3c0 1.66 1.34 3 3 3h12c1.66 0 3-1.34 3-3V2l-1.5 1.5zM19 19c0 .55-.45 1-1 1s-1-.45-1-1v-3H8V5h11v14zM9 7h6v2H9zm7 0h2v2h-2zm-7 3h6v2H9zm7 0h2v2h-2z',
+  add: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z',
+  pie: 'M11 2v20c-5.07-.5-9-4.79-9-10s3.93-9.5 9-10zm2.03 0v8.99H22c-.47-4.74-4.24-8.52-8.97-8.99zm0 11.01V22c4.74-.47 8.5-4.25 8.97-8.99h-8.97z',
+  wallet: 'M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z',
+  in: 'M20 5.41L18.59 4 7 15.59V9H5v10h10v-2H8.41z',
+  out: 'M9 5v2h6.59L4 18.59 5.41 20 17 8.41V15h2V5z',
+  trend: 'M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z',
+  restaurant: 'M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z',
+  cart: 'M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z',
+  spa: 'M12 15.45C9.85 12.17 6.18 10 2 10c0 5.32 3.36 9.82 8.03 11.49.63.23 1.29.4 1.97.51.68-.12 1.33-.29 1.97-.51C18.64 19.82 22 15.32 22 10c-4.18 0-7.85 2.17-10 5.45zM15.49 9.63c-.18-2.79-1.31-5.51-3.43-7.63-2.14 2.14-3.32 4.86-3.55 7.63 1.28.68 2.46 1.56 3.49 2.63 1.03-1.06 2.21-1.94 3.49-2.63z',
+  bag: 'M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z',
+  tv: 'M21 6h-7.59l3.29-3.29L16 2l-4 4-4-4-.71.71L10.59 6H3c-1.1 0-2 .89-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.11-.9-2-2-2zm0 14H3V8h18v12zM9 10v8l7-4z',
+  bus: 'M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z',
+  bolt: 'M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z',
+  wifi: 'M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z',
+  house: 'M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z',
+  shapes: 'M12 2l-5.5 9h11L12 2zm5.5 11a4.5 4.5 0 100 9 4.5 4.5 0 000-9zM3 13.5h8v8H3v-8z',
+};
+const svg = (d: Icon, cls = '') => `<svg viewBox="0 0 24 24" aria-hidden="true" class="${cls}"><path d="${d}"/></svg>`;
+
+// The demo month's expense categories (lucento-android androidTest DemoMonth.kt), with the app's category icons.
+const categories = [
+  { id: 'personal', name: 'Personal care', icon: 'spa', hue: '#2BA8D8' },
+  { id: 'groceries', name: 'Groceries', icon: 'cart', hue: '#D9823C' },
+  { id: 'clothing', name: 'Clothing and shoes', icon: 'bag', hue: '#D86A9E' },
+  { id: 'restaurants', name: 'Restaurants', icon: 'restaurant', hue: '#E06A5A' },
+  { id: 'transport', name: 'Public transportation', icon: 'bus', hue: '#4FB06E' },
+  { id: 'streaming', name: 'Streaming services', icon: 'tv', hue: '#9A86E6' },
+  { id: 'electricity', name: 'Electricity', icon: 'bolt', hue: '#C9A400' },
+  { id: 'internet', name: 'Internet', icon: 'wifi', hue: '#5D87D7' },
+  { id: 'rent', name: 'Rent', icon: 'house', hue: '#5D87D7' },
+];
+const cat = (id: string) => categories.find((c) => c.id === id)!;
+/** The four offered beside the phone (all nine are in the phone's own menu). */
+const quick = ['personal', 'groceries', 'clothing', 'restaurants'];
+
+const message = ['Lunch 250', 'Groceries 1,200', 'Shampoo 180'];
+const rows = [
+  { key: 'lunch', name: 'Lunch', minor: -25_000, category: 'restaurants' },
+  { key: 'groceries', name: 'Groceries', minor: -120_000, category: 'groceries' },
+  { key: 'shampoo', name: 'Shampoo', minor: -18_000, category: null as string | null },
+];
+
+// The save bar totals ready rows only (BatchReview.summarize).
+const readyBefore = formatMinor(sumMinor(rows.filter((r) => r.category).map((r) => r.minor)));
+const readyAfter = formatMinor(sumMinor(rows.map((r) => r.minor)));
+const added = sumMinor(rows.map((r) => r.minor));
+
+// The Transactions screen of the demo month (s-transactions), then the same month with the three rows saved.
+const month = { count: 11, incomeMinor: 4_200_000, expensesMinor: -2_297_990 };
+const today = [
+  { name: 'Uncategorised', sub: 'Uncategorized · Cash', minor: -24_000, icon: 'shapes', hue: '#8C9BBA' },
+  { name: 'Shoes', sub: 'Clothing and shoes · Everyday bank', minor: -89_000, icon: 'bag', hue: '#D86A9E' },
+  { name: 'Streaming', sub: 'Streaming services · Everyday bank', minor: -15_990, icon: 'tv', hue: '#9A86E6' },
+  { name: 'Market', sub: 'Groceries · Everyday bank', minor: -107_600, icon: 'cart', hue: '#D9823C' },
+];
+const todayBefore = sumMinor(today.map((t) => t.minor));
+const after = {
+  count: month.count + rows.length,
+  expenses: formatMinor(sumMinor([month.expensesMinor, added])),
+  net: formatMinor(sumMinor([month.incomeMinor, month.expensesMinor, added]), { plus: true }),
+  today: formatMinor(sumMinor([todayBefore, added])),
+};
+const before = {
+  expenses: formatMinor(month.expensesMinor),
+  net: formatMinor(sumMinor([month.incomeMinor, month.expensesMinor]), { plus: true }),
+  today: formatMinor(todayBefore),
+};
+// Newest first, as the list orders a day's rows.
+const saved = [...rows].reverse();
+const tile = (hue: string) => `--hue:${hue}`;
+---
+
+<div class="type-demo" data-type-demo data-state="ready" data-awake>
+  <div class="type-head">
+    <p class="eyebrow">Type your way</p>
+    <h3 class="headline" id="h-type">Say it once. <span class="accent">Lucento writes the rows.</span></h3>
+    <p class="lede">Write several transactions in one message. Each becomes a row with its amount, category and wallet filled in where Lucento can tell; anything missing is highlighted, and nothing is saved until you say so.</p>
+  </div>
+
+  <div class="type-try">
+    <ol class="demo-steps" aria-label="Try it">
+      <li data-step="send">
+        <span class="demo-step-no" aria-hidden="true">1</span>
+        <div>
+          <b>Send the message</b>
+          <span class="muted">Three things bought today, one per line.</span>
+          <button type="button" class="btn btn-primary demo-action" data-act="send">Send it</button>
+        </div>
+      </li>
+      <li data-step="pick">
+        <span class="demo-step-no" aria-hidden="true">2</span>
+        <div>
+          <b>Give the shampoo a category</b>
+          <span class="muted">When Lucento isn’t sure, it asks instead of guessing.</span>
+          <div class="demo-cats" role="group" aria-label="Category for Shampoo">
+            {quick.map((id) => <button type="button" class="demo-cat" data-act="pick" data-cat={id}>{cat(id).name}</button>)}
+          </div>
+        </div>
+      </li>
+      <li data-step="save">
+        <span class="demo-step-no" aria-hidden="true">3</span>
+        <div>
+          <b>Save all three at once</b>
+          <span class="muted">One tap saves the whole batch, then they’re in Transactions.</span>
+          <button type="button" class="btn btn-primary demo-action" data-act="save">Save 3 transactions</button>
+        </div>
+      </li>
+    </ol>
+    <p class="demo-done" data-done>
+      <span>Saved, and the month’s totals moved with it.</span>
+      <button type="button" class="btn btn-ghost" data-act="reset">Try it again</button>
+    </p>
+    <p class="sr-only" aria-live="polite" data-say></p>
+    <ul class="ways-inline" aria-label="Other ways in">
+      <li><b>Say it:</b> your phone’s own speech service turns your voice into text you review.</li>
+      <li><b>Scan it:</b> receipts are read on your phone; the photo never leaves it.</li>
+    </ul>
+    <p class="fine">A working replica of the app’s Add transactions screen with the demo month’s example figures. With Pro, Smarter reading (Google’s Gemini, off until you turn it on) handles messier messages.</p>
+  </div>
+
+  <div class="type-phone">
+    <div class="device">
+      <div class="device-screen">
+        <StatusBar bg="#10182B" dark />
+        <div class="sim" data-sim aria-label="Replica of the Add transactions screen" role="group">
+          <!-- Add transactions -->
+          <div class="sim-screen sim-composer" data-screen="composer">
+            <div class="sim-top">
+              <span class="sim-round" aria-hidden="true"><Fragment set:html={svg(I.back)} /></span>
+              <b class="sim-title">Add transactions</b>
+            </div>
+            <div class="sim-into">
+              <small>Into</small>
+              <div class="sim-wallets" aria-hidden="true">
+                <span class="sim-chip is-on"><i class="sim-wicon"><Fragment set:html={svg(I.bank)} /></i>Everyday bank<Fragment set:html={svg(I.star, 'sim-star')} /></span>
+                <span class="sim-chip"><i class="sim-wicon is-cash"><Fragment set:html={svg(I.cash)} /></i>Cash</span>
+                <span class="sim-chip"><i class="sim-wicon is-save"><Fragment set:html={svg(I.savings)} /></i>Savings</span>
+              </div>
+            </div>
+            <div class="sim-chat" data-chat>
+              <div class="sim-hint">
+                <img src="/mascot/composer-160.webp" alt="" width="160" height="160" loading="lazy" decoding="async" />
+                <div><b>Tell me about your transaction</b><small>You can write naturally, like “Lunch 250 and groceries 800” or “Transfer 5,000 to savings.”</small></div>
+              </div>
+              <div class="sim-after-send">
+                <p class="sim-day"><span>Today</span></p>
+                <p class="sim-said">{message.map((line, i) => <>{line}{i < message.length - 1 && <br />}</>)}</p>
+                <p class="sim-meta"><span class="sim-edit"><Fragment set:html={svg(I.edit)} />Edit message</span><span>9:41 AM</span></p>
+                <div class="sim-reply">
+                  <img src="/mascot/composer-160.webp" alt="" width="160" height="160" loading="lazy" decoding="async" />
+                  <div class="sim-card">
+                    <p class="sim-reading"><span class="sim-dots" aria-hidden="true"><i></i><i></i><i></i></span>Reading…</p>
+                    <p class="sim-reply-line"><span class="when-open">Here are 3 transactions — 1 needs a look:</span><span class="when-ready">Got it! Here are 3 transactions I’ll add:</span></p>
+                    <div class="sim-rows">
+                      {
+                        rows.map((row) => {
+                          const c = row.category ? cat(row.category) : null;
+                          return (
+                            <div class:list={['sim-row', !c && 'needs']} data-row={row.key}>
+                              <div class="sim-row-top">
+                                <span class="sim-date"><Fragment set:html={svg(I.cal)} />Today</span>
+                                <Fragment set:html={svg(I.close, 'sim-x')} />
+                              </div>
+                              <div class="sim-row-main">
+                                <i class="sim-tile" style={tile(c?.hue ?? '#8C9BBA')} data-row-tile><Fragment set:html={svg(I[c?.icon ?? 'shapes'])} /></i>
+                                <span class="sim-row-name">{row.name}</span>
+                                <span class="sim-amount money">{formatMinor(row.minor)}</span>
+                              </div>
+                              <div class="sim-row-pick">
+                                <span class="sim-select">Expense<Fragment set:html={svg(I.drop)} /></span>
+                                {c ? (
+                                  <span class="sim-select is-cat">{c.name}<Fragment set:html={svg(I.drop)} /></span>
+                                ) : (
+                                  <button type="button" class="sim-select is-cat is-missing" data-act="menu" aria-haspopup="menu" aria-expanded="false" data-cat-label>
+                                    <span data-cat-name>Choose category</span>
+                                    <Fragment set:html={svg(I.drop)} />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })
+                      }
+                    </div>
+                    <p class="sim-engine">Read on this phone</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sim-bar">
+              <b class="sim-bar-title"><span class="when-open">1 transaction is incomplete</span><span class="when-ready">3 transactions ready</span></b>
+              <small>Expenses <span class="when-open">{readyBefore}</span><span class="when-ready">{readyAfter}</span></small>
+              <button type="button" class="sim-save" data-act="save" disabled>
+                <span class="when-open">Fix 1 highlighted to save</span>
+                <span class="when-ready">Save 3 transactions</span>
+                <span class="when-saving">Saving…</span>
+              </button>
+            </div>
+            <div class="sim-input">
+              <span class="sim-tool" aria-hidden="true"><Fragment set:html={svg(I.scan)} /></span>
+              <span class="sim-tool" aria-hidden="true"><Fragment set:html={svg(I.mic)} /></span>
+              <div class="sim-field">
+                <span class="sim-typed">{message.map((line, i) => <>{line}{i < message.length - 1 && <br />}</>)}</span>
+                <span class="sim-placeholder">Type a transaction…</span>
+              </div>
+              <button type="button" class="sim-send" data-act="send" aria-label="Send"><Fragment set:html={svg(I.send)} /></button>
+            </div>
+            <div class="sim-menu" role="menu" aria-label="Categories" data-menu>
+              {
+                categories.map((c) => (
+                  <button type="button" role="menuitem" data-act="pick" data-cat={c.id} data-name={c.name} data-hue={c.hue} data-icon={c.icon}>
+                    <i class="sim-tile" style={tile(c.hue)}><Fragment set:html={svg(I[c.icon])} /></i>
+                    {c.name}
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+
+          <!-- Transactions, after saving -->
+          <div class="sim-screen sim-list" data-screen="list" aria-hidden="true">
+            <div class="sim-list-top">
+              <b class="sim-title is-big">Transactions</b>
+              <Fragment set:html={svg(I.search, 'sim-icon')} />
+              <span class="sim-avatar"><Fragment set:html={svg(I.person)} /></span>
+            </div>
+            <div class="sim-seg"><span class="is-on">All</span><span>Income</span><span>Expenses</span><span>Transfers</span></div>
+            <div class="sim-filters"><span class="is-on"><Fragment set:html={svg(I.cal)} />This month<Fragment set:html={svg(I.drop)} /></span><span><Fragment set:html={svg(I.wallet)} />All wallets<Fragment set:html={svg(I.drop)} /></span><span>All categories</span></div>
+            <div class="sim-sums">
+              <div><i class="sim-tile" style={tile('#3DD68C')}><Fragment set:html={svg(I.in)} /></i><small>Income</small><b class="is-pos">{formatMinor(month.incomeMinor, { plus: true })}</b></div>
+              <div><i class="sim-tile" style={tile('#FF8A8A')}><Fragment set:html={svg(I.out)} /></i><small>Expenses</small><b class="is-neg" data-swap={after.expenses}>{before.expenses}</b></div>
+              <div><i class="sim-tile" style={tile('#7C9AFF')}><Fragment set:html={svg(I.trend)} /></i><small>Net inflow</small><b data-swap={after.net}>{before.net}</b></div>
+            </div>
+            <p class="sim-count"><span data-swap={`${after.count} transactions`}>{month.count} transactions</span> · This month · transfers excluded from totals</p>
+            <p class="sim-dayhead"><b>Today</b><small>Sun, Nov 8</small><span data-swap={after.today}>{before.today}</span></p>
+            <div class="sim-txs">
+              {
+                saved.map((row) => {
+                  const c = row.category ? cat(row.category) : cat('personal');
+                  return (
+                    <div class="sim-tx is-new" data-new={row.key}>
+                      <i class="sim-tile" style={tile(c.hue)} data-tx-tile><Fragment set:html={svg(I[c.icon])} /></i>
+                      <span><b>{row.name}</b><small><span data-tx-cat>{c.name}</span> · Everyday bank</small></span>
+                      <span class="sim-amount is-neg money">{formatMinor(row.minor)}</span>
+                    </div>
+                  );
+                })
+              }
+              {
+                today.map((t) => (
+                  <div class="sim-tx">
+                    <i class="sim-tile" style={tile(t.hue)}><Fragment set:html={svg(I[t.icon])} /></i>
+                    <span><b>{t.name}</b><small>{t.sub}</small></span>
+                    <span class="sim-amount is-neg money">{formatMinor(t.minor)}</span>
+                  </div>
+                ))
+              }
+            </div>
+            <p class="sim-snack">3 transactions saved</p>
+            <div class="sim-dock">
+              <span><Fragment set:html={svg(I.home)} />Home</span>
+              <span class="is-on"><Fragment set:html={svg(I.receipt)} />Transactions</span>
+              <span class="sim-plus"><Fragment set:html={svg(I.add)} /></span>
+              <span><Fragment set:html={svg(I.pie)} />Budget</span>
+              <span><Fragment set:html={svg(I.wallet)} />Wallets</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-type-demo]');
+  const sim = root?.querySelector<HTMLElement>('[data-sim]');
+  if (root && sim) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, reduce.matches ? Math.min(ms, 120) : ms));
+    const chat = sim.querySelector<HTMLElement>('[data-chat]')!;
+    const menu = sim.querySelector<HTMLElement>('[data-menu]')!;
+    const menuButton = sim.querySelector<HTMLButtonElement>('[data-act="menu"]')!;
+    const saves = [...root.querySelectorAll<HTMLButtonElement>('[data-act="save"]')];
+    const say = root.querySelector<HTMLElement>('[data-say]')!;
+    const list = sim.querySelector<HTMLElement>('[data-screen="list"]')!;
+    const composer = sim.querySelector<HTMLElement>('[data-screen="composer"]')!;
+    let busy = false;
+
+    // The app's own typeface, fetched only when the replica is about to be seen.
+    const fonts = () => {
+      if (!('FontFace' in window) || root.dataset.fonts) return;
+      root.dataset.fonts = '1';
+      ([['medium', '500'], ['semibold', '600'], ['bold', '700']] as const).forEach(([file, weight]) => {
+        new FontFace('Plus Jakarta Sans', `url(/fonts/app/plus-jakarta-sans-${file}.woff2) format('woff2')`, { weight, display: 'swap' })
+          .load()
+          .then((face) => document.fonts.add(face))
+          .catch(() => {});
+      });
+    };
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries, observer) => {
+        if (entries.some((e) => e.isIntersecting)) { fonts(); observer.disconnect(); }
+      }, { rootMargin: '600px' }).observe(root);
+    } else fonts();
+
+    // The step that wants attention now (the others are quieter, and done ones get a sun mark in CSS).
+    const now: Record<string, string> = { ready: 'send', reading: 'send', review: 'pick', picked: 'save', saving: 'save', saved: '' };
+    const state = (s: string) => {
+      root.dataset.state = s;
+      root.querySelectorAll<HTMLElement>('[data-step]').forEach((li) => li.classList.toggle('is-now', li.dataset.step === now[s] || s === 'saved'));
+    };
+    state('ready');
+    const scrollChat = (to: HTMLElement | null) => {
+      if (!to) return;
+      // Bring the element's bottom into view (rects, not offsetTop: the animated rows change the offset parent).
+      const top = chat.scrollTop + to.getBoundingClientRect().bottom - chat.getBoundingClientRect().bottom + 12;
+      chat.scrollTo({ top: Math.max(0, top), behavior: reduce.matches ? 'auto' : 'smooth' });
+    };
+    // On a phone the steps sit below the replica: bring the phone back into view when it changes.
+    const phone = root.querySelector<HTMLElement>('.type-phone .device')!;
+    const showPhone = () => {
+      if (!window.matchMedia('(max-width: 55.99em)').matches) return;
+      const box = phone.getBoundingClientRect();
+      if (box.top >= 64 && box.bottom <= window.innerHeight) return;
+      phone.scrollIntoView({ block: 'center', behavior: reduce.matches ? 'auto' : 'smooth' });
+    };
+    const closeMenu = () => { root.dataset.menu = ''; menuButton.setAttribute('aria-expanded', 'false'); };
+
+    const send = async () => {
+      if (busy || root.dataset.state !== 'ready') return;
+      busy = true;
+      state('reading');
+      showPhone();
+      say.textContent = 'Sent. Reading the message…';
+      await wait(60);
+      scrollChat(sim.querySelector('.sim-reply'));
+      await wait(900);
+      state('review');
+      await wait(380); // let the rows finish arriving before measuring
+      scrollChat(sim.querySelector('[data-row="shampoo"]'));
+      say.textContent = 'Here are 3 transactions — 1 needs a look: Shampoo has no category. Choose one in step 2.';
+      busy = false;
+    };
+
+    const pick = (id: string) => {
+      if (busy || !['review', 'picked'].includes(root.dataset.state ?? '')) return;
+      const option = menu.querySelector<HTMLButtonElement>(`[data-cat="${id}"]`)!;
+      const { name = '', hue = '', icon = '' } = option.dataset;
+      const tileHtml = option.querySelector('.sim-tile')!.innerHTML;
+      const label = menuButton.querySelector<HTMLElement>('[data-cat-name]')!;
+      label.textContent = name;
+      const rowTile = sim.querySelector<HTMLElement>('[data-row="shampoo"] [data-row-tile]')!;
+      const txTile = sim.querySelector<HTMLElement>('[data-new="shampoo"] [data-tx-tile]')!;
+      [rowTile, txTile].forEach((t) => { t.style.setProperty('--hue', hue); t.innerHTML = tileHtml; t.dataset.icon = icon; });
+      sim.querySelector<HTMLElement>('[data-new="shampoo"] [data-tx-cat]')!.textContent = name;
+      root.querySelectorAll<HTMLButtonElement>('.demo-cat').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === id)));
+      closeMenu();
+      state('picked');
+      saves.forEach((b) => { b.disabled = false; });
+      say.textContent = `Shampoo is now under ${name}. 3 transactions ready. Save them in step 3.`;
+    };
+
+    const save = async () => {
+      if (busy || root.dataset.state !== 'picked') return;
+      busy = true;
+      state('saving');
+      saves.forEach((b) => { b.disabled = true; });
+      say.textContent = 'Saving…';
+      await wait(900);
+      list.removeAttribute('aria-hidden');
+      composer.setAttribute('aria-hidden', 'true');
+      state('saved');
+      showPhone();
+      await wait(reduce.matches ? 0 : 350);
+      list.querySelectorAll<HTMLElement>('[data-swap]').forEach((el) => {
+        el.dataset.was = el.textContent ?? '';
+        el.textContent = el.dataset.swap ?? '';
+      });
+      say.textContent = '3 transactions saved. Transactions now shows 14 this month, with Shampoo, Groceries and Lunch at the top of today.';
+      busy = false;
+      root.querySelector<HTMLButtonElement>('[data-act="reset"]')?.focus({ preventScroll: true });
+    };
+
+    const reset = () => {
+      if (busy) return;
+      list.querySelectorAll<HTMLElement>('[data-swap]').forEach((el) => { if (el.dataset.was) el.textContent = el.dataset.was; });
+      menuButton.querySelector<HTMLElement>('[data-cat-name]')!.textContent = 'Choose category';
+      const rowTile = sim.querySelector<HTMLElement>('[data-row="shampoo"] [data-row-tile]')!;
+      rowTile.style.setProperty('--hue', '#8C9BBA');
+      root.querySelectorAll<HTMLButtonElement>('.demo-cat').forEach((b) => b.removeAttribute('aria-pressed'));
+      list.setAttribute('aria-hidden', 'true');
+      composer.removeAttribute('aria-hidden');
+      chat.scrollTo({ top: 0 });
+      saves.forEach((b) => { b.disabled = true; });
+      closeMenu();
+      state('ready');
+      say.textContent = 'Back to the start: the message is ready to send.';
+      root.querySelector<HTMLButtonElement>('.demo-action[data-act="send"]')?.focus({ preventScroll: true });
+    };
+    // The shampoo row starts uncategorised; keep its "shapes" tile for a reset.
+    const startTile = sim.querySelector<HTMLElement>('[data-row="shampoo"] [data-row-tile]')!.innerHTML;
+    const resetTile = () => { sim.querySelector<HTMLElement>('[data-row="shampoo"] [data-row-tile]')!.innerHTML = startTile; };
+
+    root.addEventListener('click', (event) => {
+      const el = (event.target as Element).closest<HTMLElement>('[data-act]');
+      if (!el) {
+        if (root.dataset.menu && !(event.target as Element).closest('[data-menu]')) closeMenu();
+        return;
+      }
+      const act = el.dataset.act;
+      if (act === 'send') send();
+      else if (act === 'menu') {
+        if (!['review', 'picked'].includes(root.dataset.state ?? '')) return;
+        const open = root.dataset.menu !== 'open';
+        root.dataset.menu = open ? 'open' : '';
+        menuButton.setAttribute('aria-expanded', String(open));
+        if (open) menu.querySelector<HTMLButtonElement>('button')?.focus({ preventScroll: true });
+      } else if (act === 'pick' && el.dataset.cat) pick(el.dataset.cat);
+      else if (act === 'save') save();
+      else if (act === 'reset') { reset(); resetTile(); }
+    });
+    menu.addEventListener('keydown', (event) => {
+      const items = [...menu.querySelectorAll<HTMLButtonElement>('button')];
+      const i = items.indexOf(document.activeElement as HTMLButtonElement);
+      if (event.key === 'Escape') { closeMenu(); menuButton.focus(); }
+      else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        items[(i + (event.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length]?.focus();
+      }
+    });
+    root.classList.add('is-live');
+  }
+</script>

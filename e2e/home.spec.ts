@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
-import { faq, foreignWallets, looks, netWorthWithForeign, screens, START_SCREEN } from '../src/data/content';
-import { planCards } from '../src/data/plans';
+import { faq, foreignWallets, looks, netWorthWithForeign, screens } from '../src/data/content';
+import { compareGroups, planCards } from '../src/data/plans';
 
 // The one-page site (2026-11-08). Screens and figures are the app's own (src/data/content.ts names the sources);
 // negative amounts carry U+2212, never a hyphen.
@@ -18,6 +18,59 @@ function collectErrors(page: Page): string[] {
 const overflow = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 
+/**
+ * Things that must stay inside their own section (owner review, 2026-11-08: "images overflow to some sections"):
+ * every phone, card and drawing, both ways (the hero's cropped phones are checked as their stage). Dialogs are
+ * checked while open, against the dialog's own box.
+ */
+const spills = (page: Page) =>
+  page.evaluate(() => {
+    const out: string[] = [];
+    const name = (el: Element) => `${el.tagName.toLowerCase()}.${(el.getAttribute('class') ?? '').split(' ')[0]}`;
+    const check = (box: DOMRect, el: Element, label: string, sideways: boolean) => {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const across = sideways;
+      if (r.top < box.top - 1 || r.bottom > box.bottom + 1 || (across && (r.left < box.left - 1 || r.right > box.right + 1))) {
+        out.push(`${label}: ${name(el)} ${Math.round(r.top)}–${Math.round(r.bottom)} / ${Math.round(r.left)}–${Math.round(r.right)} outside ${Math.round(box.top)}–${Math.round(box.bottom)} / ${Math.round(box.left)}–${Math.round(box.right)}`);
+      }
+    };
+    const open = document.querySelector('dialog.sheet[open]');
+    if (open) {
+      const box = open.getBoundingClientRect();
+      const body = open.querySelector('.sheet-body')!;
+      // inside a dialog, content scrolls vertically, so only the sides are checked
+      open.querySelectorAll('.device, svg, table, .fx-ledger, .lanes').forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.width && (r.left < box.left - 1 || r.right > box.right + 1)) out.push(`${open.id}: ${name(el)} ${Math.round(r.left)}–${Math.round(r.right)} outside ${Math.round(box.left)}–${Math.round(box.right)}`);
+      });
+      if (body.scrollWidth > body.clientWidth + 1) out.push(`${open.id}: scrolls sideways`);
+      return out;
+    }
+    document.querySelectorAll('main > section').forEach((section) => {
+      const box = section.getBoundingClientRect();
+      // The hero's phones are cropped by their stage on purpose; the stage itself must stay inside the hero.
+      section.querySelectorAll('.stage, .device, .glyph, .fcard, .type-demo, .plan').forEach((el) => {
+        if (!el.closest('dialog') && !el.closest('.stage-layer')) check(box, el, section.id || name(section), true);
+      });
+    });
+    document.querySelectorAll('.fcard').forEach((card) => {
+      const box = card.getBoundingClientRect();
+      card.querySelectorAll('.glyph, .glyph > *').forEach((el) => check(box, el, card.id, true));
+    });
+    return out;
+  });
+
+const scrollThrough = async (page: Page) => {
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += 600) {
+      window.scrollTo(0, y);
+      await new Promise((resolve) => setTimeout(resolve, 40));
+    }
+    window.scrollTo(0, 0);
+  });
+};
+
 const visibleVariant = (page: Page) =>
   page.locator('.studio-stage picture').evaluateAll((nodes) =>
     nodes.filter((n) => getComputedStyle(n).display !== 'none').map((n) => (n as HTMLElement).dataset.v),
@@ -30,7 +83,7 @@ test.describe('homepage', () => {
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Everything about your money, in one clear view.');
     await expect(page.locator('#how')).toHaveCount(0);
-    for (const id of ['features', 'themes', 'pricing', 'faq', 'multicurrency', 'shared', 'privacy']) {
+    for (const id of ['features', 'record', 'themes', 'pricing', 'faq', 'multicurrency', 'shared', 'privacy']) {
       await expect(page.locator(`#${id}`), id).toHaveCount(1);
     }
     await page.locator('.nav').getByRole('link', { name: 'Pricing' }).click();
@@ -39,56 +92,100 @@ test.describe('homepage', () => {
     expect(errors).toEqual([]);
   });
 
-  test('the hero carousel opens on the Dashboard and moves with arrows, tabs and keys', async ({ page }) => {
+  test('the hero stage shows the Dashboard in focus, Budget and Wallets beside it, and no more', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    await expect(page.locator('[data-slide]')).toHaveCount(screens.length);
-    await expect(page.locator('[data-tab]')).toHaveText(screens.map((s) => s.label));
-    expect(screens.map((s) => s.label)).toEqual(['Transactions', 'Insights', 'Budgets', 'Dashboard', 'Wallets', 'Scheduled', 'Goals', 'Ask Lucento']);
-    // Opens centred on the Dashboard.
-    await expect(page.locator(`[data-tab="${START_SCREEN}"]`)).toHaveAttribute('aria-current', 'true');
-    const centred = await page.locator('[data-track]').evaluate((track) => {
-      const slide = track.querySelector('[data-slide="dashboard"]') as HTMLElement;
-      const t = track.getBoundingClientRect();
-      const r = slide.getBoundingClientRect();
-      return Math.abs(r.left + r.width / 2 - (t.left + t.width / 2));
-    });
-    expect(centred).toBeLessThan(4);
-    // Arrows.
-    await page.getByRole('button', { name: 'Next screen' }).click();
-    await expect(page.locator('[data-tab="wallets"]')).toHaveAttribute('aria-current', 'true');
-    await page.getByRole('button', { name: 'Previous screen' }).click();
-    await page.getByRole('button', { name: 'Previous screen' }).click();
-    await expect(page.locator('[data-tab="budgets"]')).toHaveAttribute('aria-current', 'true');
-    await expect(page.locator('[data-caption]')).toContainText(screens.find((s) => s.id === 'budgets')!.title);
-    // Tabs and the arrow keys.
-    await page.locator('[data-tab="goals"]').click();
-    await expect(page.locator('[data-slide="goals"]')).toHaveClass(/is-active/);
-    await page.locator('[data-track]').focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(page.locator('[data-tab="ask"]')).toHaveAttribute('aria-current', 'true');
-    await expect(page.getByRole('button', { name: 'Next screen' })).toBeDisabled();
-    for (const screen of screens) {
-      await expect(page.locator(`[data-slide="${screen.id}"] img`)).toHaveAttribute('alt', screen.alt);
+    const stage = page.locator('[data-stage]');
+    const centre = stage.locator('.sp-centre img');
+    await expect(centre).toHaveAttribute('alt', screens.find((s) => s.id === 'dashboard')!.alt);
+    await expect(centre).toHaveAttribute('src', /s-dashboard/);
+    await expect(centre).toBeInViewport();
+    // Sharp: no blur on the Dashboard or its two companions; the peripheral pair is out of focus and silent.
+    for (const sel of ['.sp-centre', '.sp-side.is-left', '.sp-side.is-right']) {
+      expect(await stage.locator(sel).evaluate((el) => getComputedStyle(el).filter), sel).toBe('none');
     }
+    await expect(stage.locator('.sp-side.is-left img')).toHaveAttribute('src', /s-budget/);
+    await expect(stage.locator('.sp-side.is-right img')).toHaveAttribute('src', /s-wallets/);
+    for (const far of await stage.locator('.sp-far').all()) {
+      await expect(far).toHaveAttribute('aria-hidden', 'true');
+      expect(await far.evaluate((el) => getComputedStyle(el).filter)).toContain('blur');
+    }
+    // Five phones at most, and no tabs, arrows or captions that enumerate the app.
+    await expect(stage.locator('.device')).toHaveCount(5);
+    await expect(page.locator('.hero [data-tab], .hero [data-prev], .hero [data-next]')).toHaveCount(0);
+    // The supporting phones are cropped: about two thirds of each is on show.
+    await page.waitForTimeout(1600); // after the entrance
+    const shown = await stage.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      const centre = el.querySelector('.sp-centre .device')!.getBoundingClientRect();
+      return [...el.querySelectorAll('.sp-side .device')].map((d) => {
+        const r = d.getBoundingClientRect();
+        const w = Math.max(0, Math.min(r.right, box.right) - Math.max(r.left, box.left)) - Math.max(0, Math.min(r.right, centre.right) - Math.max(r.left, centre.left));
+        const h = Math.max(0, Math.min(r.bottom, box.bottom) - Math.max(r.top, box.top));
+        return (w * h) / (r.width * r.height);
+      });
+    });
+    for (const share of shown) {
+      expect(share).toBeGreaterThan(0.55);
+      expect(share).toBeLessThan(0.75);
+    }
+  });
+
+  test('on a phone the hero leads with the Dashboard and stays short', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    await expect(page.locator('.sp-centre .device')).toBeVisible();
+    await expect(page.locator('.sp-far').first()).toBeHidden();
+    const [hero, cta] = await page.evaluate(() => [
+      document.querySelector('.hero')!.getBoundingClientRect().height,
+      document.querySelector('.hero .play')!.getBoundingClientRect().bottom,
+    ]);
+    expect(cta).toBeLessThan(844); // the call to action is on the first screen
+    expect(hero).toBeLessThan(844 * 1.35);
+    expect(await overflow(page)).toBeLessThanOrEqual(1);
+  });
+
+  test('screens kept back from the site are not published anywhere on it', async ({ page, request }) => {
+    await page.goto('/');
+    const html = await page.content();
+    for (const file of ['s-ask', 's-scheduled', 'f-card', 'f-report', 'f-presets', 'f-composer', 'f-categories', 'mc-usd']) {
+      expect(html, file).not.toContain(`/screens/${file}-`);
+      expect((await request.get(`/screens/${file}-560.webp`)).status(), file).toBe(404);
+    }
+    await expect(page.locator('.matrix')).toHaveCount(0);
+  });
+
+  test('no feature dialog shows a screen flat and whole', async ({ page }) => {
+    await page.goto('/');
+    const phones = page.locator('dialog .device');
+    expect(await phones.count()).toBeGreaterThan(5);
+    for (const phone of await phones.all()) {
+      await expect(phone).toHaveClass(/is-(window|focus|angle|lift)/);
+      // Dialog screens stop at 560 px files: less detail to trace.
+      expect(await phone.locator('img').first().getAttribute('srcset')).not.toContain('-720.');
+    }
+    await expect(page.locator('#themes .device')).toHaveClass(/is-angle/);
+    await expect(page.locator('footer')).toContainText('App screens © Lucento');
+    // The closing band's buttons keep clear of the footer (owner, 2026-11-08).
+    const gap = await page.evaluate(() => {
+      const band = document.querySelector('.finale')!.getBoundingClientRect();
+      const play = document.querySelector('.finale .play')!.getBoundingClientRect();
+      return band.bottom - play.bottom;
+    });
+    expect(gap).toBeGreaterThanOrEqual(96);
   });
 
   test('every phone uses the one template, with a mock status bar', async ({ page }) => {
     await page.goto('/');
-    const devices = page.locator('main .device');
-    const count = await devices.count();
-    expect(count).toBeGreaterThan(10);
-    await expect(page.locator('main .device .statusbar')).toHaveCount(count);
+    // One read, so the carousel's loop copies (added after load) can't arrive in between.
+    const [devices, bars] = await page.evaluate(() => [
+      document.querySelectorAll('main .device').length,
+      document.querySelectorAll('main .device .statusbar').length,
+    ]);
+    expect(devices).toBeGreaterThan(10);
+    expect(bars).toBe(devices);
     const time = await page.locator('main .device .statusbar .sb-time').first().evaluate((el) => getComputedStyle(el, '::before').content);
     expect(time).toBe('"9:41"');
-  });
-
-  test('a phone swipes through the screens', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
-    const track = page.locator('[data-track]');
-    await track.evaluate((el) => el.scrollTo({ left: el.scrollWidth, behavior: 'instant' as ScrollBehavior }));
-    await expect(page.locator(`[data-tab="${screens[screens.length - 1].id}"]`)).toHaveAttribute('aria-current', 'true');
   });
 
   test('the theme switcher shows the real Wallets screen in each theme and mode', async ({ page }) => {
@@ -127,6 +224,80 @@ test.describe('homepage', () => {
     await expect(hidden).toBeVisible();
   });
 
+  test('type your way: send, give the shampoo a category, save, and Transactions adds up', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const demo = page.locator('[data-type-demo]');
+    const sim = demo.locator('[data-sim]');
+    await demo.scrollIntoViewIfNeeded();
+    await expect(sim.locator('.sim-typed')).toHaveText('Lunch 250Groceries 1,200Shampoo 180');
+    await demo.getByRole('button', { name: 'Send it' }).click();
+    await expect(sim.locator('.sim-reply-line .when-open')).toHaveText('Here are 3 transactions — 1 needs a look:');
+    await expect(sim.locator('.sim-bar-title .when-open')).toBeVisible();
+    await expect(sim.locator('.sim-bar-title .when-open')).toHaveText('1 transaction is incomplete');
+    const shownTotals = () => sim.locator('.sim-bar small').evaluate((el) => (el as HTMLElement).innerText);
+    await expect.poll(shownTotals).toBe(`Expenses ${MINUS}₱1,450.00`);
+    await expect(sim.locator('.sim-save')).toBeDisabled();
+    await expect.poll(() => sim.locator('.sim-save').evaluate((el) => (el as HTMLElement).innerText)).toBe('Fix 1 highlighted to save');
+    // The phone's own category menu
+    await sim.getByRole('button', { name: 'Choose category' }).click();
+    await sim.getByRole('menuitem', { name: 'Personal care' }).click();
+    await expect(sim.locator('.sim-bar-title .when-ready')).toBeVisible();
+    await expect(sim.locator('.sim-bar-title .when-ready')).toHaveText('3 transactions ready');
+    await expect.poll(shownTotals).toBe(`Expenses ${MINUS}₱1,630.00`);
+    await expect(demo.locator('.demo-cat[data-cat="personal"]')).toHaveAttribute('aria-pressed', 'true');
+    await demo.locator('.demo-action[data-act="save"]').click();
+    await expect(demo).toHaveAttribute('data-state', 'saved');
+    const list = sim.locator('[data-screen="list"]');
+    await expect(list).not.toHaveAttribute('aria-hidden', 'true');
+    await expect(list.locator('.sim-snack')).toHaveText('3 transactions saved');
+    // The demo month (11 transactions, expenses −₱22,979.90) with the three rows added.
+    await expect(list.locator('.sim-count')).toContainText('14 transactions');
+    await expect(list.locator('.sim-sums')).toContainText(`${MINUS}₱24,609.90`);
+    await expect(list.locator('.sim-sums')).toContainText('+₱17,390.10');
+    await expect(list.locator('.sim-dayhead')).toContainText(`${MINUS}₱3,995.90`);
+    await expect(list.locator('.sim-tx').first()).toContainText('Shampoo');
+    await expect(list.locator('.sim-tx').first()).toContainText('Personal care');
+    // And again, from the start.
+    await demo.getByRole('button', { name: 'Try it again' }).click();
+    await expect(demo).toHaveAttribute('data-state', 'ready');
+    await expect(list.locator('.sim-count')).toContainText('11 transactions');
+    await expect(demo.getByRole('button', { name: 'Send it' })).toBeFocused();
+  });
+
+  test('each feature card opens its details in a dialog that closes and returns focus', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 860 });
+    await page.goto('/');
+    const links = page.locator('.fcard-link');
+    await expect(links).toHaveCount(8);
+    for (const link of await links.all()) {
+      const id = (await link.getAttribute('data-dialog'))!;
+      const dialog = page.locator(`dialog#${id}`);
+      await link.scrollIntoViewIfNeeded();
+      await link.click();
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole('heading', { level: 2 })).toBeVisible();
+      await page.waitForTimeout(350);
+      expect(await spills(page), id).toEqual([]);
+      await page.keyboard.press('Escape');
+      await expect(dialog).toBeHidden();
+      await expect(link).toBeFocused();
+    }
+    // The close button and a click on the backdrop close it too.
+    await links.first().click();
+    await page.getByRole('button', { name: /^Close / }).first().click();
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
+    await links.first().click();
+    await page.mouse.click(8, 8);
+    await expect(page.locator('dialog[open]')).toHaveCount(0);
+  });
+
+  test('a link to a dialog opens it', async ({ page }) => {
+    await page.goto('/#about-shared');
+    await expect(page.locator('dialog#about-shared')).toBeVisible();
+    await expect(page.locator('dialog#about-shared .ticks')).toBeVisible();
+  });
+
   test('multicurrency figures are the app’s conversions and add up', async ({ page }) => {
     await page.goto('/');
     const rows = page.locator('.fx-ledger li');
@@ -148,6 +319,28 @@ test.describe('homepage', () => {
   test('pricing shows every plan and names every comparison cell', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('.plan h3')).toHaveText(planCards.map((p) => p.name));
+    // Pro opens on yearly billing, with its saving; monthly is one tap away.
+    const pro = page.locator('.plan-pro');
+    await pro.scrollIntoViewIfNeeded();
+    await expect(pro.getByRole('radio', { name: /Yearly/ })).toBeChecked();
+    await expect(pro.locator('.price-yearly')).toBeVisible();
+    await expect(pro.locator('.price-yearly .plan-price')).toHaveText(/₱1,190\s*a year/);
+    await expect(pro.locator('.save-pill')).toHaveText('Save 33%');
+    await expect(pro.locator('.price-yearly .saving')).toHaveText('₱598 less than paying monthly for a year');
+    await pro.locator('label', { hasText: 'Monthly' }).click();
+    await expect(pro.locator('.price-monthly .plan-price')).toHaveText(/₱149\s*a month/);
+    await expect(pro.locator('.price-yearly')).toBeHidden();
+    await expect(page.locator('.plan-lifetime .plan-price')).toHaveText(/₱3,490\s*once/);
+    // Nothing promises a free plan without ads (owner, 2026-11-08: ads may come to Free).
+    await expect(page.locator('main')).not.toContainText(/no ads/i);
+    // The comparison opens in a dialog, not inline.
+    const compare = page.locator('dialog#compare');
+    await expect(compare).toBeHidden();
+    await page.getByRole('link', { name: 'Compare the plans' }).first().click();
+    await expect(compare).toBeVisible();
+    await expect(compare.locator('tbody tr:not(:has(th[scope="rowgroup"]))')).toHaveCount(compareGroups.reduce((n, g) => n + g.rows.length, 0));
+    await page.keyboard.press('Escape');
+    await expect(compare).toBeHidden();
     const marks = page.locator('.compare td.yes, .compare td.no');
     expect(await marks.count()).toBeGreaterThan(10);
     for (const cell of await marks.all()) {
@@ -186,6 +379,24 @@ test.describe('homepage', () => {
     }
   });
 
+  test('nothing spills out of its section, card or dialog', async ({ page }) => {
+    for (const [width, height] of [[360, 760], [768, 1000], [1024, 768], [1440, 900]]) {
+      await page.setViewportSize({ width, height });
+      await page.goto('/');
+      await scrollThrough(page);
+      expect(await spills(page), `${width}px`).toEqual([]);
+    }
+    // Dialogs on a phone
+    await page.setViewportSize({ width: 360, height: 760 });
+    await page.goto('/');
+    for (const id of ['about-multicurrency', 'about-shared', 'about-intelligence', 'about-goals', 'about-offline', 'compare']) {
+      await page.evaluate((d) => (document.getElementById(d) as HTMLDialogElement).showModal(), id);
+      await page.waitForTimeout(300);
+      expect(await spills(page), `${id} at 360px`).toEqual([]);
+      await page.keyboard.press('Escape');
+    }
+  });
+
   test('the first Tab reaches the skip link, which moves to the content', async ({ page }) => {
     await page.goto('/');
     await page.keyboard.press('Tab');
@@ -199,10 +410,13 @@ test.describe('homepage', () => {
     const page = await context.newPage();
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    await expect(page.locator('[data-slide] img').first()).toBeVisible();
+    await expect(page.locator('.sp-centre img')).toBeVisible();
     await page.locator('#themes label.look', { hasText: 'Aurora' }).click();
     expect(await visibleVariant(page)).toEqual(['aurora-light']);
     expect(await overflow(page)).toBeLessThanOrEqual(1);
+    // A card's details are a link: without the dialog script it shows the details in place.
+    await page.locator('#wallets .fcard-link').click();
+    await expect(page.locator('#about-wallets')).toBeVisible();
     await context.close();
   });
 
@@ -211,6 +425,9 @@ test.describe('homepage', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await page.mouse.wheel(0, 3000);
+    // Try the composer too: its steps must not animate either.
+    await page.locator('[data-type-demo]').getByRole('button', { name: 'Send it' }).click();
+    await page.waitForTimeout(400);
     const moving = await page.evaluate(() => {
       const main = document.querySelector('main');
       return document.getAnimations().filter((animation) => {

@@ -8,9 +8,14 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 import PlayCta from '../components/site/PlayCta.astro';
 import Phone from '../components/site/Phone.astro';
 import StatusBar from '../components/site/StatusBar.astro';
-import Showcase from '../components/site/Showcase.astro';
+import HeroStage from '../components/site/HeroStage.astro';
 import ThemeStudio from '../components/site/ThemeStudio.astro';
 import Pricing from '../components/site/Pricing.astro';
+import TypeDemo from '../components/site/TypeDemo.astro';
+import FeatureGlyph from '../components/site/FeatureGlyph.astro';
+import SharedArt from '../components/site/SharedArt.astro';
+import Dialog from '../components/site/Dialog.astro';
+import DialogScript from '../components/site/DialogScript.astro';
 import { faq, foreignWallets, netWorthWithForeign } from '../data/content';
 import { formatMinor } from '../lib/money';
 import { site } from '../data/site';
@@ -68,11 +73,11 @@ const jsonLd = [
 
 <SiteLayout title={title} description={description} jsonLd={jsonLd}>
   <Fragment slot="head">
-    <link rel="preload" as="image" type="image/avif" href="/screens/s-dashboard-560.avif" imagesrcset="/screens/s-dashboard-400.avif 400w, /screens/s-dashboard-560.avif 560w, /screens/s-dashboard-720.avif 720w" imagesizes="(min-width: 64em) 330px, (min-width: 48em) 300px, 66vw" fetchpriority="high" />
+    <link rel="preload" as="image" type="image/avif" href="/screens/s-dashboard-560.avif" imagesrcset="/screens/s-dashboard-400.avif 400w, /screens/s-dashboard-560.avif 560w, /screens/s-dashboard-720.avif 720w" imagesizes="(min-width: 64em) 330px, (min-width: 48em) 300px, 60vw" fetchpriority="high" />
   </Fragment>
 
   <!-- 01 · Hero -->
-  <section class="hero theme-night" aria-labelledby="h1">
+  <section class="hero" aria-labelledby="h1">
     <div class="wrap hero-head">
       <p class="eyebrow">Personal finance for Android</p>
       <h1 id="h1">Everything about your money, <span class="accent">in one clear view.</span></h1>
@@ -84,76 +89,128 @@ const jsonLd = [
       <ul class="hero-facts" aria-label="Good to know">
         <li>No bank login</li>
         <li>Works offline</li>
-        <li>Free plan, no ads</li>
+        <li>Free plan</li>
       </ul>
     </div>
-    <Showcase />
+    <HeroStage />
     <div class="hero-ground" aria-hidden="true"></div>
   </section>
 
-  <!-- 03 · Features -->
+  <!-- 02 · Themes (owner, 2026-11-08: straight after the hero) -->
+  <ThemeStudio />
+
+  <!-- 03 · Features (owner review 2026-11-08): the composer to try, then compact cards that open their details -->
   <section class="band" id="features" aria-labelledby="h-features">
     <div class="wrap">
       <div class="section-head center">
         <p class="eyebrow">Features</p>
         <h2 id="h-features">From today’s coffee to a loan’s last payment.</h2>
-        <p class="lede">Record it fast, see it clearly, and stay ahead of it.</p>
+        <p class="lede">Record it fast, see it clearly, and stay ahead of it. Open any card for the details and the real screens.</p>
       </div>
 
-      <!-- A · Enter transactions your way -->
-      <article class="feature" aria-labelledby="f-record">
-        <div class="feature-copy">
-          <p class="eyebrow">Enter transactions your way</p>
-          <h3 class="title-lg" id="f-record">Say it once. Lucento writes the rows.</h3>
-          <p class="lede">Several transactions in one message become rows with the amount, category and wallet filled in where Lucento can tell. Anything missing is flagged, and nothing is saved until you’ve checked it.</p>
-          <ol class="ways">
-            <li><div><b>Type it</b><span>Plain words and amounts, the way you’d text a friend.</span></div></li>
-            <li><div><b>Say it</b><span>Your phone’s own speech service turns your voice into text you review.</span></div></li>
-            <li><div><b>Scan it</b><span>Receipts are read on your phone; the photo never leaves it.</span></div></li>
-            <li><div><b>Several at once</b><span>Lunch, groceries and the power bill in one go, saved together.</span></div></li>
-          </ol>
-          <p class="fine">With Pro, Smarter reading (Google’s Gemini, off until you turn it on) handles messier messages.</p>
-        </div>
-        <div class="feature-art record-art">
-          <div class="message" role="group" aria-label="One message becomes three rows">
-            <p class="message-said">Lunch 150, groceries 1200, and paid the electricity bill</p>
-            <ul class="message-rows">
-              <li><span>Lunch</span><small>Restaurants · Everyday bank</small><span class="money">{formatMinor(-15_000)}</span></li>
-              <li><span>Groceries</span><small>Groceries · Everyday bank</small><span class="money">{formatMinor(-120_000)}</span></li>
-              <li class="needs"><span>“paid the electricity bill”</span><small>No amount yet: flagged for you</small><span class="money">₱ ?</span></li>
-            </ul>
-            <p class="message-foot">Here are 3 transactions: 1 needs a look. Nothing is saved yet.</p>
+      <article class="feature-panel theme-night type-panel" id="record" aria-labelledby="h-type">
+        <TypeDemo />
+      </article>
+
+      <ul class="fcards">
+        <li class="fcard theme-night" id="wallets">
+          <FeatureGlyph kind="wallets" />
+          <div class="fcard-text">
+            <p class="eyebrow">Your complete picture</p>
+            <h3 class="fcard-title" id="c-wallets">Everything you own, everything you owe.</h3>
+            <p>Cash, banks, cards and loans side by side, adding up to one net worth.</p>
           </div>
-          <Phone file="f-composer" alt="The Add transactions screen after that message: Lunch −₱150.00 under Restaurants and Groceries −₱1,200.00 are filled in, and the save bar says 1 transaction is incomplete." sizes="(min-width: 56em) 250px, 46vw" class="record-phone" />
-        </div>
-      </article>
+          <a class="fcard-link" href="#about-wallets" data-dialog="about-wallets" aria-haspopup="dialog" aria-describedby="c-wallets">See the details <Fragment set:html={arrow} /></a>
+        </li>
+        <li class="fcard theme-night is-wide" id="multicurrency">
+          <FeatureGlyph kind="fx" />
+          <div class="fcard-text">
+            <p class="eyebrow">Multicurrency wallets <span class="pro-tag">Pro</span></p>
+            <h3 class="fcard-title" id="c-multicurrency">Every currency you hold. One total you can trust.</h3>
+            <p>Dollars, dirhams and yen keep their own balances, each valued in your main currency at the rates you actually got.</p>
+          </div>
+          <a class="fcard-link" href="#about-multicurrency" data-dialog="about-multicurrency" aria-haspopup="dialog" aria-describedby="c-multicurrency">See the details <Fragment set:html={arrow} /></a>
+        </li>
+        <li class="fcard theme-night" id="intelligence">
+          <FeatureGlyph kind="intel" />
+          <div class="fcard-text">
+            <p class="eyebrow">Understand your finances</p>
+            <h3 class="fcard-title" id="c-intelligence">See where the money went.</h3>
+            <p>Income against spending, month by month, with answers in plain words when you ask.</p>
+          </div>
+          <a class="fcard-link" href="#about-intelligence" data-dialog="about-intelligence" aria-haspopup="dialog" aria-describedby="c-intelligence">See the details <Fragment set:html={arrow} /></a>
+        </li>
+        <li class="fcard theme-night" id="budgeting">
+          <FeatureGlyph kind="budget" />
+          <div class="fcard-text">
+            <p class="eyebrow">Stay within your means</p>
+            <h3 class="fcard-title" id="c-budgeting">A budget that knows what’s coming.</h3>
+            <p>What’s left, what’s safe to spend after bills, and how the month is pacing.</p>
+          </div>
+          <a class="fcard-link" href="#about-budgeting" data-dialog="about-budgeting" aria-haspopup="dialog" aria-describedby="c-budgeting">See the details <Fragment set:html={arrow} /></a>
+        </li>
+        <li class="fcard theme-night" id="goals">
+          <FeatureGlyph kind="goals" />
+          <div class="fcard-text">
+            <p class="eyebrow">Build your future</p>
+            <h3 class="fcard-title" id="c-goals">Goals with a pace to keep.</h3>
+            <p>A target, a date if you like, and how far you’ve come.</p>
+          </div>
+          <a class="fcard-link" href="#about-goals" data-dialog="about-goals" aria-haspopup="dialog" aria-describedby="c-goals">See the details <Fragment set:html={arrow} /></a>
+        </li>
+        <li class="fcard theme-night" id="upcoming">
+          <FeatureGlyph kind="ahead" />
+          <div class="fcard-text">
+            <p class="eyebrow">Never miss a payment</p>
+            <h3 class="fcard-title" id="c-upcoming">See the bills before they land.</h3>
+            <p>Bills, salary and loan payments lined up by date, with what’s overdue flagged.</p>
+          </div>
+          <a class="fcard-link" href="#about-upcoming" data-dialog="about-upcoming" aria-haspopup="dialog" aria-describedby="c-upcoming">See the details <Fragment set:html={arrow} /></a>
+        </li>
+        <li class="fcard theme-night is-wide" id="shared">
+          <FeatureGlyph kind="shared" />
+          <div class="fcard-text">
+            <p class="eyebrow">Lucento Shared <span class="pro-tag">Pro</span></p>
+            <h3 class="fcard-title" id="c-shared">Two people. One ledger.</h3>
+            <p>One budget for two people, each on their own phone. Plan together, without sharing a password.</p>
+          </div>
+          <a class="fcard-link" href="#about-shared" data-dialog="about-shared" aria-haspopup="dialog" aria-describedby="c-shared">See the details <Fragment set:html={arrow} /></a>
+        </li>
+        <li class="fcard theme-night is-strip" id="offline">
+          <FeatureGlyph kind="offline" />
+          <div class="fcard-text">
+            <p class="eyebrow">Offline or online</p>
+            <h3 class="fcard-title" id="c-offline">Your phone keeps the books.</h3>
+            <p>No account and no connection needed. Sign in only for the things that need one.</p>
+          </div>
+          <a class="fcard-link" href="#about-offline" data-dialog="about-offline" aria-haspopup="dialog" aria-describedby="c-offline">See the details <Fragment set:html={arrow} /></a>
+        </li>
+      </ul>
 
-      <!-- B · Track your wallets -->
-      <article class="feature is-flipped" aria-labelledby="f-wallets">
-        <div class="feature-copy">
-          <p class="eyebrow">Track your wallets</p>
-          <h3 class="title-lg" id="f-wallets">Cash, banks, cards and loans, side by side.</h3>
-          <p class="lede">Every place your money lives gets a wallet with its own balance and history, as a gallery of cards or a compact list.</p>
-          <ul class="ticks">
-            <li>Cash, bank, e-wallet and savings wallets, with logos for more than 400 banks and e-wallets</li>
-            <li>Credit cards with their limit, statement day and due date; loans with interest and installments</li>
-            <li>Transfers between wallets recorded once, never counted twice</li>
-            <li>Free: 3 money wallets and 2 cards or loans. Pro: as many as you need</li>
-          </ul>
+      <Dialog id="about-wallets" kicker="Your complete picture" title="Everything you own, everything you owe." night wide>
+        <div class="detail">
+          <div class="detail-copy">
+            <p class="lede">Every place your money lives gets a wallet with its own balance, and together they add up to one honest net worth: what you have, minus what you owe.</p>
+            <ul class="ticks">
+              <li>Cash, bank, e-wallet and savings wallets, with logos for more than 400 banks and e-wallets</li>
+              <li>Credit cards and loans beside your accounts, so what you owe is never out of sight</li>
+              <li>Transfers between wallets recorded once, never counted twice</li>
+              <li>Free: 3 money wallets and 2 cards or loans. Pro: as many as you need</li>
+            </ul>
+          </div>
+          <div class="detail-art">
+            <div class="feature-art is-pair">
+              <Phone file="f-wallet-rows" treatment="window" max={560} alt="The Wallets list: net worth ₱62,120.10; Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00 under assets, and the Visa card −₱6,400.00 under liabilities." sizes="(min-width: 56em) 250px, 40vw" />
+              <Phone file="f-networth" treatment="angle" max={560} alt="What your net worth is made of: ₱62,120.10, with assets ₱176,520.10 across bank accounts, savings and cash, and liabilities ₱114,400.00 across loans and credit cards." sizes="(min-width: 56em) 250px, 40vw" />
+            </div>
+          </div>
         </div>
-        <div class="feature-art is-pair">
-          <Phone file="f-wallet-rows" alt="The Wallets list: net worth ₱62,120.10; Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00 under assets, and the Visa card −₱6,400.00 under liabilities." sizes="(min-width: 56em) 250px, 40vw" />
-          <Phone file="f-card" alt="A Visa card wallet at 24% a year: amount owed −₱6,400.00, credit limit ₱50,000.00, ₱43,600.00 available and ₱6,400.00 due by November 13." sizes="(min-width: 56em) 250px, 40vw" />
-        </div>
-      </article>
+      </Dialog>
 
-      <!-- G · Multicurrency wallets (special emphasis): a night panel inside Features -->
-      <article class="feature-panel theme-night fx" id="multicurrency" aria-labelledby="h-fx">
+      <Dialog id="about-multicurrency" kicker="Multicurrency wallets · Pro" title="Every currency you hold. One total you can trust." night wide>
       <div class="fx-grid">
         <div>
-          <div class="section-head" style="margin-bottom: 0">
-            <p class="eyebrow">Multicurrency wallets <span class="pro-tag">Pro</span></p>
-            <h3 class="headline" id="h-fx">Every currency you hold. <span class="accent">One total you can trust.</span></h3>
+          <div class="stack">
             <p class="lede">Keep dollars, dirhams and yen in their own wallets. Each shows its own balance and what it’s worth in your main currency, so net worth, budgets and insights all add up in one place.</p>
           </div>
           <ul class="fx-ledger">
@@ -173,32 +230,30 @@ const jsonLd = [
           <p class="fx-total"><span class="muted">Net worth, all in pesos</span> <b>{peso(netWorthWithForeign)}</b></p>
         </div>
         <div class="fx-art">
-          <Phone file="mc-rows" alt="The Wallets list with wallets in three currencies: Japan trip yen ¥60,000 ≈ ₱22,950.00, Dubai account AED4,200.00 ≈ ₱66,108.00 and Dollar savings $1,850.00 ≈ ₱106,930.00, beside the peso wallets." sizes="(min-width: 56em) 270px, 42vw" />
-          <Phone file="mc-usd" alt="The Dollar savings wallet: current balance $1,850.00, about ₱106,930.00, at an average of 1 USD = 57.8 PHP, with a note that each transaction counts at its own rate and the difference on the way out is an FX gain or loss." sizes="(min-width: 56em) 270px, 42vw" />
+          <Phone file="mc-rows" treatment="lift" lifts={[[0.05, 0.018, 0.9, 0.2], [0.05, 0.83, 0.9, 0.0685]]} max={560} alt="The Wallets list with wallets in three currencies: net worth ₱258,108.10 at the top, and Dollar savings $1,850.00 ≈ ₱106,930.00 raised out of the list." sizes="(min-width: 56em) 270px, 62vw" />
         </div>
       </div>
-      <ul class="fx-notes">
-        <li><h4>Valued at its own rate</h4><p>Each movement is valued at its day’s rate and the wallet carries the average. What leaves at a different rate becomes an FX gain or loss in Insights.</p></li>
-        <li><h4>Rates without your money</h4><p>Rates come from public exchange-rate services. Only two currency codes and a date are sent, never an amount; turn it off in Settings › Money.</p></li>
-        <li><h4>Works offline too</h4><p>No connection? Type the rate yourself. Lucento keeps what you chose and never silently replaces it later.</p></li>
-      </ul>
-      </article>
 
-      <!-- C · Financial intelligence -->
-      <article class="feature" aria-labelledby="f-intel">
-        <div class="feature-copy">
-          <p class="eyebrow">Financial intelligence</p>
-          <h3 class="title-lg" id="f-intel">Built-in answers. AI only when you ask for it.</h3>
-          <p class="lede">Insights and Ask Lucento work everything out on your phone from your own records. The AI adviser is a separate, optional step for open questions, and it says exactly what it sends.</p>
+      <ul class="fx-notes">
+        <li><h3 class="title">Valued at its own rate</h3><p>Each movement is valued at its day’s rate and the wallet carries the average. What leaves at a different rate becomes an FX gain or loss in Insights.</p></li>
+        <li><h3 class="title">Rates without your money</h3><p>Rates come from public exchange-rate services. Only two currency codes and a date are sent, never an amount; turn it off in Settings › Money.</p></li>
+        <li><h3 class="title">Works offline too</h3><p>No connection? Type the rate yourself. Lucento keeps what you chose and never silently replaces it later.</p></li>
+      </ul>
+
+      </Dialog>
+
+      <Dialog id="about-intelligence" kicker="Understand your finances" title="See where the money went." night wide>
+        <div class="detail">
+          <div class="detail-copy">
+            <p class="lede">Insights lays out income against spending over 3, 6 or 12 months. Ask Lucento answers questions about your own figures in plain words, worked out on your phone. The AI adviser is a separate, optional step for open questions, and it says exactly what it sends.</p>
+          </div>
+          <div class="detail-art">
+            <Phone file="s-insights" treatment="focus" region={[0.05, 0.4, 0.9, 0.175]} max={560} alt="Insights over the last 6 months: net +₱60,020.10 from income ₱126,000.00 and expenses −₱65,979.90, with monthly income and expense bars from June to November." sizes="(min-width: 56em) 270px, 60vw" />
+          </div>
         </div>
-        <div class="feature-art is-pair">
-          <Phone file="f-networth" alt="Insights: what your net worth is made of. Net worth ₱62,120.10; assets ₱176,520.10 across bank accounts, savings and cash; liabilities ₱114,400.00 across loans and credit cards." sizes="(min-width: 56em) 250px, 40vw" />
-          <Phone file="f-report" alt="Ask Lucento’s reports: net worth, cash flow, budget against actual, and debts and loans statements, each worked out on the phone." sizes="(min-width: 56em) 250px, 40vw" />
-        </div>
-      </article>
       <ul class="tiers">
         <li class="tier">
-          <h4>Insights</h4>
+          <h3 class="title">Insights</h3>
           <p class="muted">Income, spending and net flow by month, and what your net worth is made of.</p>
           <dl>
             <div><dt>Runs</dt><dd>On your phone, offline</dd></div>
@@ -207,7 +262,7 @@ const jsonLd = [
           </dl>
         </li>
         <li class="tier">
-          <h4>Ask Lucento</h4>
+          <h3 class="title">Ask Lucento</h3>
           <p class="muted">Ask in plain words: top categories, net worth, cash flow, budget against actual, debts.</p>
           <dl>
             <div><dt>Runs</dt><dd>On your phone, offline</dd></div>
@@ -216,7 +271,7 @@ const jsonLd = [
           </dl>
         </li>
         <li class="tier">
-          <h4>AI adviser <span class="muted">(Gemini)</span></h4>
+          <h3 class="title">AI adviser <span class="muted">(Gemini)</span></h3>
           <p class="muted">Open questions about your money, answered by Google’s Gemini.</p>
           <dl>
             <div><dt>Runs</dt><dd>Online, after you sign in and turn it on</dd></div>
@@ -226,82 +281,84 @@ const jsonLd = [
         </li>
       </ul>
 
-      <!-- D · Stay ahead -->
-      <article class="feature is-flipped" aria-labelledby="f-ahead">
-        <div class="feature-copy">
-          <p class="eyebrow">Stay ahead of what’s coming</p>
-          <h3 class="title-lg" id="f-ahead">See the bills before they land.</h3>
-          <p class="lede">Schedule bills, salary, transfers and loan installments once. Lucento lines them up by date, flags what’s overdue, and sets the bills aside before it tells you what’s safe to spend.</p>
-          <ul class="ticks">
+
+      </Dialog>
+
+      <Dialog id="about-upcoming" kicker="Never miss a payment" title="See the bills before they land." night wide>
+        <div class="detail">
+          <div class="detail-copy">
+            <p class="lede">Schedule bills, salary, transfers and loan installments once. Lucento lines them up by date, flags what’s overdue, and sets the bills aside before it tells you what’s safe to spend.</p>
+            <ul class="ticks">
             <li>Upcoming income, expenses and transfers in one agenda</li>
             <li>The bell lists what’s due this week; a card payment opens already filled in</li>
             <li>Nothing is recorded until you mark it paid, so your balances stay true</li>
           </ul>
+          </div>
+          <div class="detail-art">
+            <div class="feature-art is-pair">
+          <Phone file="f-schedules" treatment="window" max={560} alt="All schedules: every repeating bill, salary and loan payment with how often it comes and the next date." sizes="(min-width: 56em) 250px, 40vw" />
+          <Phone file="f-bell" treatment="angle" max={560} alt="The Dashboard’s bell open on upcoming payments due this week, including the overdue fibre internet bill and the Visa card payment." sizes="(min-width: 56em) 250px, 40vw" />
         </div>
-        <div class="feature-art is-pair">
-          <Phone file="f-schedules" alt="All schedules: every repeating bill, salary and loan payment with how often it comes and the next date." sizes="(min-width: 56em) 250px, 40vw" />
-          <Phone file="f-bell" alt="The Dashboard’s bell open on upcoming payments due this week, including the overdue fibre internet bill and the Visa card payment." sizes="(min-width: 56em) 250px, 40vw" />
+          </div>
         </div>
-      </article>
 
-      <!-- E · Budgeting -->
-      <article class="feature" aria-labelledby="f-budget">
-        <div class="feature-copy">
-          <p class="eyebrow">Budgeting made easier</p>
-          <h3 class="title-lg" id="f-budget">Start from presets. Make it yours.</h3>
-          <p class="lede">Pick from ready-made categories when you start, give each a monthly amount, and your total budget is simply their sum. Add, rename or archive categories whenever life changes.</p>
-          <ul class="ticks">
+      </Dialog>
+
+      <Dialog id="about-budgeting" kicker="Stay within your means" title="A budget that knows what’s coming." night wide>
+        <div class="detail">
+          <div class="detail-copy">
+            <p class="lede">Give each category a monthly amount and your total budget is simply their sum. Lucento shows what’s left, sets the bills due aside before it tells you what’s safe to spend, and says how the month is pacing.</p>
+            <ul class="ticks">
             <li>Ready-made categories grouped by how people actually spend</li>
             <li>A monthly amount per category, and a total that always adds up</li>
             <li>Pace, percentage used and what’s left, on Home and in Budget</li>
           </ul>
+          </div>
+          <div class="detail-art">
+            <div class="feature-art is-pair">
+          <Phone file="s-budget" treatment="lift" lifts={[[0.05, 0.166, 0.9, 0.229], [0.5125, 0.393, 0.398, 0.112]]} max={560} alt="The Budget screen for November 2026: ₱2,920.10 remaining of a ₱25,900.00 budget, 89% spent with 26% of the month gone, marked Ahead of pace; ₱0.00 safe to spend because the bills due take what’s left." sizes="(min-width: 56em) 250px, 40vw" />
         </div>
-        <div class="feature-art is-pair">
-          <Phone file="f-presets" alt="Onboarding: choose what you spend on, from ready-made category groups." sizes="(min-width: 56em) 250px, 40vw" />
-          <Phone file="f-categories" alt="Manage categories: the chosen spending categories, each of which can be edited or archived." sizes="(min-width: 56em) 250px, 40vw" />
+          </div>
         </div>
-      </article>
 
-      <!-- H · Lucento Shared (special emphasis): a panel inside Features -->
-      <article class="feature-panel space" id="shared" aria-labelledby="h-shared">
-      <div class="feature-copy">
-        <p class="eyebrow">Lucento Shared <span class="pro-tag">Pro</span></p>
-        <h3 class="headline" id="h-shared">Two people. One ledger.</h3>
-        <p class="lede">Invite one person into your Shared Space: a partner, a parent, a housemate. Each of you keeps your own account and phone, sees the same money, and records as it happens.</p>
-        <ul class="ticks">
+      </Dialog>
+
+      <Dialog id="about-goals" kicker="Build your future" title="Goals with a pace to keep." night wide>
+        <div class="detail">
+          <div class="detail-copy">
+            <p class="lede">Give each goal a target and, if you like, a date. Lucento shows how far you’ve come, what’s left, and the pace that gets you there on time.</p>
+            <ul class="ticks">
+              <li>A target and an optional date for every goal</li>
+              <li>Progress, what’s still to save and a projected finish</li>
+              <li>2 active goals free; up to 20 with Pro</li>
+            </ul>
+          </div>
+          <div class="detail-art">
+            <Phone file="s-goals" treatment="focus" region={[0.05, 0.08, 0.9, 0.27]} max={560} alt="Goals: ₱37,500.00 saved of ₱80,000.00 across 2 goals (47%), ₱42,500.00 still to save; Emergency fund ₱21,000.00 of ₱50,000.00 (42%) and Japan trip ₱16,500.00 of ₱30,000.00 (55%), each with its pace." sizes="(min-width: 56em) 270px, 60vw" />
+          </div>
+        </div>
+      </Dialog>
+
+      <Dialog id="about-shared" kicker="Lucento Shared · Pro" title="Two people. One ledger." night wide>
+        <div class="detail">
+          <div class="detail-copy">
+            <p class="lede">Invite one person into your Shared Space: a partner, a parent, a housemate. Each of you keeps your own account and phone and records from it; the other sees your entries once their phone syncs, when Lucento opens or comes back to the front.</p>
+            <ul class="ticks">
           <li>Only the owner needs Pro; the partner needs no plan</li>
           <li>Label wallets Shared or Personal to stay organised; labels never hide anything</li>
+              <li>Your partner records as they spend; you stay in charge of the plan and the invitation</li>
           <li>Every rule here is enforced by Lucento’s server, not just the app</li>
         </ul>
-      </div>
-      <div class="stack" style="gap: var(--space-8)">
-        <div class="people" aria-hidden="true">
-          <div class="person"><span class="person-mark">You</span><small>Owner</small></div>
-          <div class="space-core">Shared Space<small>one ledger, two phones</small></div>
-          <div class="person"><span class="person-mark">+1</span><small>Partner</small></div>
+          </div>
+          <div class="detail-art">
+            <SharedArt class="detail-shared" />
+          </div>
         </div>
-        <table class="matrix">
-          <caption>Who can do what</caption>
-          <thead><tr><th scope="col">In a Shared Space</th><th scope="col">Owner</th><th scope="col">Partner</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">See every wallet, budget, goal, debt and schedule</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
-            <tr><th scope="row">Add, edit or delete any transaction</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
-            <tr><th scope="row">See who added or changed a transaction</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
-            <tr><th scope="row">Manage wallets, budgets, goals, categories and schedules</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></td></tr>
-            <tr><th scope="row">Invite or remove the partner</th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></td></tr>
-            <tr><th scope="row">Leave the Space</th><td class="no"><span aria-hidden="true">—</span><span class="sr-only">No</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-      </article>
 
-      <!-- F · Offline or online -->
-      <article class="offline" aria-labelledby="f-offline">
-        <div class="section-head">
-          <p class="eyebrow">Offline or online: your choice</p>
-          <h3 class="title-lg" id="f-offline">Your phone keeps the books. The cloud is optional.</h3>
-          <p class="lede">Lucento is built to work with no account and no connection. Sign in only for the things that need one.</p>
-        </div>
+      </Dialog>
+
+      <Dialog id="about-offline" kicker="Offline or online: your choice" title="Your phone keeps the books. The cloud is optional." night wide>
+        <p class="lede">Lucento is built to work with no account and no connection. Sign in only for the things that need one.</p>
         <div class="lanes">
           <div class="lane lane-local">
             <p class="lane-label">On your phone · no account, no internet</p>
@@ -323,7 +380,7 @@ const jsonLd = [
             <p class="fine">Exchange rates are the one lookup that’s on by default: fetched only when you record something in another currency, sending two currency codes and a date. Offline, you type the rate.</p>
           </div>
         </div>
-      </article>
+      </Dialog>
     </div>
   </section>
 
@@ -389,16 +446,13 @@ const jsonLd = [
     </div>
   </section>
 
-  <!-- 04 · Themes -->
-  <ThemeStudio />
-
   <!-- 05 · Pricing -->
   <section class="band" id="pricing" aria-labelledby="h-pricing">
     <div class="wrap">
       <div class="section-head center">
         <p class="eyebrow">Pricing</p>
         <h2 id="h-pricing">Free to start. Pro when you want more.</h2>
-        <p class="lede">Free is a complete budget app, with no ads and no account. Pro removes the limits and adds the online services. Here is exactly what each plan includes.</p>
+        <p class="lede">Free is a complete budget app, with no account needed. Pro removes the limits and adds the online services. Here is exactly what each plan includes.</p>
       </div>
       <Pricing />
     </div>
@@ -442,4 +496,5 @@ const jsonLd = [
     </div>
     <div class="hero-ground" aria-hidden="true"></div>
   </section>
+  <DialogScript />
 </SiteLayout>

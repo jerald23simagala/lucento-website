@@ -8,7 +8,13 @@ Lucento's marketing website (Astro on Vercel) for the Android app in `../lucento
 - Typography first: Inter at 800, tight tracking, uppercase eyebrows, generous whitespace, editorial hierarchy.
 - The app is the picture: real screenshots (dark mode, except the theme switcher) in the one phone template
   (`Phone` + `StatusBar`). Never invent UI. After adding screens run `node scripts/screen-tops.mjs`.
-- No generic SaaS templates, no icon-heading-paragraph card grids, no gratuitous gradients, glows or glass.
+- No generic SaaS templates, no gratuitous gradients, glows or glass. Features are night cards (the Multicurrency
+  style) with their own drawn glyph, opening a dialog with the real screens; never identical icon-heading cards.
+- A replica of app UI (Type your way) uses the app's own strings, flow, palette and demo-month figures, and says it
+  is a replica. Never promise "no ads" for Free.
+- Show what Lucento does, not how (owner, 2026-11-08): three screens in the hero, each screen once where it tells its
+  story, and no full flows of Ask Lucento, card mechanics, Shared's rules or sync internals. Delete unused screens.
+  Dialog phones always carry a `Phone` treatment (window, focus, angle, lift); see docs/WEBSITE_DESIGN.md.
 - Every section has one clear job; alternate compositions instead of repeating one.
 - Motion only where it explains the product; always respect reduced motion; never trade performance for animation.
 - Mobile layouts are designed (swipe, folded menu, labelled table rows), not compressed desktop.

@@ -1,0 +1,49 @@
+---
+/**
+ * The hero's product stage (owner brief, 2026-11-08: "less product exposure, more product desirability"). An editorial
+ * composition instead of a carousel of every screen: the Dashboard sharp in the centre, Budget and Wallets beside it
+ * (smaller, tucked behind it and cropped by the horizon to about two thirds), and two peripheral phones far out,
+ * small, dimmed and out of focus, so they say "there's more" without being readable. Everything rises out of the
+ * app's own landscape.
+ *
+ * Motion (CSS only, all off under prefers-reduced-motion): the phones rise into place once on load (the Dashboard by
+ * transform only, so it stays the first paint), a single light sweep crosses the Dashboard's glass, the supporting
+ * phones float slowly and the peripheral ones drift, and where scroll-driven animation exists the landscape and the
+ * phones part gently as the page scrolls. Idle motion pauses when the hero is off screen.
+ *
+ * Phones: centre on every width; Budget and Wallets peek in from the edges on phones; the peripheral pair from 64em.
+ */
+import Phone from './Phone.astro';
+import { screens } from '../../data/content';
+
+const alt = (id: string) => screens.find((s) => s.id === id)?.alt ?? '';
+const phones = [
+  { id: 'transactions', role: 'far is-left', file: 's-transactions', alt: '', sizes: '210px' },
+  { id: 'budgets', role: 'side is-left', file: 's-budget', alt: 'Beside it, the Budget screen for November.', sizes: '(min-width: 64em) 264px, (min-width: 48em) 240px, 46vw' },
+  { id: 'dashboard', role: 'centre', file: 's-dashboard', alt: alt('dashboard'), sizes: '(min-width: 64em) 330px, (min-width: 48em) 300px, 60vw' },
+  { id: 'wallets', role: 'side is-right', file: 's-wallets', alt: 'And the Wallets screen, with net worth above the account cards.', sizes: '(min-width: 64em) 264px, (min-width: 48em) 240px, 46vw' },
+  { id: 'goals', role: 'far is-right', file: 's-goals', alt: '', sizes: '210px' },
+];
+---
+
+<div class="stage" data-stage>
+  <div class="stage-layer">
+    {
+      phones.map((p) => (
+        <div class:list={['sp', ...p.role.split(' ').map((r) => (r.startsWith('is-') ? r : `sp-${r}`))]} aria-hidden={p.alt ? undefined : 'true'}>
+          <div class="sp-float">
+            <Phone file={p.file} alt={p.alt} sizes={p.sizes} eager={p.id === 'dashboard'} />
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  // Idle motion only while the hero is on screen.
+  const stage = document.querySelector<HTMLElement>('[data-stage]');
+  if (stage && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => stage.classList.toggle('is-away', !entry.isIntersecting)).observe(stage);
+  }
+</script>

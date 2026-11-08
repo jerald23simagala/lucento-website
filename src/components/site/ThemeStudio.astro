@@ -71,7 +71,7 @@ const css =
       </fieldset>
     </div>
     <div class="studio-stage">
-      <div class="device">
+      <div class="device is-angle">
         <div class="device-screen">
         <StatusBar />
         {
@@ -118,5 +118,11 @@ const css =
     modes.forEach((m) => (m.disabled = midnight));
   };
   looksGroup.forEach((input) => input.addEventListener('change', sync));
+  // On a dark site the section starts on the dark Sunrise, so it isn't the one bright band.
+  const theme = document.documentElement.dataset.theme;
+  if (theme === 'dark' || (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    const dark = document.querySelector<HTMLInputElement>('#mode-dark');
+    if (dark) dark.checked = true;
+  }
   sync();
 </script>

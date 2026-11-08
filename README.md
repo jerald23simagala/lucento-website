@@ -80,7 +80,8 @@ scripts/build-tokens.mjs    tokens.json -> tokens.css; horizon.tokens.json -> ho
 docs/WEBSITE_DESIGN.md      Design principles and system (read first)
 src/styles/                 site.css, tokens.css + horizon-tokens.css (generated)
 src/layouts/SiteLayout      Every page: inlined CSS and fonts, header, footer, structured data
-src/components/site/        Header, Footer, PlayCta, Phone + StatusBar (phone template), Showcase, ThemeStudio, Pricing
+src/components/site/        Header, Footer, PlayCta, Phone + StatusBar (phone template), HeroStage, ThemeStudio,
+                            TypeDemo, FeatureGlyph, SharedArt, Dialog + DialogScript, Pricing
 src/components/             ContentPage + LegalBody (reading pages)
 src/data/                   content.ts (screens, themes, FAQ), plans.ts, site.ts (contact, Play link, playListed),
                             screen-tops.json (generated), demo.ts, legal.ts (generated from the app: tools/legal/export_legal.py — don't edit)
