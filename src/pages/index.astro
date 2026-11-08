@@ -200,8 +200,8 @@ const jsonLd = [
           </div>
           <div class="detail-art">
             <div class="feature-art is-pair">
-              <Phone file="f-wallet-rows" alt="The Wallets list: net worth ₱62,120.10; Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00 under assets, and the Visa card −₱6,400.00 under liabilities." sizes="(min-width: 56em) 250px, 40vw" />
-              <Phone file="f-networth" alt="What your net worth is made of: ₱62,120.10, with assets ₱176,520.10 across bank accounts, savings and cash, and liabilities ₱114,400.00 across loans and credit cards." sizes="(min-width: 56em) 250px, 40vw" />
+              <Phone file="f-wallet-rows" treatment="window" max={560} alt="The Wallets list: net worth ₱62,120.10; Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00 under assets, and the Visa card −₱6,400.00 under liabilities." sizes="(min-width: 56em) 250px, 40vw" />
+              <Phone file="f-networth" treatment="angle" max={560} alt="What your net worth is made of: ₱62,120.10, with assets ₱176,520.10 across bank accounts, savings and cash, and liabilities ₱114,400.00 across loans and credit cards." sizes="(min-width: 56em) 250px, 40vw" />
             </div>
           </div>
         </div>
@@ -230,8 +230,7 @@ const jsonLd = [
           <p class="fx-total"><span class="muted">Net worth, all in pesos</span> <b>{peso(netWorthWithForeign)}</b></p>
         </div>
         <div class="fx-art">
-          <Phone file="mc-rows" alt="The Wallets list with wallets in three currencies: Japan trip yen ¥60,000 ≈ ₱22,950.00, Dubai account AED4,200.00 ≈ ₱66,108.00 and Dollar savings $1,850.00 ≈ ₱106,930.00, beside the peso wallets." sizes="(min-width: 56em) 270px, 42vw" />
-          <Phone file="mc-usd" alt="The Dollar savings wallet: current balance $1,850.00, about ₱106,930.00, at an average of 1 USD = 57.8 PHP, with a note that each transaction counts at its own rate and the difference on the way out is an FX gain or loss." sizes="(min-width: 56em) 270px, 42vw" />
+          <Phone file="mc-rows" treatment="lift" lifts={[[0.05, 0.018, 0.9, 0.2], [0.05, 0.83, 0.9, 0.0685]]} max={560} alt="The Wallets list with wallets in three currencies: net worth ₱258,108.10 at the top, and Dollar savings $1,850.00 ≈ ₱106,930.00 raised out of the list." sizes="(min-width: 56em) 270px, 62vw" />
         </div>
       </div>
 
@@ -249,7 +248,7 @@ const jsonLd = [
             <p class="lede">Insights lays out income against spending over 3, 6 or 12 months. Ask Lucento answers questions about your own figures in plain words, worked out on your phone. The AI adviser is a separate, optional step for open questions, and it says exactly what it sends.</p>
           </div>
           <div class="detail-art">
-            <Phone file="s-insights" alt="Insights over the last 6 months: net +₱60,020.10 from income ₱126,000.00 and expenses −₱65,979.90, with monthly income and expense bars from June to November." sizes="(min-width: 56em) 270px, 60vw" />
+            <Phone file="s-insights" treatment="focus" region={[0.05, 0.4, 0.9, 0.175]} max={560} alt="Insights over the last 6 months: net +₱60,020.10 from income ₱126,000.00 and expenses −₱65,979.90, with monthly income and expense bars from June to November." sizes="(min-width: 56em) 270px, 60vw" />
           </div>
         </div>
       <ul class="tiers">
@@ -297,8 +296,8 @@ const jsonLd = [
           </div>
           <div class="detail-art">
             <div class="feature-art is-pair">
-          <Phone file="f-schedules" alt="All schedules: every repeating bill, salary and loan payment with how often it comes and the next date." sizes="(min-width: 56em) 250px, 40vw" />
-          <Phone file="f-bell" alt="The Dashboard’s bell open on upcoming payments due this week, including the overdue fibre internet bill and the Visa card payment." sizes="(min-width: 56em) 250px, 40vw" />
+          <Phone file="f-schedules" treatment="window" max={560} alt="All schedules: every repeating bill, salary and loan payment with how often it comes and the next date." sizes="(min-width: 56em) 250px, 40vw" />
+          <Phone file="f-bell" treatment="angle" max={560} alt="The Dashboard’s bell open on upcoming payments due this week, including the overdue fibre internet bill and the Visa card payment." sizes="(min-width: 56em) 250px, 40vw" />
         </div>
           </div>
         </div>
@@ -317,8 +316,7 @@ const jsonLd = [
           </div>
           <div class="detail-art">
             <div class="feature-art is-pair">
-          <Phone file="s-budget" alt="The Budget screen for November 2026: ₱2,920.10 remaining of a ₱25,900.00 budget, 89% spent with 26% of the month gone, marked Ahead of pace; ₱0.00 safe to spend because the bills due take what’s left." sizes="(min-width: 56em) 250px, 40vw" />
-          <Phone file="f-categories" alt="Manage categories: the chosen spending categories, each of which can be edited or archived." sizes="(min-width: 56em) 250px, 40vw" />
+          <Phone file="s-budget" treatment="lift" lifts={[[0.05, 0.166, 0.9, 0.229], [0.5125, 0.393, 0.398, 0.112]]} max={560} alt="The Budget screen for November 2026: ₱2,920.10 remaining of a ₱25,900.00 budget, 89% spent with 26% of the month gone, marked Ahead of pace; ₱0.00 safe to spend because the bills due take what’s left." sizes="(min-width: 56em) 250px, 40vw" />
         </div>
           </div>
         </div>
@@ -336,7 +334,7 @@ const jsonLd = [
             </ul>
           </div>
           <div class="detail-art">
-            <Phone file="s-goals" alt="Goals: ₱37,500.00 saved of ₱80,000.00 across 2 goals (47%), ₱42,500.00 still to save; Emergency fund ₱21,000.00 of ₱50,000.00 (42%) and Japan trip ₱16,500.00 of ₱30,000.00 (55%), each with its pace." sizes="(min-width: 56em) 270px, 60vw" />
+            <Phone file="s-goals" treatment="focus" region={[0.05, 0.08, 0.9, 0.27]} max={560} alt="Goals: ₱37,500.00 saved of ₱80,000.00 across 2 goals (47%), ₱42,500.00 still to save; Emergency fund ₱21,000.00 of ₱50,000.00 (42%) and Japan trip ₱16,500.00 of ₱30,000.00 (55%), each with its pace." sizes="(min-width: 56em) 270px, 60vw" />
           </div>
         </div>
       </Dialog>

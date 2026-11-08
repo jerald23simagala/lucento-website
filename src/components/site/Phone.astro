@@ -3,10 +3,18 @@
  * A real Lucento screen in the site's one phone template: device frame, mock status bar (StatusBar), then the
  * capture. Screens are API 36 captures (peso demo month) with the real status bar and navigation bar cropped off by
  * lucento-studio qa/crop-screen.mjs, at 400/560/720 px wide in AVIF and WebP (/public/screens).
+ *
+ * Treatments (owner, 2026-11-08: show what Lucento does without handing over a blueprint of every screen):
+ * - `window`: the top of the screen tells the story; the rest fades into the frame.
+ * - `focus`: one region (`region`, as fractions x, y, w, h of the screen) sharp; the rest softly out of focus.
+ * - `angle`: the phone turned slightly in space, catching the light.
+ * - `lift`: the screen dimmed and soft, with the regions in `lifts` raised out of it, sharp.
+ * The sharp and lifted copies use the same sources as the screen, so the browser downloads one file.
  */
 import { SCREEN_H, SCREEN_W } from '../../data/content';
 import StatusBar from './StatusBar.astro';
 
+type Region = readonly [number, number, number, number];
 interface Props {
   file: string;
   alt: string;
@@ -14,28 +22,60 @@ interface Props {
   sizes?: string;
   eager?: boolean;
   class?: string;
+  treatment?: 'window' | 'focus' | 'angle' | 'lift';
+  region?: Region;
+  lifts?: readonly Region[];
+  /** Largest file width to offer (560 keeps detail down where the phone is small). */
+  max?: 560 | 720;
 }
 
-const { file, alt, sizes = '(min-width: 64em) 330px, 66vw', eager = false, class: extra } = Astro.props;
-const set = (format: 'avif' | 'webp') => [400, 560, 720].map((w) => `/screens/${file}-${w}.${format} ${w}w`).join(', ');
+const { file, alt, sizes = '(min-width: 64em) 330px, 66vw', eager = false, class: extra, treatment, region, lifts = [], max = 720 } = Astro.props;
+const widths = [400, 560, 720].filter((w) => w <= max);
+const set = (format: 'avif' | 'webp') => widths.map((w) => `/screens/${file}-${w}.${format} ${w}w`).join(', ');
+const src = `/screens/${file}-560.webp`;
+const vars = ([x, y, w, h]: Region) => `--x:${x};--y:${y};--w:${w};--h:${h}`;
 ---
 
-<div class:list={['device', extra]}>
+<div class:list={['device', extra, treatment && `is-${treatment}`]}>
   <div class="device-screen">
     <StatusBar file={file} />
-    <picture>
-      <source type="image/avif" srcset={set('avif')} sizes={sizes} />
-      <img
-        src={`/screens/${file}-560.webp`}
-        srcset={set('webp')}
-        sizes={sizes}
-        width={SCREEN_W}
-        height={SCREEN_H}
-        alt={alt}
-        decoding="async"
-        loading={eager ? 'eager' : 'lazy'}
-        fetchpriority={eager ? 'high' : 'auto'}
-      />
-    </picture>
+    <div class="shot">
+      <picture>
+        <source type="image/avif" srcset={set('avif')} sizes={sizes} />
+        <img
+          src={src}
+          srcset={set('webp')}
+          sizes={sizes}
+          width={SCREEN_W}
+          height={SCREEN_H}
+          alt={alt}
+          decoding="async"
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={eager ? 'high' : 'auto'}
+        />
+      </picture>
+      {
+        treatment === 'focus' && region && (
+          <picture class="shot-sharp" style={vars(region)}>
+            <source type="image/avif" srcset={set('avif')} sizes={sizes} />
+            <img src={src} srcset={set('webp')} sizes={sizes} width={SCREEN_W} height={SCREEN_H} alt="" decoding="async" loading="lazy" />
+          </picture>
+        )
+      }
+    </div>
   </div>
+  {
+    treatment === 'lift' && lifts.length > 0 && (
+      <div class="lift-layer" aria-hidden="true">
+        {lifts.map((r) => (
+          <span class="lift" style={vars(r)}>
+            <picture>
+              <source type="image/avif" srcset={set('avif')} sizes={sizes} />
+              <img src={src} srcset={set('webp')} sizes={sizes} width={SCREEN_W} height={SCREEN_H} alt="" decoding="async" loading="lazy" />
+            </picture>
+          </span>
+        ))}
+      </div>
+    )
+  }
 </div>

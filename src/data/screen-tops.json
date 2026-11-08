@@ -3,10 +3,6 @@
     "bg": "#0F172B",
     "dark": true
   },
-  "f-categories": {
-    "bg": "#0F172B",
-    "dark": true
-  },
   "f-hidden": {
     "bg": "#0F172B",
     "dark": true
@@ -28,10 +24,6 @@
     "dark": true
   },
   "mc-rows": {
-    "bg": "#0F172B",
-    "dark": true
-  },
-  "mc-usd": {
     "bg": "#0F172B",
     "dark": true
   },

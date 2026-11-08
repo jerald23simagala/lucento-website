@@ -14,6 +14,7 @@ Lucento's marketing website (Astro on Vercel) for the Android app in `../lucento
   is a replica. Never promise "no ads" for Free.
 - Show what Lucento does, not how (owner, 2026-11-08): three screens in the hero, each screen once where it tells its
   story, and no full flows of Ask Lucento, card mechanics, Shared's rules or sync internals. Delete unused screens.
+  Dialog phones always carry a `Phone` treatment (window, focus, angle, lift); see docs/WEBSITE_DESIGN.md.
 - Every section has one clear job; alternate compositions instead of repeating one.
 - Motion only where it explains the product; always respect reduced motion; never trade performance for animation.
 - Mobile layouts are designed (swipe, folded menu, labelled table rows), not compressed desktop.

@@ -148,11 +148,24 @@ test.describe('homepage', () => {
   test('screens kept back from the site are not published anywhere on it', async ({ page, request }) => {
     await page.goto('/');
     const html = await page.content();
-    for (const file of ['s-ask', 's-scheduled', 'f-card', 'f-report', 'f-presets', 'f-composer']) {
+    for (const file of ['s-ask', 's-scheduled', 'f-card', 'f-report', 'f-presets', 'f-composer', 'f-categories', 'mc-usd']) {
       expect(html, file).not.toContain(`/screens/${file}-`);
       expect((await request.get(`/screens/${file}-560.webp`)).status(), file).toBe(404);
     }
     await expect(page.locator('.matrix')).toHaveCount(0);
+  });
+
+  test('no feature dialog shows a screen flat and whole', async ({ page }) => {
+    await page.goto('/');
+    const phones = page.locator('dialog .device');
+    expect(await phones.count()).toBeGreaterThan(5);
+    for (const phone of await phones.all()) {
+      await expect(phone).toHaveClass(/is-(window|focus|angle|lift)/);
+      // Dialog screens stop at 560 px files: less detail to trace.
+      expect(await phone.locator('img').first().getAttribute('srcset')).not.toContain('-720.');
+    }
+    await expect(page.locator('#themes .device')).toHaveClass(/is-angle/);
+    await expect(page.locator('footer')).toContainText('App screens © Lucento');
   });
 
   test('every phone uses the one template, with a mock status bar', async ({ page }) => {

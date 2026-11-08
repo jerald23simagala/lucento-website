@@ -46,6 +46,10 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
     Lucento, the credit-card mechanics, the full Shared rules and the inner workings of entry and sync are told by
     benefit, not by full screens or complete flows. Screens the site doesn't use are deleted from `public/screens`, so
     they aren't published at all.
+    No dialog shows a screen flat and whole (`Phone` `treatment`): `window` (the story at the top, the rest fades),
+    `focus` (one region sharp, the rest soft), `angle` (turned in space) and `lift` (key pieces raised out of a soft,
+    dim screen; Multicurrency and Budget). Pairs are window + angle; single phones are focus or lift; the theme
+    switcher is angled. Dialog screens stop at 560 px files. The footer says "App screens © Lucento".
 14. **Premium, modern, confident, honest.** Every claim is checked against the app; signed amounts use U+2212; Pro
     features are tagged Pro; limits are the app's exact numbers.
 
