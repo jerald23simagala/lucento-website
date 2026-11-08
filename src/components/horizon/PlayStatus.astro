@@ -1,0 +1,21 @@
+---
+// Until the Google Play listing is public (site.playListed), plain status text: not a control, no badge.
+// Non-breaking spaces keep "Google Play" and "Android 8.0 and later" whole; running text may still break such a run
+// when it can't fit (overflow-wrap), so nothing overflows at large text.
+import { site } from '../../data/site';
+
+const nbsp = '\u00A0';
+const status = `Coming soon to Google${nbsp}Play${nbsp}· Android${nbsp}8.0${nbsp}and${nbsp}later`;
+---
+
+{
+  site.playListed ? (
+    <a class="btn btn--primary" href={site.playUrl}>
+      Get it on Google Play
+    </a>
+  ) : (
+    <p class="play-status">
+      <span>{status}</span>
+    </p>
+  )
+}

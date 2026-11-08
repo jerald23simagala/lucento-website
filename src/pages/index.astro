@@ -1,288 +1,131 @@
 ---
-import '../styles/home.css';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PhoneDemo from '../components/PhoneDemo.astro';
-import PhoneShot from '../components/PhoneShot.astro';
-import DayMarks from '../components/DayMarks.astro';
-import Glyph from '../components/Glyph.astro';
-import HeroComposer from '../components/HeroComposer.astro';
-import AppShowcase from '../components/AppShowcase.astro';
-import FeatureStrip from '../components/FeatureStrip.astro';
-import SampleWallets from '../components/SampleWallets.astro';
-import MoreFeatures from '../components/MoreFeatures.astro';
-import { site } from '../data/site';
-import { answers, checkRows, icons, limits } from '../data/home';
+// Homepage on the Horizon system (Phase 4). The design reference is lucento-studio lab/horizon-home.html (critic
+// round 4: every gate passing); figures come from src/data/demo.ts, plans from src/data/plans.ts.
+import HorizonLayout from '../layouts/HorizonLayout.astro';
+import PhoneFigure from '../components/horizon/PhoneFigure.astro';
+import PlayStatus from '../components/horizon/PlayStatus.astro';
+import Facts from '../components/horizon/Facts.astro';
+import HorizonChart from '../components/horizon/HorizonChart.astro';
+import NetWorthLegend from '../components/horizon/NetWorthLegend.astro';
+import Ledger from '../components/horizon/Ledger.astro';
+import PlanTeaser from '../components/horizon/PlanTeaser.astro';
+import ClosingBand from '../components/horizon/ClosingBand.astro';
+import { demo, haveTotal, netWorth, oweTotal } from '../data/demo';
+import { formatMinor } from '../lib/money';
 
-const shot = '(min-width: 700px) 360px, calc(100vw - 40px)';
+const f = (minor: number) => formatMinor(minor, { currency: demo.currency });
+const homeAlt = `The Lucento Dashboard: net wallet balance ${f(netWorth)}, wallets ${f(haveTotal)}, debts and loans ${f(-oweTotal)}, shortcuts to goals, insights, milestones, debts and scheduled bills, and the monthly budget: ${f(demo.budget.spent)} spent of ${f(demo.budget.limit)}.`;
+const [lunch, groceries] = demo.composer.rows;
+const composerAlt = `The Add transactions screen: the message “${demo.composer.message}” has become rows to check. ${lunch.name} ${f(lunch.minor)} under ${lunch.category} and ${groceries.name} ${f(groceries.minor)} are filled in, the reply says one of the three needs a look, and the save bar says “1 transaction is incomplete”.`;
+
+const nbsp = ' ';
+// The short version of the app's Privacy Policy (lucento-android feature/legal/LegalDocuments.kt, published at /privacy):
+// one row per thing that leaves the phone, its trigger beside it, each answer short. It never claims to be complete;
+// the section links to the policy for every detail (the leaked-password check, Shared invitations, retention).
+const privacyRows = [
+  { term: 'Your account', when: 'optional', detail: 'Your email address, a scrambled form of your password and, with Google sign-in, your Google name and picture.' },
+  { term: 'Sync', when: 'Pro, with an account', detail: 'A copy of your records in Lucento’s cloud, where access rules let only your account and the people you share with open it.' },
+  { term: 'Crash reports', when: 'off until you turn them on', detail: 'What went wrong in the app’s code, never amounts, names or notes.' },
+  { term: 'Usage counts', when: 'off until you turn them on', detail: 'Event names and timings with a random number for this install, never amounts or what you type.' },
+  { term: 'AI features (Gemini)', when: 'off until you turn them on', detail: 'Reading a message sends it with today’s date, your main currency and your category and wallet names. Asking the AI adviser sends your question with a summary of your finances, including recent transactions.' },
+  { term: 'Exchange rates', when: 'on by default', detail: `For wallets in other currencies: only currency codes and dates, nothing about you or your money. Off in Settings${nbsp}›${nbsp}Money.` },
+  { term: 'Google Play', when: 'built into the app', detail: 'Its billing component sends Google its own diagnostics. When you buy Pro, Google takes the payment and Lucento’s server checks the purchase, never your card.' },
+];
 ---
 
-<BaseLayout
-  title="Lucento — a little light for your money"
-  description="Type a day’s spending the way you’d text it. Lucento turns the sentence into rows you check before anything is saved. Records work offline, on your phone, with no bank login. Speech only requests on-device recognition, which isn’t guaranteed."
-  theme="light"
+<HorizonLayout
+  title="Lucento: everything about your money, in one clear view"
+  description="Wallets, income, expenses, budgets, savings, debts, bills and assets, together in one Android app. No bank login: you record it, and Lucento keeps it straight. Coming soon to Google Play."
 >
   <Fragment slot="head">
-    <link
-      rel="preload"
-      as="image"
-      type="image/avif"
-      href="/screens/06-home-within-budget-540.avif"
-      imagesrcset="/screens/06-home-within-budget-540.avif 540w, /screens/06-home-within-budget-720.avif 720w, /screens/06-home-within-budget-1080.avif 1080w"
-      imagesizes="270px"
-      media="(min-width: 640px)"
-      fetchpriority="high"
-    />
+    <!-- The panorama is the hero's largest element (a CSS background, found late without this); it is ~15 KB. The phone
+         screenshot is an <img> in the HTML, so the browser finds it early without a preload. -->
+    <link rel="preload" as="image" href="/brand/scenery/scenery_sunrise_panorama.webp" media="(prefers-color-scheme: light)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/brand/scenery/scenery_midnight_panorama.webp" media="(prefers-color-scheme: dark)" fetchpriority="high" />
   </Fragment>
-  <section class="lx-wrap lx-hero" id="write" aria-labelledby="h-hero">
-    <DayMarks day={5} />
-    <div class="lx-kicker-row">
-      <p>01 · Write it</p>
-      <p class="lx-day">Day 5</p>
-    </div>
-    <div class="lx-hero-grid">
-      <div class="lx-hero-copy">
-        <p>Lucento — a budget tracker for Android</p>
-        <h1 class="lx-display" id="h-hero">Say what you spent. <span class="lx-soft">Lucento does the sums.</span></h1>
-        <p class="lx-lede">
-          Type a day’s spending the way you’d text it. Lucento turns the sentence into rows you check before anything
-          is saved, then tells you whether the month is on pace. On your phone, with no bank login. What you type
-          works offline. Speech only asks the recogniser to stay on the device, and that isn’t guaranteed.
+
+  <section class="hero" aria-labelledby="h1">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1 id="h1">
+          Everything about your money<span class="tuck">,</span> <span class="keep">in one clear view<span class="tuck">.</span></span>
+        </h1>
+        <p class="lede">
+          Wallets, income, expenses, budgets, savings, debts, bills and assets, together in one app. You record it, and Lucento keeps it straight.
         </p>
-        <div class="lx-actions">
-          <a class="lx-btn" href="#try">Open the full demo</a>
-          <p class="lx-quiet">Or try the phone on this page →</p>
+        <div class="actions">
+          <a class="btn btn--primary" href="#horizon">See the whole picture</a>
+          <PlayStatus />
         </div>
+        <Facts label="Good to know" items={['No bank login', 'Works offline', 'Free plan, no ads']} />
       </div>
-      <div class="lx-hero-stage">
-        <div class="lx-phones">
-          <div class="lx-back">
-            <PhoneShot
-              id="06-home-within-budget"
-              source="06-home-within-budget.png"
-              alt=""
-              sizes="(min-width: 640px) 270px, 1px"
-              fallback="Home, with the month on pace."
-            />
-          </div>
-          <div class="lx-front">
-            <HeroComposer />
-          </div>
-        </div>
-        <p class="lx-caption">
-          Tap a suggestion inside the phone. A preview with fictional money; behind it, the real Home screen.
-        </p>
-      </div>
+      <PhoneFigure screen="home" alt={homeAlt} priority />
     </div>
-    <ul class="lx-promises">
-      <li>Works offline for what you type</li>
-      <li>No bank login</li>
-      <li>Your entries leave your phone only for sync or the Gemini features, and only when you turn them on</li>
-      <li>Message, receipt or voice</li>
-    </ul>
-    <p class="lx-fine">
-      Speech recognition only requests offline mode. Your phone’s recogniser may still use the network. Receipts are
-      read on the device. When you record something in another currency, Lucento looks up that day’s exchange rate:
-      only two currency codes and a date are sent, never an amount. Turn it off in Settings › Money.
-    </p>
+    <div class="ground" aria-hidden="true"></div>
   </section>
 
-  <section class="lx-wrap lx-section" id="check" aria-labelledby="h-check">
-    <DayMarks day={12} />
-    <div class="lx-kicker-row">
-      <p>02 · Check it</p>
-      <p class="lx-day">Day 12</p>
+  <section class="wrap section" id="horizon" aria-labelledby="h-horizon">
+    <div class="section-head">
+      <h2 id="h-horizon">One view of what you have and what you owe<span class="tuck">.</span></h2>
+      <p class="lede">
+        What you have rises above the horizon, what you owe hangs below it, and net worth is where the sun stands. Here’s the app’s demo data, drawn to one scale.
+      </p>
     </div>
-    <div class="lx-split">
-      <div class="lx-split-phone">
-        <PhoneShot
-          id="09-composer-rows"
-          source="09-composer-rows.png"
-          sizes={shot}
-          fallback="One incomplete row, and Save waits until it is fixed."
-          alt="Lucento’s Add transactions screen saying 1 transaction is incomplete, with the save button reading Fix 1 highlighted to save."
-        />
-        <p class="lx-caption">In the app: one incomplete row, and Save waits until it’s fixed.</p>
-      </div>
-      <div class="lx-split-copy">
-        <h2 class="lx-title" id="h-check">An honest ledger, <span class="lx-soft">written for real life.</span></h2>
-        <p class="lx-lede">
-          Messy messages make messy records. Before you save, Lucento marks anything that looks wrong, and nothing is
-          stored until you tap Save.
-        </p>
-        <div class="lx-ledger">
-          {
-            checkRows.map((row, index) => (
-              <article>
-                <div class="lx-row">
-                  <span class="lx-tile" style={`background:${row.tile}`}>
-                    <Glyph d={icons[row.icon]} stroke={row.glyph} />
-                  </span>
-                  <span class="lx-row-copy">
-                    <span>{row.title}</span>
-                    <span class:list={['lx-flag', row.flagTone === 'warn' ? 'is-warn' : 'is-mute']}>{row.flag}</span>
-                  </span>
-                  <span class:list={['lx-amt', row.dashed && 'is-dashed']} style={row.dashed ? undefined : `color:${row.amountColor}`}>
-                    {row.amount}
-                  </span>
-                </div>
-                <p class="lx-explain">
-                  <b>{index + 1}</b>
-                  {row.text}
-                </p>
-              </article>
-            ))
-          }
-          <p class="lx-note">Offline? It saves on your phone and syncs later, if you use sync.</p>
-        </div>
-      </div>
+    <div class="horizon section-body">
+      <HorizonChart have={haveTotal} owe={oweTotal} currency={demo.currency} id="chart" />
+      <NetWorthLegend have={demo.have} owe={demo.owe} currency={demo.currency} />
     </div>
   </section>
 
-  <section class="lx-pace" id="pace" aria-labelledby="h-pace">
-    <div class="lx-wrap lx-section">
-      <div class="lx-kicker-row">
-        <p>03 · Keep pace</p>
-        <p class="lx-day">Day 27</p>
-      </div>
-      <div class="lx-split">
-        <div class="lx-split-copy">
-          <h2 class="lx-title" id="h-pace">Is your money moving faster than the month?</h2>
-          <div class="lx-stats">
-            <div class="lx-stat">
-              <strong>89%</strong>
-              <p>of the budget spent</p>
-              <small>$2,297.99 of $2,590.00</small>
-            </div>
-            <div class="lx-stat is-soft">
-              <strong>87%</strong>
-              <p>of the month gone</p>
-              <small>Day 27 of 31</small>
-            </div>
-          </div>
-          <p class="lx-pace-line">Spending in step with the month</p>
-          <p class="lx-pace-advice">About <span class="lx-amt">$58.40</span> a day keeps you within budget.</p>
-        </div>
-        <div class="lx-split-phone">
-          <PhoneShot
-            id="15-budget"
-            source="15-budget.png"
-            sizes={shot}
-            fallback="Budget for October: $292.01 left, and a line that marks today."
-            alt="Lucento’s Budget screen for October 2026: $292.01 left of $2,590.00, 89% spent, $58.40 per day, with a line marking that 87% of the month has gone."
-          />
-          <p class="lx-caption">Budget tab. The line marks today.</p>
-        </div>
-      </div>
-      <div class="lx-month" role="img" aria-label="A month drawn as 31 days. 27 days have passed; 89% of the budget is spent.">
-        <div class="lx-month-bar" aria-hidden="true"><span></span></div>
-        <DayMarks day={27} variant="month" />
-        <div class="lx-month-labels">
-          <span>1 Oct</span>
-          <span>Today, day 27</span>
-          <span>31 Oct</span>
-        </div>
-      </div>
-      <p class="lx-fine">Figures from the app’s demo data. In the app, Home and Budget work this out from your own records.</p>
+  <section class="wrap section feature" id="how" aria-labelledby="h-how">
+    <PhoneFigure screen="composer" alt={composerAlt} />
+    <div class="feature-copy">
+      <h2 id="h-how">Say what you spent<span class="tuck">.</span> Lucento does the sums<span class="tuck">.</span></h2>
+      <p class="lede">
+        Type “{demo.composer.message}”, or scan a receipt. It becomes rows with the amount, category and wallet filled in where Lucento can tell; anything missing is flagged, and nothing is saved until you’ve checked it.
+      </p>
+      <Facts label="How recording works" items={['Several at once', 'Read on your phone (Gemini reading with Pro)', 'Checked before saving']} />
     </div>
   </section>
 
-  <AppShowcase />
-
-  <SampleWallets />
-
-  <FeatureStrip />
-  <MoreFeatures />
-
-  <section class="lx-privacy lx-section" id="privacy" aria-labelledby="h-privacy">
-    <div class="lx-wrap lx-privacy-grid">
+  <section class="wrap section" id="privacy" aria-labelledby="h-privacy">
+    <div class="privacy-grid">
+      <div class="section-head">
+        <h2 id="h-privacy">What leaves your phone<span class="tuck">,</span> and when<span class="tuck">.</span></h2>
+        <p class="lede">Nothing about your money, unless you turn something on. Here’s the short version; the privacy policy has every detail.</p>
+      </div>
       <div>
-        <p class="lx-eyebrow">Privacy</p>
-        <h2 id="h-privacy">Your money stays on your phone.</h2>
+        <Ledger rows={privacyRows} />
+        <p class="ledger-more">
+          <a class="link-arrow" href="/privacy"
+            >Read the privacy policy <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              ><path d="M3 8h10M9 4l4 4-4 4"></path></svg
+            ></a
+          >
+        </p>
       </div>
-      <ul class="lx-facts">
-        <li><strong>No bank login. No ads.</strong> You record what you choose to record.</li>
-        <li>
-          <strong>Your data lives on the device.</strong> Sync is optional. Signing out takes the account’s records off
-          that phone; they stay safe in your account.
-        </li>
-        <li><strong>Receipts are read on your phone.</strong> With an on-device model. Always.</li>
-        <li>
-          <strong>The AI features are optional.</strong> Smarter reading and the AI adviser are cloud services you
-          turn on in Settings, after reading what is sent. With them off, everything is read on the phone.
-        </li>
-        <li><strong>Delete your account any time.</strong> In Settings, or <a href="/delete-account">without the app</a>.</li>
-        <li><a href="/privacy">Read the Privacy Policy</a></li>
-      </ul>
     </div>
-  </section>
-
-  <section class="lx-wrap lx-section" id="answers" aria-labelledby="h-answers">
-    <h2 class="lx-title" id="h-answers">Straight answers.</h2>
-    <div class="lx-answers">
-      <div class="lx-faq">
-        {
-          answers.map((item) => (
-            <details>
-              <summary>{item.q}</summary>
-              <p>{item.a}</p>
-            </details>
-          ))
-        }
+    <div class="points points--two section-body">
+      <div>
+        <h3>Nothing to connect</h3>
+        <p>Lucento never connects to a bank. You record your wallets, and logos for more than 400 banks and <span class="nowrap">e-wallets</span> come with the app, for display only.</p>
       </div>
-      <div class="lx-limits">
-        <p>What it doesn’t do yet</p>
-        <ul>
-          {limits.map((item) => <li>{item}</li>)}
-        </ul>
+      <div>
+        <h3>Your data, in a file</h3>
+        <p>Back up to a file and restore it, or export a CSV, on every plan, whenever you like.</p>
       </div>
     </div>
   </section>
 
-  <section class="lx-close" aria-labelledby="h-close">
-    <div class="lx-wrap">
-      <DayMarks day={31} />
-      <div class="lx-kicker-row">
-        <p>A month, well kept</p>
-        <p class="lx-day">Day 31</p>
+  <section class="dusk section" id="plans" aria-labelledby="h-plans">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="h-plans">
+          <span class="keep">Free to start<span class="tuck">.</span></span> <span class="keep">Pro when you want more<span class="tuck">.</span></span>
+        </h2>
       </div>
-      <div class="lx-close-grid">
-        <div class="lx-close-copy">
-          {
-            site.playListed ? (
-              <h2 class="lx-title" id="h-close">Get Lucento on <span class="lx-nowrap">Google Play.</span></h2>
-            ) : (
-              <h2 class="lx-title" id="h-close">Coming soon to <span class="lx-nowrap">Google Play.</span></h2>
-            )
-          }
-          <p class="lx-lede">
-            Free to start, with no ads and no account. Lucento Pro adds more wallets and goals, other currencies, sync
-            and sharing when you want them. Meanwhile, the whole composer runs in your browser with made-up money.
-          </p>
-          <div class="lx-actions">
-            {
-              site.playListed ? (
-                <a class="lx-btn" href={site.playUrl}>Get it on Google Play</a>
-              ) : (
-                <a class="lx-btn" href="#try">Try Lucento in your browser</a>
-              )
-            }
-            <a class="lx-textlink" href="/pricing">See plans and pricing</a>
-            <a class="lx-textlink" href="/how-to">Open the guides</a>
-          </div>
-        </div>
-        <div class="lx-close-phone">
-          <PhoneShot
-            id="01-onboarding-welcome"
-            source="01-onboarding-welcome.png"
-            sizes={shot}
-            fallback="The welcome screen: Get started, or I already have an account."
-            alt="Lucento’s welcome screen: the logo, the line Financial clarity without the complexity, the mascot in a sunrise landscape, Get started and I already have an account."
-          />
-          <p class="lx-caption">The first screen you’ll see.</p>
-        </div>
-      </div>
+      <PlanTeaser />
+      <ClosingBand />
     </div>
   </section>
-
-  <PhoneDemo stories={['add-transactions', 'scheduled', 'budget', 'new-phone']} />
-</BaseLayout>
+</HorizonLayout>

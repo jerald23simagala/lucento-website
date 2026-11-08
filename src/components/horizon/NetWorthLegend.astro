@@ -1,0 +1,45 @@
+---
+// The chart's legend: every wallet with its signed amount, ending with the sum. Owed balances are written with − in
+// ink, never alarm red. Always tagged as example figures.
+import { formatMinor, sumMinor } from '../../lib/money.ts';
+
+interface Line {
+  name: string;
+  detail?: string;
+  minor: number;
+}
+interface Props {
+  have: readonly Line[];
+  owe: readonly Line[];
+  currency?: string;
+}
+
+const { have, owe, currency = 'PHP' } = Astro.props;
+const f = (minor: number) => formatMinor(minor, { currency });
+const net = sumMinor(have.map((l) => l.minor)) - sumMinor(owe.map((l) => l.minor));
+---
+
+<div>
+  <ul class="legend">
+    {have.map((line) => (
+      <li>
+        <i class="have" aria-hidden="true" />
+        <span>{line.name}</span>
+        <span class="money">{f(line.minor)}</span>
+      </li>
+    ))}
+    {owe.map((line) => (
+      <li>
+        <i class="owe" aria-hidden="true" />
+        <span>{line.detail ? `${line.name} · ${line.detail}` : line.name}</span>
+        <span class="money">{f(-line.minor)}</span>
+      </li>
+    ))}
+    <li class="total">
+      <i class="net" aria-hidden="true" />
+      <span>Net worth = have − owe</span>
+      <span class="money">{f(net)}</span>
+    </li>
+  </ul>
+  <p class="example-tag">Example figures from the app’s demo data. On the app’s Dashboard this is the net wallet balance.</p>
+</div>

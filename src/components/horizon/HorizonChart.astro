@@ -1,0 +1,48 @@
+---
+/**
+ * The horizon chart (signature). One scale, computed by the layout: the rows above and below the horizon are sized in
+ * fr by the two totals, and the sun stands at net worth's true height (below the horizon when it is negative). Labels
+ * sit in their own rows, so they never cover a bar, at any text size. Amounts are integer minor units.
+ */
+import { formatMinor, wholeUnits } from '../../lib/money.ts';
+
+interface Props {
+  /** Total of what you have, minor units (≥ 0). */
+  have: number;
+  /** Total of what you owe, minor units, as a positive number. */
+  owe: number;
+  currency?: string;
+  /** Prefix for the caption's id. */
+  id: string;
+}
+
+const { have, owe, currency = 'PHP', id } = Astro.props;
+if (have < 0 || owe < 0 || have + owe === 0) throw new Error('HorizonChart needs a positive total on at least one side');
+const net = have - owe;
+const negative = net < 0;
+// Display and layout only: where the sun stands, as a share of its own side.
+const netShare = (Math.abs(net) / (negative ? owe : have)) * 100;
+const style = `--have: ${Math.max(wholeUnits(have, currency), 1)}fr; --owe: ${Math.max(wholeUnits(owe, currency), 1)}fr; --net: ${netShare.toFixed(2)}%`;
+const f = (minor: number) => formatMinor(minor, { currency });
+const zero = f(0).replace(/[.,]0+$/, '');
+const caption = `Example figures from the app’s demo data. Bar chart drawn to one scale: what you have, ${f(have)}, rises above the horizon; what you owe, ${f(-owe)}, hangs below it; net worth, ${f(net)}, is marked by a sun ${negative ? 'below the horizon' : 'at that height'}.`;
+---
+
+<figure class:list={['horizon-chart', negative && 'is-negative']} style={style} aria-labelledby={`${id}-cap`}>
+  <div class="hc-row hc-row-top"><p class="hc-label hc-have"><b>{f(have)}</b>What you have</p></div>
+  <div class="hc-bar hc-up"></div>
+  <div class="hc-net">
+    <span class="stem"></span><span class="sun"></span>
+    {!negative && (
+      <div class="hc-tag"><p class="hc-label hc-net-label"><b>{f(net)}</b>Net worth</p></div>
+    )}
+  </div>
+  <div class="hc-line"></div>
+  <span class="axis hc-zero">{zero}</span>
+  <div class="hc-bar hc-down"></div>
+  <div class:list={['hc-row', 'hc-row-bottom', negative && 'has-net']}>
+    <p class="hc-label hc-owe"><b>{f(-owe)}</b>What you owe</p>
+    {negative && <p class="hc-label hc-net-label"><b>{f(net)}</b>Net worth</p>}
+  </div>
+  <figcaption id={`${id}-cap`} class="sr-only">{caption}</figcaption>
+</figure>
