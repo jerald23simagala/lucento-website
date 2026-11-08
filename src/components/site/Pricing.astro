@@ -4,13 +4,18 @@
  * lucento-android PlanCatalog: 3 money wallets and 2 cards or loans free, 2 → 20 goals, 10 AI questions a month free →
  * 50 a day, 3 → 6 and 12 months of Insights, one Shared partner, two → five themes). Prices are Google Play's
  * indicative Philippine prices; the app only ever shows Play's own price.
+ *
+ * Owner review (2026-11-08): Pro opens on yearly billing with its saving shown (a radio switch, no JavaScript needed),
+ * Lifetime gets Pro's premium treatment, and the full comparison opens in a dialog instead of unfolding the page.
  */
-import { compareGroups, planCards, priceNote, type Cell } from '../../data/plans';
+import { compareGroups, planCards, priceNote, proBilling, type Cell } from '../../data/plans';
+import { formatPrice, yearlySaving } from '../../lib/money';
+import Dialog from './Dialog.astro';
 
-const split = (price: string) => {
-  const match = /^(\S+)\s*(.*)$/.exec(price);
-  return { figure: match?.[1] ?? price, unit: match?.[2] ?? '' };
-};
+const saving = yearlySaving(proBilling.monthlyMinor, proBilling.yearlyMinor);
+const perMonth = formatPrice(Math.floor(proBilling.yearlyMinor / 12 / 100) * 100);
+const featureCount = compareGroups.reduce((sum, g) => sum + g.rows.length, 0);
+
 const cell = (value: Cell) =>
   value === true ? { text: 'Included', cls: 'yes', mark: '✓' } : value === false ? { text: 'Not included', cls: 'no', mark: '—' } : { text: value, cls: '', mark: value };
 const plans = [
@@ -22,30 +27,65 @@ const plans = [
 
 <div class="plans">
   {
-    planCards.map((plan) => {
-      const { figure, unit } = split(plan.price);
-      return (
-        <article class:list={['plan', plan.id === 'pro' && 'is-pro']} aria-labelledby={`plan-${plan.id}`}>
-          <div class="stack">
+    planCards.map((plan) => (
+      <article class:list={['plan', `plan-${plan.id}`, plan.id !== 'free' && 'is-pro']} aria-labelledby={`plan-${plan.id}`}>
+        <div class="stack">
+          <div class="plan-title">
             <h3 id={`plan-${plan.id}`}>{plan.name}</h3>
-            <p class="muted">{plan.tagline}</p>
+            {plan.id === 'pro' && <span class="plan-flag">{proBilling.trialDays}-day free trial</span>}
+            {plan.id === 'lifetime' && <span class="plan-flag is-sun">Pay once</span>}
           </div>
+          <p class="muted">{plan.tagline}</p>
+        </div>
+        {plan.id === 'pro' ? (
+          <div class="billing-wrap">
+            <fieldset class="billing">
+              <legend class="sr-only">Billing</legend>
+              <label>
+                <input type="radio" name="pro-billing" value="yearly" checked />
+                <span>Yearly</span>
+                <span class="save-pill">Save {saving.percent}%</span>
+              </label>
+              <label>
+                <input type="radio" name="pro-billing" value="monthly" />
+                <span>Monthly</span>
+              </label>
+            </fieldset>
+            <div class="price-yearly">
+              <p class="plan-price"><b>{formatPrice(proBilling.yearlyMinor)}</b><span>a year</span></p>
+              <p class="fine">About {perMonth} a month. Starts with a {proBilling.trialDays}-day free trial.</p>
+              <p class="saving">{formatPrice(saving.savedMinor)} less than paying monthly for a year</p>
+            </div>
+            <div class="price-monthly">
+              <p class="plan-price"><b>{formatPrice(proBilling.monthlyMinor)}</b><span>a month</span></p>
+              <p class="fine">Billed every month. Cancel any time in Google Play.</p>
+              <p class="saving is-quiet">Switch to yearly and pay {formatPrice(saving.savedMinor)} less a year</p>
+            </div>
+          </div>
+        ) : (
           <div>
             <p class="plan-price">
-              <b>{figure}</b>
-              {unit && <span>{unit}</span>}
+              <b>{formatPrice(plan.id === 'lifetime' ? proBilling.lifetimeMinor : 0)}</b>
+              <span>{plan.id === 'lifetime' ? 'once' : 'forever'}</span>
             </p>
             <p class="fine">{plan.priceDetail}</p>
           </div>
-          <ul class="ticks">
-            {plan.highlights.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
+        )}
+        <ul class="ticks">
+          {plan.highlights.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        {plan.id === 'pro' ? (
+          <p class="plan-note">
+            <span class="note-yearly">{plan.note}</span>
+            <span class="note-monthly">Renews every month until you cancel in Google Play.</span>
+          </p>
+        ) : (
           <p class="plan-note">{plan.note}</p>
-        </article>
-      );
-    })
+        )}
+      </article>
+    ))
   }
 </div>
 <p class="fine" style="margin-top: var(--space-4)">{priceNote}</p>
@@ -65,8 +105,15 @@ const plans = [
   </div>
 </div>
 
-<details class="compare-wrap" data-compare>
-  <summary><span class="title-lg">Compare every feature, plan by plan</span></summary>
+<div class="compare-cta">
+  <div>
+    <h3 class="title">Every feature, plan by plan</h3>
+    <p class="muted">All {featureCount} features side by side across Free, Pro and Lifetime.</p>
+  </div>
+  <a class="btn btn-ghost" href="#compare" data-dialog="compare" aria-haspopup="dialog">Compare the plans</a>
+</div>
+
+<Dialog id="compare" title="Compare the plans" wide>
   <table class="compare">
     <caption class="sr-only">Every feature on Free, Pro and Lifetime</caption>
     <thead>
@@ -105,10 +152,5 @@ const plans = [
       ))
     }
   </table>
-</details>
-
-<script>
-  // Open on wide screens, where the table reads at a glance; folded on phones, where it is long.
-  const compare = document.querySelector<HTMLDetailsElement>('[data-compare]');
-  if (compare && window.matchMedia('(min-width: 48em)').matches) compare.open = true;
-</script>
+  <p class="fine" style="margin-top: var(--space-4)">{priceNote}</p>
+</Dialog>

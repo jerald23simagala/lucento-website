@@ -3,15 +3,7 @@
     "bg": "#0F172B",
     "dark": true
   },
-  "f-card": {
-    "bg": "#0F172B",
-    "dark": true
-  },
   "f-categories": {
-    "bg": "#0F172B",
-    "dark": true
-  },
-  "f-composer": {
     "bg": "#0F172B",
     "dark": true
   },
@@ -21,14 +13,6 @@
   },
   "f-networth": {
     "bg": "#18233F",
-    "dark": true
-  },
-  "f-presets": {
-    "bg": "#0F172B",
-    "dark": true
-  },
-  "f-report": {
-    "bg": "#0C101C",
     "dark": true
   },
   "f-schedules": {
@@ -51,10 +35,6 @@
     "bg": "#0F172B",
     "dark": true
   },
-  "s-ask": {
-    "bg": "#0F172B",
-    "dark": true
-  },
   "s-budget": {
     "bg": "#0F172B",
     "dark": true
@@ -68,10 +48,6 @@
     "dark": true
   },
   "s-insights": {
-    "bg": "#0F172B",
-    "dark": true
-  },
-  "s-scheduled": {
     "bg": "#0F172B",
     "dark": true
   },

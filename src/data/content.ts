@@ -21,7 +21,7 @@ export interface AppScreen {
   alt: string;
 }
 
-/** The hero carousel, in the owner's order; it opens centred on the Dashboard. */
+/** Screen captions and alt texts; the hero stage (HeroStage.astro) shows the Dashboard, Budget and Wallets. */
 export const screens: AppScreen[] = [
   {
     id: 'transactions',
@@ -64,14 +64,6 @@ export const screens: AppScreen[] = [
     alt: 'The Wallets gallery: net worth ₱62,120.10, assets ₱176,520.10 and liabilities −₱114,400.00, with cards for Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00.',
   },
   {
-    id: 'scheduled',
-    label: 'Scheduled',
-    file: 's-scheduled',
-    title: 'What’s coming, before it lands',
-    caption: 'Bills, salary and loan payments lined up by date, with what’s overdue flagged.',
-    alt: 'The Scheduled screen: upcoming this month, expenses −₱15,649.90 and transfers −₱12,744.40; Fibre internet −₱299.90 overdue, then the phone plan −₱350.00, the Visa card payment −₱6,400.00 and the car loan installment −₱6,344.40 in November.',
-  },
-  {
     id: 'goals',
     label: 'Goals',
     file: 's-goals',
@@ -79,18 +71,9 @@ export const screens: AppScreen[] = [
     caption: 'Savings goals with a target, a date and the pace you need.',
     alt: 'Goals: ₱37,500.00 saved of ₱80,000.00 across 2 goals (47%), ₱42,500.00 still to save; Emergency fund ₱21,000.00 of ₱50,000.00 (42%) and Japan trip ₱16,500.00 of ₱30,000.00 (55%), each with its pace.',
   },
-  {
-    id: 'ask',
-    label: 'Ask Lucento',
-    file: 's-ask',
-    title: 'Ask your money a question',
-    caption: 'Plain-language answers worked out on your phone from your own records.',
-    alt: 'Ask Lucento answering “What are my top 5 spending categories?”: rent leads November at ₱15,000.00 (65%), then groceries ₱3,200.00, restaurants ₱1,450.00, electricity ₱960.00 and clothing and shoes ₱890.00, with ₱22,979.90 spent in November in all, calculated on this phone.',
-  },
 ];
 
 /** The carousel's starting screen. */
-export const START_SCREEN = 'dashboard';
 
 /** The five preset themes (Themes.kt). Colours are the app's own background and primary for each mode. */
 export interface Look {

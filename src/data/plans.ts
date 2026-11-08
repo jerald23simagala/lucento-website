@@ -7,6 +7,9 @@
  * the app only ever shows Google Play's price — so every price on this site carries that note.
  */
 
+/** Pro's two billing periods, in integer minor units (CUSTOMER_COPY.md): ₱149 a month, or ₱1,190 a year with a 7-day trial. */
+export const proBilling = { monthlyMinor: 14_900, yearlyMinor: 119_000, lifetimeMinor: 349_000, trialDays: 7 } as const;
+
 export const priceNote = 'Indicative prices in the Philippines. Google Play shows the exact price in your currency before you pay.';
 
 export interface PlanCard {
@@ -25,7 +28,7 @@ export const planCards: PlanCard[] = [
     name: 'Free',
     tagline: 'Everything you need to budget, on your phone.',
     price: '₱0',
-    priceDetail: 'Forever. No ads, no account needed.',
+    priceDetail: 'No account needed.',
     highlights: [
       'Record by typing, speaking or scanning, with unlimited history',
       'Up to 3 money wallets and 2 cards or loans',

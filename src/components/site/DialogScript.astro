@@ -1,0 +1,35 @@
+---
+/**
+ * Opens Dialog.astro dialogs from `[data-dialog]` links, closes them on a backdrop click, and opens one named in the URL.
+ * Also marks `[data-awake]` elements `.is-awake` while they're on screen, so their looping motion runs only then.
+ */
+---
+
+<script>
+  const open = (id: string, opener?: HTMLElement) => {
+    const dialog = document.getElementById(id);
+    if (!(dialog instanceof HTMLDialogElement) || dialog.open) return false;
+    dialog.showModal();
+    document.documentElement.classList.add('has-sheet');
+    dialog.querySelector('.sheet-body')?.scrollTo(0, 0);
+    dialog.dispatchEvent(new CustomEvent('sheet-open', { detail: { opener } }));
+    return true;
+  };
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element | null)?.closest<HTMLElement>('[data-dialog]');
+    if (link?.dataset.dialog && open(link.dataset.dialog, link)) event.preventDefault();
+  });
+  document.querySelectorAll<HTMLDialogElement>('dialog.sheet').forEach((dialog) => {
+    // A click on the backdrop lands on the <dialog> itself (its content fills the box): close, as `closedby="any"` does.
+    dialog.addEventListener('close', () => document.documentElement.classList.toggle('has-sheet', !!document.querySelector('dialog.sheet[open]')));
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  });
+  if ('IntersectionObserver' in window) {
+    const watch = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('is-awake', e.isIntersecting)));
+    document.querySelectorAll('[data-awake]').forEach((el) => watch.observe(el));
+  }
+  const fromUrl = location.hash.slice(1);
+  if (fromUrl && document.querySelector(`dialog.sheet#${CSS.escape(fromUrl)}`)) open(fromUrl);
+</script>

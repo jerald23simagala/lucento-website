@@ -1,0 +1,36 @@
+---
+/**
+ * The site's one dialog (owner review, 2026-11-08): feature details and the plan comparison open here instead of
+ * unfolding the page. A native <dialog> opened with showModal() by the script in DialogScript.astro, so focus is
+ * trapped and returned, Escape closes it, and the page behind is inert. Openers are links to `#id` with
+ * `data-dialog`; without JavaScript the link still works and `:target` shows the content in place.
+ */
+interface Props {
+  id: string;
+  title: string;
+  /** Visible eyebrow above the title. */
+  kicker?: string;
+  wide?: boolean;
+  /** Render the inside on the night palette (the feature cards' colours). */
+  night?: boolean;
+}
+
+const { id, title, kicker, wide = false, night = false } = Astro.props;
+---
+
+<dialog id={id} class:list={['sheet', wide && 'is-wide', night && 'theme-night']} aria-labelledby={`${id}-title`} closedby="any">
+  <div class="sheet-head">
+    <div class="sheet-heading">
+      {kicker && <p class="eyebrow">{kicker}</p>}
+      <h2 id={`${id}-title`} class="title-lg">{title}</h2>
+    </div>
+    <form method="dialog">
+      <button type="submit" class="sheet-close" aria-label={`Close ${title}`}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg>
+      </button>
+    </form>
+  </div>
+  <div class="sheet-body">
+    <slot />
+  </div>
+</dialog>
