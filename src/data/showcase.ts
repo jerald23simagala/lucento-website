@@ -32,8 +32,8 @@ export const showcaseScreens: ShowcaseScreen[] = [
     id: '06-home-within-budget',
     file: '06-home-within-budget.png',
     kicker: 'Keep pace',
-    title: 'The month, and its light',
-    body: 'Home compares budget used with how much of the month has passed. On pace, the torch is bright. The light describes the month — it doesn’t scold you.',
+    title: 'The month at a glance',
+    body: 'Home compares budget used with how much of the month has passed, and says whether you’re in step.',
     alt: 'Home for October 2026. Monthly budget 89% used of $2,590.00, spending in step with the month, about $58.40 a day, net flow +$1,902.01, and the mascot holding a lit torch.',
   },
   {
