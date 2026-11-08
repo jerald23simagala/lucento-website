@@ -1021,7 +1021,7 @@ html.has-sheet { overflow: hidden; } /* set by DialogScript; a root :has() would
 }
 
 /* ---------------------------------------------------------------- 07 finale and footer */
-.finale { position: relative; isolation: isolate; overflow: hidden; padding-top: var(--section); text-align: center; }
+.finale { position: relative; isolation: isolate; overflow: hidden; padding-block: var(--section) clamp(120px, 14vw, 200px); text-align: center; } /* room below the buttons, where the landscape shows */
 .finale-inner { display: grid; justify-items: center; gap: var(--space-5); }
 .finale .hero-ground { height: clamp(140px, 22vw, 240px); }
 

@@ -166,6 +166,13 @@ test.describe('homepage', () => {
     }
     await expect(page.locator('#themes .device')).toHaveClass(/is-angle/);
     await expect(page.locator('footer')).toContainText('App screens © Lucento');
+    // The closing band's buttons keep clear of the footer (owner, 2026-11-08).
+    const gap = await page.evaluate(() => {
+      const band = document.querySelector('.finale')!.getBoundingClientRect();
+      const play = document.querySelector('.finale .play')!.getBoundingClientRect();
+      return band.bottom - play.bottom;
+    });
+    expect(gap).toBeGreaterThanOrEqual(96);
   });
 
   test('every phone uses the one template, with a mock status bar', async ({ page }) => {
