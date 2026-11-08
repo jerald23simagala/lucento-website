@@ -156,7 +156,7 @@ export const answers = [
   { q: 'Does it connect to my bank?', a: 'No, and that’s by design. You record what you spend; Lucento never asks for a bank login.' },
   {
     q: 'Do I need an account?',
-    a: 'Only for sync, and for the optional Read messages with Gemini setting. What you type is stored on the phone and works offline. Speech recognition asks to run on the device, but that isn’t guaranteed.',
+    a: 'Only for the online features: sync, Lucento Shared, and the optional Gemini features (reading your messages, AI answers). What you type is stored on the phone and works offline. Speech recognition asks to run on the device, but that isn’t guaranteed.',
   },
   { q: 'Can I move to a new phone?', a: 'Yes. With cloud sync, sign in on the new phone and your records come across. Without it, carry a backup file over — that’s free on every plan.' },
   { q: 'Why does Spent include uncategorised things?', a: 'Because the money is gone either way. Leaving it out would make the month look better than it is.' },

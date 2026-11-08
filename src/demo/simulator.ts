@@ -350,7 +350,7 @@ export const STORIES: Record<string, Story> = {
   sync: {
     kicker: 'Cloud sync',
     title: 'Back up and sync your phones',
-    text: 'Optional: keep your data the same on every phone. Your entries stay on this one unless you turn on sync or Gemini reading.',
+    text: 'Optional: keep your data the same on every phone. Your entries leave this one only for sync or the Gemini features you turn on.',
     steps: [
       { title: 'Open Settings from your profile', body: 'Tap the round profile button, then Settings.', target: 'profile', done: (s) => s.sheet === 'profile' || onSettings(s) || s.syncEmail !== null || s.disconnected },
       { title: 'Tap Settings', body: 'Cloud sync is near the top.', target: 'open-settings', done: (s) => onSettings(s) || s.syncEmail !== null || s.disconnected },
@@ -677,7 +677,7 @@ function onboarding(s: State): string {
     case 'onb-sync':
       return `<div class="ls-onb ls-left">
         <b class="ls-onb-title">Back up and sync?</b>
-        <small>Optional. Your entries stay on this phone unless you turn on sync or Gemini reading.</small>
+        <small>Optional. Your entries leave this phone only for sync or the Gemini features you turn on.</small>
         <button type="button" class="ls-primary ls-google" data-action="soon" data-label="Connecting an account during setup">${icon(P.google, 18)}Continue with Google</button>
         <span class="ls-grow"></span>
         <button type="button" class="ls-text" data-action="setup-sync-skip">Not now — keep it on this phone</button>
