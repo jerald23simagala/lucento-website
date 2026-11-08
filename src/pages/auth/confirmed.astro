@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
 ---
 
 <!--
@@ -8,7 +8,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   app. Supabase appends tokens to the URL fragment: they are never read, sent or stored here, and the fragment is
   cleared from the address bar. Only an error code is read, to explain an expired or reused link.
 -->
-<BaseLayout title="Email confirmed · Lucento" description="Your Lucento account is confirmed." noindex>
+<SiteLayout appTokens title="Email confirmed · Lucento" description="Your Lucento account is confirmed." noindex>
   <section class="confirm" aria-labelledby="confirm-title">
     <div data-state="ok">
       <h1 id="confirm-title">Your email is confirmed</h1>
@@ -25,7 +25,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       </p>
     </div>
   </section>
-</BaseLayout>
+</SiteLayout>
 
 <script is:inline>
   (function () {
@@ -35,6 +35,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     if (error) {
       document.querySelector('[data-state="ok"]').hidden = true;
       document.querySelector('[data-state="error"]').hidden = false;
+      document.title = 'This link didn’t work · Lucento';
       const text = document.querySelector('[data-error-text]');
       if (text) text.textContent = error.replace(/\+/g, ' ');
     }
@@ -64,6 +65,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
   }
 
   .muted {
-    opacity: 0.75;
+    color: var(--on-surface-variant);
   }
 </style>

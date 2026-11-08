@@ -9,7 +9,7 @@ repository (`lucento-android`); nothing here changes it.
 - [Astro](https://astro.build) 5 (static output, no client-side framework)
 - TypeScript (strict) with `astro check`
 - ESLint with `eslint-plugin-astro` and its strict accessibility rules
-- Manrope (self-hosted via `@fontsource-variable/manrope`), the brand's marketing face
+- Inter (self-hosted via `@fontsource-variable/inter`), the website's face
 - All versions are pinned exactly (`.npmrc` sets `save-exact`)
 
 ## Getting started
@@ -29,7 +29,8 @@ npm run dev        # http://localhost:4321
 | `npm run lint`     | ESLint, including accessibility rules for `.astro` files      |
 | `npm run check`    | Astro and TypeScript type-check                               |
 | `npm run tokens`   | Regenerates `src/styles/tokens.css` and `horizon-tokens.css`  |
-| `npm run verify`   | Token freshness check, lint, type-check and build in one go   |
+| `npm run verify`   | Token freshness check, lint, type-check, unit tests and build |
+| `npx playwright test` | End-to-end checks of the homepage and the other pages      |
 
 ## Design tokens
 
@@ -39,23 +40,23 @@ turns it into CSS custom properties. Night colours apply automatically through
 `prefers-color-scheme`, and `data-theme="light" | "dark"` on `<html>` can force
 either. Don't edit `tokens.css` by hand; `npm run verify` fails if it is stale.
 
-### Horizon (the website's own system, Phase 4)
+### The website's design (2026-11-08)
 
-The redesigned pages use **Horizon**, built and reviewed in the private `lucento-studio` workspace (its `DESIGN.md`
-is the spec; `system/CONTRAST.md` checks every colour pair). Here:
+The site is one page for the whole product plus `/privacy`, `/terms`, `/delete-account` and `/auth/confirmed`;
+`/pricing`, `/how-to` and `/demo` (the retired interactive demo) redirect. **Read `docs/WEBSITE_DESIGN.md` first**: it holds the permanent
+design principles (typography first, real app screens, no template card grids, purposeful motion, designed mobile
+layouts) and the system. `CLAUDE.md` summarises them for Claude.
 
-- `design/horizon.tokens.json` is copied from the studio's `system/horizon.tokens.json`; `npm run tokens` also writes
-  `src/styles/horizon-tokens.css`, and `npm run verify` fails if it is stale.
-- `src/styles/horizon.css` is the component stylesheet. `src/layouts/HorizonLayout.astro` inlines both files and the
-  Plus Jakarta Sans variable font faces (`@fontsource-variable/plus-jakarta-sans`, OFL, hashed URLs), so a Horizon
-  page needs no stylesheet request. Keep Horizon styles in `horizon.css`, not in component `<style>` blocks (those
-  become deferred stylesheets here).
-- `src/components/horizon/` holds the parts. Figures come from `src/data/demo.ts` (the app's demo month in pesos,
-  read off the screenshot tour), formatted by `src/lib/money.ts` (integer minor units, signed with U+2212); unit
-  tests in `src/lib/money.test.ts` check that the demo month reconciles with the app's screens.
-- Screens in `public/screens/{home,composer}-{light,dark}-{400,720}.webp` come from the Android tour in peso mode
-  (`-e demoCurrency PHP`), cropped with the studio's `qa/crop-screen.mjs`. The panoramas in `public/brand/scenery/`
-  are copies of the app's own.
+- `design/horizon.tokens.json` → `src/styles/horizon-tokens.css` (`npm run tokens`); `src/styles/site.css` is the
+  stylesheet. `src/layouts/SiteLayout.astro` inlines both with Inter's font faces (`@fontsource-variable/inter`, OFL,
+  plus an 8 KB currency subset in `src/assets/fonts/` for ₱), so no page needs a stylesheet request.
+- `src/components/site/` holds the parts; `src/data/content.ts` the screens, themes and FAQ (each with its source in
+  the app); `src/data/plans.ts` the plans. Amounts are formatted by `src/lib/money.ts` (U+2212 minus).
+- `public/screens/` are API 36 captures from lucento-android's `ScreenshotTourTest` and `WebsiteShowcaseTest` in peso
+  mode (dark), cropped with lucento-studio `qa/crop-screen.mjs`; `node scripts/screen-tops.mjs` then records each
+  screen's top colour for the phone template's status bar. `public/og-lucento.png` is the link
+  preview, composed from the same screens.
+- The reading pages keep the app's own palette (`tokens.css`), scoped to the page content.
 
 ## Site URL, canonical links and sitemap
 
@@ -73,17 +74,19 @@ Earlier explorations stay in `brand/logo-concepts/` for reference.
 ## Structure
 
 ```
-design/tokens.json        Design-system export (source of truth for tokens)
-design/horizon.tokens.json  Horizon tokens (copied from lucento-studio)
-scripts/build-tokens.mjs  tokens.json -> src/styles/tokens.css; horizon.tokens.json -> horizon-tokens.css
-src/styles/               tokens.css, horizon-tokens.css (generated), global.css, horizon.css
-src/layouts/              BaseLayout (pages not yet redesigned) and HorizonLayout (homepage)
-src/components/           SiteHeader, SiteFooter, ContentPage + LegalBody (reading pages), MoreFeatures, phone demos
-src/data/                 site.ts (contact, Play link, playListed), plans.ts (pricing), guides, home copy,
-                          legal.ts (generated from the app: lucento-android tools/legal/export_legal.py — don't edit)
-src/pages/                index, pricing, privacy, terms, delete-account (Play's account-deletion page), how-to,
-                          auth/confirmed, api/* (AI proxy, billing), 404, robots.txt
-brand/logo/               Rising Crest logo: symbol, wordmark, lockups, Android
-brand/logo-concepts/      Earlier logo explorations
-public/                   Static files (favicon)
+design/tokens.json          The app's design-system export (the reading pages' palette)
+design/horizon.tokens.json  The website's tokens: Lucento palette, Inter type scale
+scripts/build-tokens.mjs    tokens.json -> tokens.css; horizon.tokens.json -> horizon-tokens.css
+docs/WEBSITE_DESIGN.md      Design principles and system (read first)
+src/styles/                 site.css, tokens.css + horizon-tokens.css (generated)
+src/layouts/SiteLayout      Every page: inlined CSS and fonts, header, footer, structured data
+src/components/site/        Header, Footer, PlayCta, Phone + StatusBar (phone template), Showcase, ThemeStudio, Pricing
+src/components/             ContentPage + LegalBody (reading pages)
+src/data/                   content.ts (screens, themes, FAQ), plans.ts, site.ts (contact, Play link, playListed),
+                            screen-tops.json (generated), demo.ts, legal.ts (generated from the app: tools/legal/export_legal.py — don't edit)
+src/pages/                  index, privacy, terms, delete-account (Play's account-deletion page),
+                            auth/confirmed, api/* (AI proxy, billing), 404, robots.txt
+e2e/home.spec.ts            Playwright checks
+brand/logo/                 Rising Crest logo: symbol, wordmark, lockups, Android
+public/                     screens/, brand/scenery/, og-lucento.png, favicon
 ```

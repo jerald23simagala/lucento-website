@@ -1,15 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
+import { faq, foreignWallets, looks, netWorthWithForeign, screens, START_SCREEN } from '../src/data/content';
 import { planCards } from '../src/data/plans';
-import { site } from '../src/data/site';
 
-// The homepage is built on Horizon (src/layouts/HorizonLayout.astro). Its figures are the app's demo month
-// (src/data/demo.ts) and must match the app's own screens; negative amounts carry U+2212, never a hyphen.
+// The one-page site (2026-11-08). Screens and figures are the app's own (src/data/content.ts names the sources);
+// negative amounts carry U+2212, never a hyphen.
 const MINUS = '−';
-
-function minorOf(text: string): number {
-  const value = Number(text.replace(/[^0-9]/g, ''));
-  return text.includes(MINUS) ? -value : value;
-}
 
 function collectErrors(page: Page): string[] {
   const errors: string[] = [];
@@ -23,84 +18,162 @@ function collectErrors(page: Page): string[] {
 const overflow = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 
+const visibleVariant = (page: Page) =>
+  page.locator('.studio-stage picture').evaluateAll((nodes) =>
+    nodes.filter((n) => getComputedStyle(n).display !== 'none').map((n) => (n as HTMLElement).dataset.v),
+  );
+
 test.describe('homepage', () => {
-  test('loads quietly and leads from the promise to its proof', async ({ page }) => {
+  test('loads quietly, and every section the navigation names exists', async ({ page }) => {
     const errors = collectErrors(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Everything about your money, in one clear view.');
-    await page.getByRole('link', { name: 'See the whole picture' }).click();
-    await expect(page).toHaveURL(/#horizon$/);
-    await expect(page.getByRole('heading', { level: 2, name: /One view of what you have and what you owe/ })).toBeInViewport();
+    await expect(page.locator('#how')).toHaveCount(0);
+    for (const id of ['features', 'themes', 'pricing', 'faq', 'multicurrency', 'shared', 'privacy']) {
+      await expect(page.locator(`#${id}`), id).toHaveCount(1);
+    }
+    await page.locator('.nav').getByRole('link', { name: 'Pricing' }).click();
+    await expect(page).toHaveURL(/#pricing$/);
+    await expect(page.getByRole('heading', { level: 2, name: 'Free to start. Pro when you want more.' })).toBeInViewport();
     expect(errors).toEqual([]);
   });
 
-  test('the demo month reconciles, and every amount carries its sign', async ({ page }) => {
-    await page.goto('/');
-    const rows = await page.locator('.legend li').evaluateAll((items) =>
-      items.map((li) => ({
-        kind: li.querySelector('i')?.getAttribute('class') ?? '',
-        money: li.querySelector('.money')?.textContent?.trim() ?? '',
-      })),
-    );
-    const have = rows.filter((row) => row.kind === 'have');
-    const owe = rows.filter((row) => row.kind === 'owe');
-    const total = rows.find((row) => row.kind === 'net');
-    expect(have.length).toBeGreaterThan(0);
-    expect(owe.length).toBeGreaterThan(0);
-    expect(total).toBeDefined();
-    for (const row of rows) expect(row.money, `${row.money} uses U+2212, not a hyphen`).not.toContain('-');
-    for (const row of have) expect(row.money.startsWith(MINUS), row.money).toBe(false);
-    for (const row of owe) expect(row.money.startsWith(MINUS), row.money).toBe(true);
-    const sum = [...have, ...owe].reduce((acc, row) => acc + minorOf(row.money), 0);
-    expect(minorOf(total!.money)).toBe(sum);
-
-    // The same month as the app's screenshots (API 36 tour, peso mode).
-    await expect(page.locator('.hc-have b')).toHaveText('₱176,520.10');
-    await expect(page.locator('.hc-owe b')).toHaveText(`${MINUS}₱114,400.00`);
-    await expect(page.locator('.hc-net-label b')).toHaveText('₱62,120.10');
-    expect(total!.money).toBe('₱62,120.10');
-    await expect(page.locator('#chart-cap')).toHaveText(/^Example figures from the app’s demo data\./);
-    await expect(page.locator('.example-tag')).toContainText('Example figures');
-  });
-
-  test('the chart is drawn to one scale', async ({ page }) => {
+  test('the hero carousel opens on the Dashboard and moves with arrows, tabs and keys', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    const up = await page.locator('.hc-up').evaluate((el) => el.getBoundingClientRect().height);
-    const down = await page.locator('.hc-down').evaluate((el) => el.getBoundingClientRect().height);
-    expect(up).toBeGreaterThan(0);
-    expect(down).toBeGreaterThan(0);
-    const expected = 176_520 / 114_400;
-    expect(Math.abs(up / down / expected - 1), `have/owe bars ${up}:${down}`).toBeLessThan(0.03);
+    await expect(page.locator('[data-slide]')).toHaveCount(screens.length);
+    await expect(page.locator('[data-tab]')).toHaveText(screens.map((s) => s.label));
+    expect(screens.map((s) => s.label)).toEqual(['Transactions', 'Insights', 'Budgets', 'Dashboard', 'Wallets', 'Scheduled', 'Goals', 'Ask Lucento']);
+    // Opens centred on the Dashboard.
+    await expect(page.locator(`[data-tab="${START_SCREEN}"]`)).toHaveAttribute('aria-current', 'true');
+    const centred = await page.locator('[data-track]').evaluate((track) => {
+      const slide = track.querySelector('[data-slide="dashboard"]') as HTMLElement;
+      const t = track.getBoundingClientRect();
+      const r = slide.getBoundingClientRect();
+      return Math.abs(r.left + r.width / 2 - (t.left + t.width / 2));
+    });
+    expect(centred).toBeLessThan(4);
+    // Arrows.
+    await page.getByRole('button', { name: 'Next screen' }).click();
+    await expect(page.locator('[data-tab="wallets"]')).toHaveAttribute('aria-current', 'true');
+    await page.getByRole('button', { name: 'Previous screen' }).click();
+    await page.getByRole('button', { name: 'Previous screen' }).click();
+    await expect(page.locator('[data-tab="budgets"]')).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator('[data-caption]')).toContainText(screens.find((s) => s.id === 'budgets')!.title);
+    // Tabs and the arrow keys.
+    await page.locator('[data-tab="goals"]').click();
+    await expect(page.locator('[data-slide="goals"]')).toHaveClass(/is-active/);
+    await page.locator('[data-track]').focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('[data-tab="ask"]')).toHaveAttribute('aria-current', 'true');
+    await expect(page.getByRole('button', { name: 'Next screen' })).toBeDisabled();
+    for (const screen of screens) {
+      await expect(page.locator(`[data-slide="${screen.id}"] img`)).toHaveAttribute('alt', screen.alt);
+    }
   });
 
-  test('the privacy rows name each trigger and link to the policy', async ({ page }) => {
+  test('every phone uses the one template, with a mock status bar', async ({ page }) => {
     await page.goto('/');
-    const ledger = page.locator('#privacy .ledger');
-    const terms = ledger.locator('dt');
-    expect(await terms.count()).toBeGreaterThan(0);
-    for (const term of await terms.all()) await expect(term.locator('span')).not.toBeEmpty();
-    for (const name of ['Your account', 'Sync', 'Crash reports', 'Usage counts', 'AI features (Gemini)', 'Exchange rates', 'Google Play']) {
-      await expect(ledger).toContainText(name);
-    }
-    await expect(page.getByRole('link', { name: 'Read the privacy policy' })).toHaveAttribute('href', '/privacy');
+    const devices = page.locator('main .device');
+    const count = await devices.count();
+    expect(count).toBeGreaterThan(10);
+    await expect(page.locator('main .device .statusbar')).toHaveCount(count);
+    const time = await page.locator('main .device .statusbar .sb-time').first().evaluate((el) => getComputedStyle(el, '::before').content);
+    expect(time).toBe('"9:41"');
   });
 
-  test('plans come from the pricing data and the page ends with routes onward', async ({ page }) => {
+  test('a phone swipes through the screens', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
-    await expect(page.locator('#plans .plan h3')).toHaveText(planCards.map((plan) => plan.name));
-    const plans = page.locator('#plans');
-    await expect(plans.getByRole('link', { name: 'Compare plans' })).toHaveAttribute('href', '/pricing');
-    await expect(plans.getByRole('link', { name: 'Read the guides' })).toHaveAttribute('href', '/how-to');
-    if (site.playListed) {
-      await expect(plans.getByRole('link', { name: 'Get it on Google Play' })).toHaveAttribute('href', site.playUrl);
-    } else {
-      await expect(plans.locator('.play-status')).toContainText('Coming soon to Google');
+    const track = page.locator('[data-track]');
+    await track.evaluate((el) => el.scrollTo({ left: el.scrollWidth, behavior: 'instant' as ScrollBehavior }));
+    await expect(page.locator(`[data-tab="${screens[screens.length - 1].id}"]`)).toHaveAttribute('aria-current', 'true');
+  });
+
+  test('the theme switcher shows the real Wallets screen in each theme and mode', async ({ page }) => {
+    await page.goto('/');
+    const studio = page.locator('#themes');
+    await studio.scrollIntoViewIfNeeded();
+    expect(await visibleVariant(page)).toEqual(['sunrise-light']);
+    await studio.locator('label.look', { hasText: 'Grove' }).click();
+    expect(await visibleVariant(page)).toEqual(['grove-light']);
+    await studio.locator('label.mode', { hasText: 'Dark' }).click();
+    expect(await visibleVariant(page)).toEqual(['grove-dark']);
+    const groveDark = looks.find((l) => l.id === 'grove')!.modes.find((m) => m.mode === 'dark')!;
+    const hex = groveDark.bg.slice(1);
+    const expected = `rgb(${parseInt(hex.slice(0, 2), 16)}, ${parseInt(hex.slice(2, 4), 16)}, ${parseInt(hex.slice(4, 6), 16)})`;
+    await expect.poll(() => studio.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(expected);
+    // Midnight is always dark, whatever the mode says.
+    await studio.locator('label.look', { hasText: 'Midnight' }).click();
+    expect(await visibleVariant(page)).toEqual(['midnight-dark']);
+    await expect(studio.locator('.mode-note')).toBeVisible();
+    // The chosen screen loads.
+    await expect
+      .poll(() => studio.locator('[data-v="midnight-dark"] img').evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0))
+      .toBe(true);
+  });
+
+  test('hide amounts swaps to the app’s own hidden view', async ({ page }) => {
+    await page.goto('/');
+    const toggle = page.getByRole('switch', { name: 'Hide amounts' });
+    const shown = page.locator('.reveal-toggle picture.is-shown');
+    const hidden = page.locator('.reveal-toggle picture.is-hidden-view');
+    await toggle.scrollIntoViewIfNeeded();
+    await expect(shown).toBeVisible();
+    await expect(hidden).toBeHidden();
+    await toggle.check();
+    await expect(shown).toBeHidden();
+    await expect(hidden).toBeVisible();
+  });
+
+  test('multicurrency figures are the app’s conversions and add up', async ({ page }) => {
+    await page.goto('/');
+    const rows = page.locator('.fx-ledger li');
+    await expect(rows).toHaveCount(foreignWallets.length);
+    await expect(rows.nth(0)).toContainText('$1,850.00');
+    await expect(rows.nth(0)).toContainText('₱106,930.00');
+    await expect(rows.nth(1)).toContainText('₱66,108.00');
+    await expect(rows.nth(2)).toContainText('¥60,000');
+    await expect(rows.nth(2)).toContainText('₱22,950.00');
+    // The demo month's net worth (₱62,120.10) plus the three conversions.
+    expect(6_212_010 + foreignWallets.reduce((sum, w) => sum + w.pesoMinor, 0)).toBe(netWorthWithForeign);
+    await expect(page.locator('.fx-total b')).toHaveText('₱258,108.10');
+    // Signed amounts use U+2212.
+    const money = await page.locator('.money').allTextContents();
+    expect(money.some((t) => t.startsWith(MINUS))).toBe(true);
+    for (const text of money) expect(text, text).not.toContain('-');
+  });
+
+  test('pricing shows every plan and names every comparison cell', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.plan h3')).toHaveText(planCards.map((p) => p.name));
+    const marks = page.locator('.compare td.yes, .compare td.no');
+    expect(await marks.count()).toBeGreaterThan(10);
+    for (const cell of await marks.all()) {
+      await expect(cell.locator('.sr-only')).toHaveText(/^(Included|Not included)$/);
     }
+    await expect(page.locator('#pricing')).toContainText('Up to 3');
+    await expect(page.locator('#pricing')).toContainText('50 a day');
+  });
+
+  test('the FAQ opens, and its structured data matches it', async ({ page }) => {
+    await page.goto('/');
+    const first = page.locator('.faq details').first();
+    await first.locator('summary').click();
+    await expect(first).toHaveAttribute('open', '');
+    await expect(first.locator('p')).toBeVisible();
+    const total = faq.reduce((n, g) => n + g.items.length, 0);
+    await expect(page.locator('.faq details')).toHaveCount(total);
+    const data = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const parsed = data.map((d) => JSON.parse(d));
+    const faqPage = parsed.find((d) => d['@type'] === 'FAQPage');
+    expect(faqPage.mainEntity).toHaveLength(total);
+    expect(parsed.find((d) => d['@type'] === 'SoftwareApplication')?.name).toBe('Lucento');
   });
 
   test('no sideways scrolling on small phones, even with text at 200%', async ({ page }) => {
-    for (const width of [320, 360]) {
+    for (const width of [320, 360, 390]) {
       await page.setViewportSize({ width, height: 740 });
       await page.goto('/');
       for (const size of ['100%', '200%']) {
@@ -113,29 +186,6 @@ test.describe('homepage', () => {
     }
   });
 
-  test('short laptop windows keep the hero phone legible and in view', async ({ page }) => {
-    for (const [width, height] of [[1280, 720], [1366, 768]] as const) {
-      await page.setViewportSize({ width, height });
-      await page.goto('/');
-      await page.evaluate(() => document.fonts.ready);
-      const box = await page.locator('.hero .phone').boundingBox();
-      expect(box, `${width}×${height}`).not.toBeNull();
-      expect(box!.width, `${width}×${height} phone width`).toBeGreaterThanOrEqual(239);
-      expect(box!.y + box!.height, `${width}×${height} phone bottom`).toBeLessThanOrEqual(height);
-    }
-  });
-
-  test('screens follow the colour scheme and describe their figures', async ({ page }) => {
-    for (const scheme of ['light', 'dark'] as const) {
-      await page.emulateMedia({ colorScheme: scheme });
-      await page.goto('/');
-      const image = page.locator('.hero .phone img');
-      await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.currentSrc)).toContain(`/screens/home-${scheme}-`);
-      await expect(image).toHaveAttribute('alt', /₱62,120\.10/);
-      await expect(page.locator('.hero figcaption')).toContainText('example figures');
-    }
-  });
-
   test('the first Tab reaches the skip link, which moves to the content', async ({ page }) => {
     await page.goto('/');
     await page.keyboard.press('Tab');
@@ -144,13 +194,14 @@ test.describe('homepage', () => {
     await expect(page).toHaveURL(/#main$/);
   });
 
-  test('without JavaScript the page reads the same', async ({ browser }) => {
+  test('without JavaScript the page still reads, and themes still switch', async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 360, height: 740 } });
     const page = await context.newPage();
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-    await expect(page.locator('.hc-net-label b')).toHaveText('₱62,120.10');
-    await expect(page.locator('#privacy .ledger dt').first()).toBeVisible();
+    await expect(page.locator('[data-slide] img').first()).toBeVisible();
+    await page.locator('#themes label.look', { hasText: 'Aurora' }).click();
+    expect(await visibleVariant(page)).toEqual(['aurora-light']);
     expect(await overflow(page)).toBeLessThanOrEqual(1);
     await context.close();
   });
@@ -159,6 +210,7 @@ test.describe('homepage', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
+    await page.mouse.wheel(0, 3000);
     const moving = await page.evaluate(() => {
       const main = document.querySelector('main');
       return document.getAnimations().filter((animation) => {
@@ -189,18 +241,20 @@ test.describe('homepage', () => {
   });
 });
 
-test('the guides page phone demo starts without errors', async ({ page }) => {
-  const errors = collectErrors(page);
-  await page.goto('/how-to');
-  await expect(page.locator('[data-sim="steps"] li').first()).toBeVisible();
-  expect(errors).toEqual([]);
-});
-
-test('guides, legal, pricing and deletion pages still respond', async ({ page }) => {
-  for (const path of ['/how-to', '/privacy', '/terms', '/pricing', '/delete-account', '/auth/confirmed']) {
+test('privacy, terms, deletion and confirmation pages respond', async ({ page }) => {
+  for (const path of ['/privacy', '/terms', '/delete-account', '/auth/confirmed']) {
     const response = await page.goto(path);
     expect(response?.status(), path).toBeLessThan(400);
   }
+});
+
+test('old addresses lead to their new places', async ({ page }) => {
+  for (const old of ['/how-to', '/demo']) {
+    await page.goto(old);
+    await expect(page).toHaveURL(/\/$/);
+  }
+  await page.goto('/pricing');
+  await expect(page).toHaveURL(/\/#pricing$/);
 });
 
 test('an unknown address answers 404 with a way home', async ({ page }) => {
@@ -214,13 +268,4 @@ test('the deletion page works without the app: steps, an email request, and what
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Delete your Lucento account');
   await expect(page.getByRole('link', { name: 'Email a deletion request' })).toHaveAttribute('href', /^mailto:lucentoapp@gmail\.com/);
   await expect(page.getByRole('heading', { name: 'What is kept, and for how long' })).toBeVisible();
-});
-
-test('the pricing table names every cell for screen readers', async ({ page }) => {
-  await page.goto('/pricing');
-  const marks = page.locator('td.mark');
-  expect(await marks.count()).toBeGreaterThan(10);
-  for (const cell of await marks.all()) {
-    await expect(cell.locator('.visually-hidden')).toHaveText(/^(Included|Not included)$/);
-  }
 });

@@ -89,7 +89,7 @@ export const compareGroups: CompareGroup[] = [
       { what: 'Record income and expenses by typing, speaking or scanning — several at once — and review before saving', free: 'Unlimited', pro: 'Unlimited', lifetime: 'Unlimited' },
       { what: 'Every transaction you’ve recorded: search, filter, edit, delete', free: yes, pro: yes, lifetime: yes },
       { what: 'Transfers between wallets that never double-count', free: yes, pro: yes, lifetime: yes },
-      { what: 'Categories: 90 ready-made, plus your own', free: yes, pro: yes, lifetime: yes },
+      { what: 'Categories: 82 ready-made spending categories, plus your own', free: yes, pro: yes, lifetime: yes },
       { what: 'Monthly budget per category; your total is their sum; pace and safe-to-spend', free: yes, pro: yes, lifetime: yes },
       { what: 'Works offline, on your phone, with no account', free: yes, pro: yes, lifetime: yes },
     ],
