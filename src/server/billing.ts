@@ -44,18 +44,7 @@ const serviceHeaders = (c: BillingConfig): Record<string, string> => ({
   'Content-Type': 'application/json',
 });
 
-/** The signed-in person behind `Authorization: Bearer <Supabase JWT>`, checked by Supabase Auth; null when it isn't valid. */
-export async function signedInUser(c: BillingConfig, authorization: string): Promise<string | null> {
-  if (!/^Bearer\s+\S+$/.test(authorization)) return null;
-  try {
-    const res = await fetch(`${c.supabaseUrl}/auth/v1/user`, { headers: { apikey: c.publishableKey, Authorization: authorization } });
-    if (!res.ok) return null;
-    const user = (await res.json()) as { id?: unknown };
-    return typeof user.id === 'string' && /^[0-9a-f-]{36}$/i.test(user.id) ? user.id.toLowerCase() : null;
-  } catch {
-    return null;
-  }
-}
+// The signed-in account is read by src/server/email.ts signedInAccount (id and address, one Supabase Auth call).
 
 async function rpc(c: BillingConfig, name: string, args: Record<string, unknown>): Promise<{ ok: boolean; status: number; body: unknown }> {
   try {
