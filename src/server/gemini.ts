@@ -9,6 +9,10 @@
  * no capacity is tried last for the next two minutes (per function instance), so later requests start with one that
  * answers instead of spending seconds on the same busy models (owner round 9: Ask Lucento answers failed while the
  * newest Flash models answered 429/503). Each call has a hard timeout, so one slow model can't outlast the app's wait.
+ * Owner test round 2 (2026-11-09): during a capacity spell every Flash model answered 503 or ran out the clock, the
+ * first slow one using the whole wait. So each call except the last now gets at most CALL_CAP_MS, leaving time for
+ * another model; the newest Flash-Lite (lighter, usually with room) is tried third; and a model that answered 404 is
+ * skipped for this function instance instead of costing every request a call.
  * Thinking is kept low: Gemini 2.x takes a thinking budget, later models a thinking level; if a model refuses the
  * setting (400) the call is retried once without it. Nothing here logs prompts or answers — only statuses and model
  * names.
@@ -29,10 +33,14 @@ const BUSY_MS = 2 * 60 * 1000;
 /** A call may run this long past the caller's budget for trying new models, and never less than MIN_CALL_MS. */
 const CALL_GRACE_MS = 4_000;
 const MIN_CALL_MS = 3_000;
+/** The longest a call may take while another model could still be tried in time. */
+export const CALL_CAP_MS = 11_000;
 
 let cached: { models: string[]; at: number } | null = null;
 /** Model → until when it is tried last. Per function instance, like the models list. */
 const busyUntil = new Map<string, number>();
+/** Models that answered 404 (retired or not offered to this key), skipped until the function instance is recycled. */
+const retired = new Set<string>();
 
 /** [models] with the ones that had no capacity in the last two minutes moved to the end, each group in its own order. */
 export function preferAvailable(models: string[], now: number, busy: Map<string, number> = busyUntil): string[] {
@@ -76,11 +84,14 @@ export function rankFlashModels(names: string[]): string[] {
   const stable = byVersion(/^gemini-(\d+(?:\.\d+)*)-flash$/);
   const other = byVersion(/^gemini-(\d+(?:\.\d+)*)-flash-[\w.-]+$/, (n) => !n.includes('lite') && !SPECIAL.test(n));
   const lite = byVersion(/^gemini-(\d+(?:\.\d+)*)-flash-lite$/);
+  // The newest Flash-Lite comes third: when the Flash models have no capacity, a lighter model usually still answers.
   return [
-    ...stable,
+    ...stable.slice(0, 2),
+    ...lite.slice(0, 1),
+    ...stable.slice(2),
     ...(plain.includes(FALLBACK_MODEL) ? [FALLBACK_MODEL] : []),
     ...other,
-    ...lite,
+    ...lite.slice(1),
     ...(plain.includes('gemini-flash-lite-latest') ? ['gemini-flash-lite-latest'] : []),
   ];
 }
@@ -113,7 +124,13 @@ async function candidates(key: string, refresh: boolean): Promise<string[]> {
   }
   const configured = process.env.GEMINI_MODEL?.trim();
   const list = [...(configured ? [configured] : []), ...(cached?.models ?? [FALLBACK_MODEL])];
-  return [...new Set(list)];
+  return [...new Set(list)].filter((m) => !retired.has(m));
+}
+
+/** How long one call may run: up to the deadline for the last try, otherwise at most CALL_CAP_MS (never under MIN_CALL_MS). */
+export function callTimeout(deadline: number, now: number, last: boolean): number {
+  const left = deadline - now;
+  return Math.max(MIN_CALL_MS, last ? left : Math.min(left, CALL_CAP_MS));
 }
 
 /** Gemini 2.x: no thinking pass at all. Later models: the lowest standard level. */
@@ -161,7 +178,7 @@ export async function generate(key: string, request: GenerateRequest, label: str
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
           body: JSON.stringify({ systemInstruction: request.systemInstruction, contents: request.contents, generationConfig }),
-          signal: AbortSignal.timeout(Math.max(MIN_CALL_MS, deadline - Date.now())),
+          signal: AbortSignal.timeout(callTimeout(deadline, Date.now(), tried >= MAX_MODELS || i === models.length - 1)),
         });
       } catch {
         // Timed out here, or the connection failed: no answer from this model in time.
@@ -180,6 +197,7 @@ export async function generate(key: string, request: GenerateRequest, label: str
       console.error(`${label}: Gemini answered HTTP ${res.status} for model ${model}`);
       last = { ok: false, status: res.status, model };
       if (BUSY.has(res.status)) markBusy(model);
+      if (res.status === 404) retired.add(model);
       if (res.status === 400 && thinking) {
         thinking = false;
         continue;
