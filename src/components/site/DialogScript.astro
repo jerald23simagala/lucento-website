@@ -25,7 +25,19 @@
   });
   document.querySelectorAll<HTMLDialogElement>('dialog.sheet').forEach((dialog) => {
     // A click on the backdrop lands on the <dialog> itself (its content fills the box): close, as `closedby="any"` does.
-    dialog.addEventListener('close', () => document.documentElement.classList.toggle('has-sheet', !!document.querySelector('dialog.sheet[open]')));
+    dialog.addEventListener('close', () => {
+      document.documentElement.classList.toggle('has-sheet', !!document.querySelector('dialog.sheet[open]'));
+      // A dialog opened from a link to it: drop the hash, so the page doesn't keep pointing at a closed dialog, and
+      // give focus to the card that opens it (there was no opener to return to).
+      if (location.hash === `#${dialog.id}`) history.replaceState(null, '', location.pathname + location.search);
+      requestAnimationFrame(() => {
+        const active = document.activeElement;
+        const lost = !active || active === document.body || !!active.closest('dialog:not([open])');
+        if (lost && !document.querySelector('dialog.sheet[open]')) {
+          document.querySelector<HTMLElement>(`a[data-dialog="${dialog.id}"]:not(dialog a)`)?.focus();
+        }
+      });
+    });
     dialog.addEventListener('click', (event) => {
       if (event.target === dialog) dialog.close();
     });

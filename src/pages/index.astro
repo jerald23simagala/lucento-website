@@ -114,7 +114,7 @@ const jsonLd = [
           <a class="fcard fcard-link" href="#about-record" data-dialog="about-record" aria-haspopup="dialog">
             <FeatureIcon kind="type" />
             <h3 class="fcard-title">Type your way</h3>
-            <p class="fcard-line">Type it once. The rows fill in.</p>
+            <p class="fcard-line">Say it once. The rows fill in.</p>
             <span class="fcard-go" aria-hidden="true"><Fragment set:html={arrow} /></span>
           </a>
         </li>
@@ -239,7 +239,8 @@ const jsonLd = [
             <p class="lede">Add a loan with its yearly rate and term, and Lucento suggests the monthly amortization; use it or type your own. Give it a reminder date and the payments join your schedule, already filled in, until the last one. Each repayment counts down the installments.</p>
             <ul class="ticks">
               <li>A suggested amortization from the rate and term, applied only if you choose</li>
-              <li>An interest estimate beside each payment; you enter the split, Lucento never guesses it</li>
+              <li>When you mark a payment paid, you enter the interest from your statement: it is recorded as spending and the rest goes against the loan</li>
+              <li>Ask Lucento estimates a month’s interest on what you owe, at the loan’s rate</li>
               <li>Progress in plain words, like “3 of 24 installments paid”</li>
               <li>Credit cards with their limit, statement and due days, and what’s due; money owed to you works the same way</li>
               <li>Repayments are transfers, so they never count as spending twice; interest is an expense</li>
@@ -302,7 +303,7 @@ const jsonLd = [
 
       <ul class="fx-notes">
         <li><h3 class="title">Valued at its own rate</h3><p>Each movement is valued at its day’s rate and the wallet carries the average. What leaves at a different rate becomes an FX gain or loss in Insights.</p></li>
-        <li><h3 class="title">Rates without your money</h3><p>Rates come from public exchange-rate services. Only two currency codes and a date are sent, never an amount; turn it off in Settings › Money.</p></li>
+        <li><h3 class="title">Rates without your money</h3><p>Rates come from public exchange-rate services. Only two currency codes and a date are sent, never an amount; turn it off in Settings › Money. The <a href="/privacy">privacy policy</a> has the details.</p></li>
         <li><h3 class="title">Works offline too</h3><p>No connection? Type the rate yourself. Lucento keeps what you chose and never silently replaces it later.</p></li>
       </ul>
 
@@ -429,7 +430,7 @@ const jsonLd = [
           <div class="lane lane-local">
             <p class="lane-label">On your phone · no account, no internet</p>
             <ul class="ticks">
-              <li>Recording by typing, speaking or scanning</li>
+              <li>Recording by typing or scanning, and by speaking where your phone’s speech service works offline</li>
               <li>Budgets, wallets, debts, goals and schedules</li>
               <li>Insights and Ask Lucento’s answers</li>
               <li>Backup files, CSV export and app lock</li>

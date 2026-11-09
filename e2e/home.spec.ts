@@ -254,6 +254,8 @@ test.describe('homepage', () => {
     await expect(sim.locator('.sim-typed')).toHaveText('Lunch 250Groceries 1,200Shampoo 180');
     await demo.getByRole('button', { name: 'Send it' }).click();
     await expect(sim.locator('.sim-reply-line .when-open')).toHaveText('Here are 3 transactions — 1 needs a look:');
+    // The button that was pressed goes away; focus moves on to the next thing to do.
+    await expect(demo.locator('.demo-cat').first()).toBeFocused();
     await expect(sim.locator('.sim-bar-title .when-open')).toBeVisible();
     await expect(sim.locator('.sim-bar-title .when-open')).toHaveText('1 transaction is incomplete');
     const shownTotals = () => sim.locator('.sim-bar small').evaluate((el) => (el as HTMLElement).innerText);
@@ -334,10 +336,26 @@ test.describe('homepage', () => {
     await expect(page.locator('dialog[open]')).toHaveCount(1);
   });
 
+  test('on a phone the composer dialog scrolls its body, never its own box', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+    await page.locator('#record .fcard-link').click();
+    const dialog = page.locator('dialog#about-record');
+    await dialog.getByRole('button', { name: 'Send it' }).click();
+    await page.waitForTimeout(1500);
+    expect(await dialog.evaluate((d) => d.scrollTop)).toBe(0);
+    await expect(dialog.getByRole('button', { name: /^Close / })).toBeInViewport({ ratio: 1 });
+  });
+
   test('deep links open their dialog', async ({ page }) => {
     await page.goto('/#about-privacy');
     await expect(page.locator('dialog#about-privacy')).toBeVisible();
     await expect.poll(() => page.locator('dialog#about-privacy').evaluate((d) => d.matches(':modal'))).toBe(true);
+    // Closing leaves no copy of it in the page, drops the hash and focuses the card that opens it.
+    await page.keyboard.press('Escape');
+    await expect(page.locator('dialog#about-privacy')).toBeHidden();
+    expect(new URL(page.url()).hash).toBe('');
+    await expect(page.locator('#privacy .fcard-link')).toBeFocused();
   });
 
   test('a link to a dialog opens it', async ({ page }) => {
