@@ -17,11 +17,27 @@
   };
   document.addEventListener('click', (event) => {
     const link = (event.target as Element | null)?.closest<HTMLElement>('[data-dialog]');
-    if (link?.dataset.dialog && open(link.dataset.dialog, link)) event.preventDefault();
+    if (!link?.dataset.dialog) return;
+    // A link from one dialog to another replaces it instead of stacking a second modal on top.
+    const from = link.closest<HTMLDialogElement>('dialog.sheet[open]');
+    if (from && from.id !== link.dataset.dialog) from.close();
+    if (open(link.dataset.dialog, link)) event.preventDefault();
   });
   document.querySelectorAll<HTMLDialogElement>('dialog.sheet').forEach((dialog) => {
     // A click on the backdrop lands on the <dialog> itself (its content fills the box): close, as `closedby="any"` does.
-    dialog.addEventListener('close', () => document.documentElement.classList.toggle('has-sheet', !!document.querySelector('dialog.sheet[open]')));
+    dialog.addEventListener('close', () => {
+      document.documentElement.classList.toggle('has-sheet', !!document.querySelector('dialog.sheet[open]'));
+      // A dialog opened from a link to it: drop the hash, so the page doesn't keep pointing at a closed dialog, and
+      // give focus to the card that opens it (there was no opener to return to).
+      if (location.hash === `#${dialog.id}`) history.replaceState(null, '', location.pathname + location.search);
+      requestAnimationFrame(() => {
+        const active = document.activeElement;
+        const lost = !active || active === document.body || !!active.closest('dialog:not([open])');
+        if (lost && !document.querySelector('dialog.sheet[open]')) {
+          document.querySelector<HTMLElement>(`a[data-dialog="${dialog.id}"]:not(dialog a)`)?.focus();
+        }
+      });
+    });
     dialog.addEventListener('click', (event) => {
       if (event.target === dialog) dialog.close();
     });
@@ -30,6 +46,13 @@
     const watch = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('is-awake', e.isIntersecting)));
     document.querySelectorAll('[data-awake]').forEach((el) => watch.observe(el));
   }
-  const fromUrl = location.hash.slice(1);
-  if (fromUrl && document.querySelector(`dialog.sheet#${CSS.escape(fromUrl)}`)) open(fromUrl);
+  // A link to a dialog (/#about-privacy) opens it as a modal. Run after the load's own fragment scroll, which would
+  // otherwise leave it showing in place through the no-JavaScript `:target` fallback.
+  const fromUrl = () => {
+    const id = location.hash.slice(1);
+    if (id && document.querySelector(`dialog.sheet#${CSS.escape(id)}`)) open(id);
+  };
+  if (document.readyState === 'complete') requestAnimationFrame(fromUrl);
+  else window.addEventListener('load', () => requestAnimationFrame(fromUrl), { once: true });
+  window.addEventListener('hashchange', fromUrl);
 </script>

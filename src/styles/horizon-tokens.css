@@ -4,6 +4,7 @@
   --color-paper: #FFFDF5;
   --color-sky: #FFFDF5;
   --color-haze: #FCF5EA;
+  --color-band: #FCF5EA;
   --color-card: #FFFFFF;
   --color-raised: #FFFFFF;
   --color-dusk: #FFF4D1;
@@ -31,7 +32,8 @@
   --color-crest-2: #61AEFD;
   --color-crest-3: #FECA45;
   --color-crest-sun: #FDA81B;
-  --color-device: #0A0F1E;
+  --color-device: #EEF1F7;
+  --color-device-edge: #B9C1D1;
   --shadow-device: 0 30px 60px -24px rgba(23, 35, 63, 0.55);
   --crest-blue-50: #F1F6FF;
   --crest-blue-100: #E3ECFF;
@@ -135,6 +137,7 @@
     --color-paper: #0B1229;
     --color-sky: #0B1229;
     --color-haze: #091226;
+    --color-band: #111A33;
     --color-card: #17233F;
     --color-raised: #202E4D;
     --color-dusk: #151A31;
@@ -162,7 +165,8 @@
     --color-crest-2: #61AEFD;
     --color-crest-3: #FECA45;
     --color-crest-sun: #FDA81B;
-    --color-device: #04070F;
+    --color-device: #E1E6EF;
+    --color-device-edge: #8E99B0;
     --shadow-device: 0 0 0 1px rgba(184, 197, 220, 0.22), 0 30px 60px -24px rgba(0, 0, 0, 0.70);
     --scene: url("/brand/scenery/scenery_midnight_panorama.webp");
   }
@@ -173,6 +177,7 @@
   --color-paper: #0B1229;
   --color-sky: #0B1229;
   --color-haze: #091226;
+  --color-band: #111A33;
   --color-card: #17233F;
   --color-raised: #202E4D;
   --color-dusk: #151A31;
@@ -200,7 +205,8 @@
   --color-crest-2: #61AEFD;
   --color-crest-3: #FECA45;
   --color-crest-sun: #FDA81B;
-  --color-device: #04070F;
+  --color-device: #E1E6EF;
+  --color-device-edge: #8E99B0;
   --shadow-device: 0 0 0 1px rgba(184, 197, 220, 0.22), 0 30px 60px -24px rgba(0, 0, 0, 0.70);
   --scene: url("/brand/scenery/scenery_midnight_panorama.webp");
 }
@@ -211,6 +217,7 @@
   --color-paper: #0B1229;
   --color-sky: #0B1229;
   --color-haze: #091226;
+  --color-band: #111A33;
   --color-card: #17233F;
   --color-raised: #202E4D;
   --color-dusk: #151A31;
@@ -238,7 +245,8 @@
   --color-crest-2: #61AEFD;
   --color-crest-3: #FECA45;
   --color-crest-sun: #FDA81B;
-  --color-device: #04070F;
+  --color-device: #E1E6EF;
+  --color-device-edge: #8E99B0;
   --shadow-device: 0 0 0 1px rgba(184, 197, 220, 0.22), 0 30px 60px -24px rgba(0, 0, 0, 0.70);
   --scene: url("/brand/scenery/scenery_midnight_panorama.webp");
 }

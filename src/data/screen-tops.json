@@ -7,6 +7,10 @@
     "bg": "#0F172B",
     "dark": true
   },
+  "f-loan": {
+    "bg": "#0F172B",
+    "dark": true
+  },
   "f-networth": {
     "bg": "#18233F",
     "dark": true
@@ -17,6 +21,14 @@
   },
   "f-shown": {
     "bg": "#0F172B",
+    "dark": true
+  },
+  "f-wallet-adjust": {
+    "bg": "#0F172B",
+    "dark": true
+  },
+  "f-wallet-new": {
+    "bg": "#0C101C",
     "dark": true
   },
   "f-wallet-rows": {
