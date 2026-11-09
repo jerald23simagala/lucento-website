@@ -50,13 +50,13 @@ const spills = (page: Page) =>
     document.querySelectorAll('main > section').forEach((section) => {
       const box = section.getBoundingClientRect();
       // The hero's phones are cropped by their stage on purpose; the stage itself must stay inside the hero.
-      section.querySelectorAll('.stage, .device, .glyph, .fcard, .type-demo, .plan').forEach((el) => {
+      section.querySelectorAll('.stage, .device, .fcard, .type-demo, .plan').forEach((el) => {
         if (!el.closest('dialog') && !el.closest('.stage-layer')) check(box, el, section.id || name(section), true);
       });
     });
     document.querySelectorAll('.fcard').forEach((card) => {
       const box = card.getBoundingClientRect();
-      card.querySelectorAll('.glyph, .glyph > *').forEach((el) => check(box, el, card.id, true));
+      card.querySelectorAll('.ficon, .fcard-title, .fcard-line, .fcard-go').forEach((el) => check(box, el, card.parentElement!.id, true));
     });
     return out;
   });
@@ -86,6 +86,9 @@ test.describe('homepage', () => {
     for (const id of ['features', 'record', 'themes', 'pricing', 'faq', 'multicurrency', 'shared', 'privacy']) {
       await expect(page.locator(`#${id}`), id).toHaveCount(1);
     }
+    // Owner review 3: currencies and Shared are features, so the navigation names only the sections.
+    await expect(page.locator('.nav a')).toHaveText(['Themes', 'Features', 'Pricing', 'FAQ']);
+    await expect(page.locator('section#privacy')).toHaveCount(0);
     await page.locator('.nav').getByRole('link', { name: 'Pricing' }).click();
     await expect(page).toHaveURL(/#pricing$/);
     await expect(page.getByRole('heading', { level: 2, name: 'Free to start. Pro when you want more.' })).toBeInViewport();
@@ -152,6 +155,7 @@ test.describe('homepage', () => {
       expect(html, file).not.toContain(`/screens/${file}-`);
       expect((await request.get(`/screens/${file}-560.webp`)).status(), file).toBe(404);
     }
+    for (const file of ['f-shown-720.webp', 'f-hidden-720.webp']) expect((await request.get(`/screens/${file}`)).status(), file).toBe(404);
     await expect(page.locator('.matrix')).toHaveCount(0);
   });
 
@@ -165,6 +169,12 @@ test.describe('homepage', () => {
       expect(await phone.locator('img').first().getAttribute('srcset')).not.toContain('-720.');
     }
     await expect(page.locator('#themes .device')).toHaveClass(/is-angle/);
+    // The screens are dark, so every phone frame is light (owner review 3).
+    const frames = await page.locator('.device').evaluateAll((els) => els.map((el) => {
+      const [r, g, b] = getComputedStyle(el).backgroundColor.match(/\d+/g)!.map(Number);
+      return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+    }));
+    for (const lum of frames) expect(lum).toBeGreaterThan(0.8);
     await expect(page.locator('footer')).toContainText('App screens © Lucento');
     // The closing band's buttons keep clear of the footer (owner, 2026-11-08).
     const gap = await page.evaluate(() => {
@@ -211,8 +221,14 @@ test.describe('homepage', () => {
       .toBe(true);
   });
 
-  test('hide amounts swaps to the app’s own hidden view', async ({ page }) => {
+  test('security and privacy opens as a feature: hide amounts swaps to the app’s own hidden view', async ({ page }) => {
     await page.goto('/');
+    await page.locator('#privacy .fcard-link').click();
+    const sheet = page.locator('dialog#about-privacy');
+    await expect(sheet).toBeVisible();
+    // Every send path from the policy's short version is still listed, with the link to the policy.
+    await expect(sheet.locator('.ledger > div')).toHaveCount(7);
+    await expect(sheet.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy');
     const toggle = page.getByRole('switch', { name: 'Hide amounts' });
     const shown = page.locator('.reveal-toggle picture.is-shown');
     const hidden = page.locator('.reveal-toggle picture.is-hidden-view');
@@ -269,7 +285,16 @@ test.describe('homepage', () => {
     await page.setViewportSize({ width: 1280, height: 860 });
     await page.goto('/');
     const links = page.locator('.fcard-link');
-    await expect(links).toHaveCount(8);
+    await expect(links).toHaveCount(9);
+    // Identical cards, one line each: icon, name and a single line; the details only on click (owner review 3).
+    const boxes = await page.locator('.fcard').evaluateAll((cards) => cards.map((c) => {
+      const r = c.getBoundingClientRect();
+      const line = c.querySelector('.fcard-line')!;
+      return { w: Math.round(r.width), h: Math.round(r.height), lines: Math.round(line.getBoundingClientRect().height / parseFloat(getComputedStyle(line).lineHeight)), icon: !!c.querySelector('.ficon svg') };
+    }));
+    expect(new Set(boxes.map((b) => `${b.w}x${b.h}`)).size).toBe(1);
+    for (const b of boxes) expect(b).toMatchObject({ lines: 1, icon: true });
+    await expect(page.locator('.fcard img, .fcard .device, .fcard .ticks')).toHaveCount(0);
     for (const link of await links.all()) {
       const id = (await link.getAttribute('data-dialog'))!;
       const dialog = page.locator(`dialog#${id}`);
@@ -456,6 +481,14 @@ test.describe('homepage', () => {
     const cls = await page.evaluate(() => (window as Window & { __cls?: number }).__cls ?? 0);
     expect(cls).toBeLessThan(0.05);
   });
+});
+
+test('nothing on the site promises no ads (owner, 2026-11-08: ads may come to Free)', async ({ page }) => {
+  for (const path of ['/', '/privacy', '/terms']) {
+    await page.goto(path);
+    const text = (await page.locator('body').textContent()) ?? '';
+    expect(text, path).not.toMatch(/no ads|ad-free|never shows ads|without ads/i);
+  }
 });
 
 test('privacy, terms, deletion and confirmation pages respond', async ({ page }) => {

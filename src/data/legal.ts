@@ -12,8 +12,8 @@ export interface LegalDocument {
   sections: LegalSection[];
 }
 
-export const VERSION = "2026-11-07";
-export const UPDATED = "7 November 2026";
+export const VERSION = "2026-11-08";
+export const UPDATED = "8 November 2026";
 export const CONTACT_EMAIL = "lucentoapp@gmail.com";
 export const DELETE_ACCOUNT_URL = "https://www.lucentoapp.com/delete-account";
 
@@ -111,7 +111,7 @@ export const privacy: LegalDocument = {
       "items": [
         "Your wallets, transactions, budgets, goals, debts, scheduled payments and settings are stored in a database on your phone. Every core feature works offline.",
         "Receipt scanning reads the photo on your phone; the photo isn’t uploaded. A profile photo stays on your phone too.",
-        "Lucento doesn’t use Android’s automatic cloud backup, so nothing is copied to a backup you didn’t choose. There are no ads."
+        "Lucento doesn’t use Android’s automatic cloud backup, so nothing is copied to a backup you didn’t choose."
       ]
     },
     {

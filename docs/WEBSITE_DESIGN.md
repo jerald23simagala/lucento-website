@@ -11,21 +11,22 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
    eyebrows, generous line height for reading. The owner's ApplyFast site is the reference for this treatment.
 2. **The product is the picture.** Real app screens come before any illustration. Every screen on the site is a
    capture from the app (see *Screens* below), shown in **dark mode** (Sunrise, dark; owner, 2026-11-08) except in the
-   theme switcher, inside the **one phone template**: a dark device frame with a mock status bar (9:41, signal, Wi-Fi,
-   battery, camera hole) in the colour of the screen's top edge. Never mock up UI the app doesn't have.
+   theme switcher, inside the **one phone template**: a light device frame (owner review 3: the screens are dark, so the
+   frame stands apart from them on day and night grounds; `--color-device`, `--color-device-edge`) with a mock status
+   bar (9:41, signal, Wi-Fi, battery, camera hole) in the colour of the screen's top edge. Never mock up UI the app doesn't have.
 3. **Real screens wherever possible.** If a feature can be shown with a capture, show the capture. When a web element
    restates app behaviour (the Type your way replica, the Shared table), it must match the app exactly: the app's own
    strings, flow, palette and figures (the demo month), and a replica says it is one.
-4. **No generic SaaS template.** No hero split into copy-left/phone-right, no rows of identical icon + heading +
-   paragraph cards, no logo walls, no testimonials we don't have.
+4. **No generic SaaS template.** No hero split into copy-left/phone-right, no paragraph-heavy card grids, no logo
+   walls, no testimonials we don't have. (The feature cards are identical one-liners on purpose: principle 6.)
 5. **No decoration for its own sake.** No gratuitous gradients, glowing borders or glassmorphism. The app's own
-   panorama grounds the hero and the closing band. Drawn art is allowed when it explains a feature (the Shared hands,
-   the card glyphs) and never shows amounts or UI the app doesn't have.
-6. **Feature cards, each with its own picture (owner, 2026-11-08).** Features are compact night cards in the
-   Multicurrency panel's style, in a varied grid (Multicurrency and Shared are wide), each with a drawn glyph that
-   shows what the feature is (a wallet deck, currency coins and rates, an agenda, a category bar), never a phone
-   screenshot. A card opens its details in a dialog, and the dialog holds the real screens and the full copy (a
-   currency ledger, the permission table, two lanes for offline and online). Recording leads, as a working replica.
+   panorama grounds the hero and the closing band. Drawn art is allowed when it explains a feature (the Shared hands)
+   and never shows amounts or UI the app doesn't have.
+6. **Quiet feature cards (owner review 3, 2026-11-08).** The Features section stays low in intensity: identical
+   cards, each an icon (`FeatureIcon`), the feature's name and one line, in a 3 × 3 grid (2 columns from 40em, 1 on
+   phones). The whole card is the link (one focus stop, a card-sized touch target). Everything else, the real
+   screens and the full copy (a currency ledger, the AI tiers, two lanes for offline and online, the privacy ledger),
+   opens only on click, in a dialog. Recording leads, as a working replica.
 7. **Whitespace is a tool.** Sections breathe (`--section`), and a section holds one idea.
 8. **Editorial hierarchy.** Eyebrow → headline → lede → proof. Alternate compositions; let one element lead.
 9. **Motion tells the story or stays still.** Allowed: the hero's one-time rise, single light sweep, slow float
@@ -67,7 +68,7 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
 - **Components:** `src/components/site/` — `Header`, `Footer`, `PlayCta` (status until `site.playListed`), `Phone`
   (the phone template: frame + `StatusBar` + screen), `StatusBar` (colours from `src/data/screen-tops.json`, written
   by `node scripts/screen-tops.mjs` after screens change), `HeroStage` (the hero's five-phone composition), `ThemeStudio`,
-  `TypeDemo` (the Add transactions replica), `FeatureGlyph` (card pictures), `SharedArt` (the two hands),
+  `TypeDemo` (the Add transactions replica), `FeatureIcon` (card icons), `SharedArt` (the two hands),
   `Dialog` + `DialogScript` (feature details and the plan comparison), `Pricing`.
 - **Content:** `src/data/content.ts` (screens, themes, foreign wallets, FAQ — each with its source in the app),
   `src/data/plans.ts` (approved plan copy; limits mirror the app's `PlanCatalog`).
@@ -82,21 +83,22 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
 2. Themes ("Make Lucento yours", straight after the hero): the real Wallets gallery in all five themes and both modes
    (radio buttons + CSS `:has()`; Midnight forces dark).
 3. Features: **Type your way** first, a working replica of Add transactions (send a three-line message, give the
-   shampoo a category, save, and Transactions shows the rows with the month's totals moved); then eight cards in
-   the owner's section language, each opening a dialog with its screens: Your complete picture (Wallets list + net
-   worth make-up) · **Multicurrency** (wide, Pro) · Understand your finances (Insights) · Stay within your means
-   (Budget + categories) · Build your future (Goals) · Never miss a payment (schedules + the bell) · **Lucento
-   Shared** (wide, Pro, the two hands; benefits only) · Offline or online (a full-width strip).
-4. Security and privacy: lock, hide amounts (a real switch between two captures from one run), recents, backups;
-   what leaves the phone, in the policy's words.
-5. Pricing: Free, Pro and Pro Lifetime. Pro opens on yearly with its saving (Save 33%, ₱598 less than monthly for a
+   shampoo a category, save, and Transactions shows the rows with the month's totals moved); then nine identical
+   cards, each opening a dialog with its screens: Wallets and net worth · Budgets · Bills and schedules · Savings
+   goals · Insights · **Multicurrency wallets** (Pro) · **Lucento Shared** (Pro, the two hands) · Works offline ·
+   **Security and privacy** (owner review 3: rolled into Features): lock, hide amounts (a real switch between two
+   captures from one run), recents, backups, and what leaves the phone in the policy's words (every send path, linked
+   to /privacy).
+4. Pricing: Free, Pro and Pro Lifetime. Pro opens on yearly with its saving (Save 33%, ₱598 less than monthly for a
    year, computed from the prices); Lifetime has Pro's premium treatment in gold. What happens after buying and if
-   Pro ends; the full comparison opens in a dialog. Free never promises "no ads" (ads may come to Free).
-6. FAQ: accordions grouped by Using Lucento, Your data, Plans and payment (FAQPage structured data).
-7. Final call to action (night): the Google Play status and the plans; then the footer (privacy, terms, deletion,
+   Pro ends; the full comparison opens in a dialog. Nothing on the site promises "no ads" (ads may come to Free;
+   the app's policy dropped the line too, e2e enforces it).
+5. FAQ: accordions grouped by Using Lucento, Your data, Plans and payment (FAQPage structured data).
+6. Final call to action (night): the Google Play status and the plans; then the footer (privacy, terms, deletion,
    contact).
 
-The header lists the sections in page order (Themes, Features, Currencies, Shared, Pricing, FAQ) with the Play
+The header lists the sections in page order (Themes, Features, Pricing, FAQ; currencies and Shared are features,
+owner review 3) with the Play
 status on wide screens; phones get an icon menu.
 
 ## Screens

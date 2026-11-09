@@ -276,10 +276,18 @@
       {
         "name": "color-device",
         "value": {
-          "light": "#0A0F1E",
-          "dark": "#04070F"
+          "light": "#EEF1F7",
+          "dark": "#E1E6EF"
         },
-        "usage": "Phone frame bezel."
+        "usage": "Phone frame bezel: light, so the dark app screens stand out from it on day and night grounds (owner, 2026-11-08)."
+      },
+      {
+        "name": "color-device-edge",
+        "value": {
+          "light": "#B9C1D1",
+          "dark": "#8E99B0"
+        },
+        "usage": "The phone frame's outer edge, separating the light bezel from the page."
       }
     ]
   },
