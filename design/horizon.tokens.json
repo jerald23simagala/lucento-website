@@ -58,6 +58,14 @@
         "usage": "Bottom of the hero sky; equals the panorama's top row so the scenery rises out of the sky with no edge."
       },
       {
+        "name": "color-band",
+        "value": {
+          "light": "#FCF5EA",
+          "dark": "#111A33"
+        },
+        "usage": "Alternate section band (.band-haze): the light haze by day, a visibly raised navy by night so sections still separate."
+      },
+      {
         "name": "color-card",
         "value": {
           "light": "#FFFFFF",

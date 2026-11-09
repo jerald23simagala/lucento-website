@@ -23,10 +23,10 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
    panorama grounds the hero and the closing band. Drawn art is allowed when it explains a feature (the Shared hands)
    and never shows amounts or UI the app doesn't have.
 6. **Quiet feature cards (owner review 3, 2026-11-08).** The Features section stays low in intensity: identical
-   cards, each an icon (`FeatureIcon`), the feature's name and one line, in a 3 × 3 grid (2 columns from 40em, 1 on
-   phones). The whole card is the link (one focus stop, a card-sized touch target). Everything else, the real
+   cards, each an icon (`FeatureIcon`), the feature's name and one line, in a 3 × 4 grid (1 column on phones, 2 from
+   48em, 3 from 80em: columns step up only where each line fits on one row). The whole card is the link (one focus stop, a card-sized touch target). Everything else, the real
    screens and the full copy (a currency ledger, the AI tiers, two lanes for offline and online, the privacy ledger),
-   opens only on click, in a dialog. Recording leads, as a working replica.
+   opens only on click, in a dialog. Type your way is the first card; its dialog holds the working replica.
 7. **Whitespace is a tool.** Sections breathe (`--section`), and a section holds one idea.
 8. **Editorial hierarchy.** Eyebrow → headline → lede → proof. Alternate compositions; let one element lead.
 9. **Motion tells the story or stays still.** Allowed: the hero's one-time rise, single light sweep, slow float
@@ -82,13 +82,16 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
    edges. No carousel, tabs or captions that enumerate the app (owner, 2026-11-08).
 2. Themes ("Make Lucento yours", straight after the hero): the real Wallets gallery in all five themes and both modes
    (radio buttons + CSS `:has()`; Midnight forces dark).
-3. Features: **Type your way** first, a working replica of Add transactions (send a three-line message, give the
-   shampoo a category, save, and Transactions shows the rows with the month's totals moved); then nine identical
-   cards, each opening a dialog with its screens: Wallets and net worth · Budgets · Bills and schedules · Savings
-   goals · Insights · **Multicurrency wallets** (Pro) · **Lucento Shared** (Pro, the two hands) · Works offline ·
-   **Security and privacy** (owner review 3: rolled into Features): lock, hide amounts (a real switch between two
-   captures from one run), recents, backups, and what leaves the phone in the policy's words (every send path, linked
-   to /privacy).
+3. Features: twelve identical cards, each opening a dialog with its screens and full copy: **Type your way** (the
+   working replica of Add transactions: send a three-line message, give the shampoo a category, save, and
+   Transactions shows the rows with the month's totals moved) · Wallets and net worth · **Wallet customization** (kinds,
+   logos, default wallet, and Adjust balance, which trues a wallet up with one recorded adjustment) · Budgets · Bills
+   and schedules · **Debts and loans** (suggested amortization from rate and term, interest estimate, reminder date
+   that schedules the payments, installments paid; cards' limit and billing days) · Savings goals · Insights ·
+   **Multicurrency wallets** (Pro) · **Lucento Shared** (Pro, the two hands) · Works offline (points to every send path
+   and the policy) · **Security and privacy** (owner review 3): lock, hide amounts (a real switch between two captures
+   from one run), recents, backups, and what leaves the phone in the policy's words (every send path, linked to
+   /privacy). Links to a dialog (`/#about-debts`) open it as a modal.
 4. Pricing: Free, Pro and Pro Lifetime. Pro opens on yearly with its saving (Save 33%, ₱598 less than monthly for a
    year, computed from the prices); Lifetime has Pro's premium treatment in gold. What happens after buying and if
    Pro ends; the full comparison opens in a dialog. Nothing on the site promises "no ads" (ads may come to Free;

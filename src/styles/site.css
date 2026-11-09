@@ -73,7 +73,7 @@ h3, h4, .title {
 }
 .muted { color: var(--color-ink-muted); }
 .fine { font-size: var(--text-caption); line-height: var(--leading-caption); color: var(--color-ink-muted); }
-.accent { color: var(--crest-blue-600); }
+.accent { color: var(--color-action); } /* #154DFD by day, #719CFF by night (3:1+ on navy) */
 .theme-night .accent { color: var(--crest-blue-300); }
 p, li, dd, dt, h1, h2, h3, h4, th, td, summary, legend { overflow-wrap: break-word; }
 fieldset { min-width: 0; }
@@ -84,7 +84,7 @@ fieldset { min-width: 0; }
 .section { padding-block: var(--section); }
 .section + .section:not(.band) { padding-top: 0; }
 .band { padding-block: var(--section); }
-.band-haze { background: var(--color-haze); }
+.band-haze { background: var(--color-band); }
 /* A night band re-declares its colours: the tokens change inside .theme-night, but inherited colour would not. */
 .theme-night { background-color: var(--color-paper); color: var(--color-ink); }
 .section-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); margin-bottom: clamp(var(--space-10), 5vw, var(--space-16)); }
@@ -674,9 +674,9 @@ a.play:hover { color: #fff; background: #111; }
 .sim-dock .sim-plus svg { width: calc(28 * var(--u)); }
 
 /* the cards (owner review 3, 2026-11-08): nine identical one-liners with icons; the whole card opens its details.
-   Columns step up only when each card's line still fits on one row (1 → 2 at 54em → 3 at 80em). */
+   Columns step up only when each card's line still fits on one row (1 → 2 at 48em → 3 at 80em). */
 .fcards { display: grid; gap: var(--space-3); grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; padding: 0; margin: var(--space-6) 0 0; list-style: none; }
-@media (min-width: 54em) { .fcards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 48em) { .fcards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (min-width: 80em) { .fcards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); } }
 /* the whole card is the link: one focus stop, and a touch target the size of the card */
 .fcards > li { display: grid; min-width: 0; }
@@ -698,14 +698,14 @@ a.play:hover { color: #fff; background: #111; }
 .fcard-go svg { display: block; width: 100%; height: 100%; }
 .fcard:hover .fcard-go { color: var(--color-action); transform: translateX(3px); }
 /* phones: one compact column, so nine cards stay a short list */
-@media (max-width: 39.99em) {
+@media (max-width: 79.99em) {
   .fcards { gap: var(--space-2); }
   .fcard { column-gap: var(--space-3); padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3); }
   .ficon { width: 44px; height: 44px; }
-  .fcard-title .pro-tag { font-size: 0.625rem; }
+  .fcard-title .pro-tag { font-size: 0.6875rem; }
 }
-/* the narrowest phones give the arrow's width to the text; the whole card is still the link */
-@media (max-width: 24.99em) { .fcard { grid-template-columns: auto minmax(0, 1fr); padding-right: var(--space-3); } .fcard-go { display: none; } }
+/* the narrowest phones keep the arrow (it says the card opens) but give it less room */
+@media (max-width: 24.99em) { .fcard { column-gap: var(--space-2); padding-right: var(--space-3); } .ficon { width: 40px; height: 40px; } .fcard-go { width: 16px; height: 16px; } }
 
 .shared-art { width: 100%; max-width: 34rem; height: auto; font-family: var(--font-sans); }
 @media (prefers-reduced-motion: no-preference) {

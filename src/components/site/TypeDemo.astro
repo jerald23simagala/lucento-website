@@ -103,12 +103,20 @@ const before = {
 // Newest first, as the list orders a day's rows.
 const saved = [...rows].reverse();
 const tile = (hue: string) => `--hue:${hue}`;
+// In a dialog (owner review 3: Type your way is a feature card) the dialog carries the headline.
+const { headless = false } = Astro.props as { headless?: boolean };
 ---
 
 <div class="type-demo" data-type-demo data-state="ready" data-awake>
   <div class="type-head">
-    <p class="eyebrow">Type your way</p>
-    <h3 class="headline" id="h-type">Say it once. <span class="accent">Lucento writes the rows.</span></h3>
+    {
+      !headless && (
+        <>
+          <p class="eyebrow">Type your way</p>
+          <h3 class="headline" id="h-type">Say it once. <span class="accent">Lucento writes the rows.</span></h3>
+        </>
+      )
+    }
     <p class="lede">Write several transactions in one message. Each becomes a row with its amount, category and wallet filled in where Lucento can tell; anything missing is highlighted, and nothing is saved until you say so.</p>
   </div>
 

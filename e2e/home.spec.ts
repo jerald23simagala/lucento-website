@@ -41,6 +41,8 @@ const spills = (page: Page) =>
       const body = open.querySelector('.sheet-body')!;
       // inside a dialog, content scrolls vertically, so only the sides are checked
       open.querySelectorAll('.device, svg, table, .fx-ledger, .lanes').forEach((el) => {
+        // The composer replica clips its own off-screen panes (the Transactions screen waiting to slide in).
+        if (el.closest('.sim')) return;
         const r = el.getBoundingClientRect();
         if (r.width && (r.left < box.left - 1 || r.right > box.right + 1)) out.push(`${open.id}: ${name(el)} ${Math.round(r.left)}–${Math.round(r.right)} outside ${Math.round(box.left)}–${Math.round(box.right)}`);
       });
@@ -161,7 +163,8 @@ test.describe('homepage', () => {
 
   test('no feature dialog shows a screen flat and whole', async ({ page }) => {
     await page.goto('/');
-    const phones = page.locator('dialog .device');
+    // Screenshots only: the composer replica (Type your way) is a working copy of the app, not a capture.
+    const phones = page.locator('dialog .device:not(.type-phone .device)');
     expect(await phones.count()).toBeGreaterThan(5);
     for (const phone of await phones.all()) {
       await expect(phone).toHaveClass(/is-(window|focus|angle|lift)/);
@@ -227,7 +230,7 @@ test.describe('homepage', () => {
     const sheet = page.locator('dialog#about-privacy');
     await expect(sheet).toBeVisible();
     // Every send path from the policy's short version is still listed, with the link to the policy.
-    await expect(sheet.locator('.ledger > div')).toHaveCount(7);
+    await expect(sheet.locator('.ledger > div')).toHaveCount(8);
     await expect(sheet.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy');
     const toggle = page.getByRole('switch', { name: 'Hide amounts' });
     const shown = page.locator('.reveal-toggle picture.is-shown');
@@ -243,9 +246,11 @@ test.describe('homepage', () => {
   test('type your way: send, give the shampoo a category, save, and Transactions adds up', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    const demo = page.locator('[data-type-demo]');
+    // Owner review 3: Type your way is a feature card; the working replica opens in its dialog.
+    await page.locator('#record .fcard-link').click();
+    await expect(page.locator('dialog#about-record')).toBeVisible();
+    const demo = page.locator('dialog#about-record [data-type-demo]');
     const sim = demo.locator('[data-sim]');
-    await demo.scrollIntoViewIfNeeded();
     await expect(sim.locator('.sim-typed')).toHaveText('Lunch 250Groceries 1,200Shampoo 180');
     await demo.getByRole('button', { name: 'Send it' }).click();
     await expect(sim.locator('.sim-reply-line .when-open')).toHaveText('Here are 3 transactions — 1 needs a look:');
@@ -285,7 +290,7 @@ test.describe('homepage', () => {
     await page.setViewportSize({ width: 1280, height: 860 });
     await page.goto('/');
     const links = page.locator('.fcard-link');
-    await expect(links).toHaveCount(9);
+    await expect(links).toHaveCount(12);
     // Identical cards, one line each: icon, name and a single line; the details only on click (owner review 3).
     const boxes = await page.locator('.fcard').evaluateAll((cards) => cards.map((c) => {
       const r = c.getBoundingClientRect();
@@ -317,9 +322,28 @@ test.describe('homepage', () => {
     await expect(page.locator('dialog[open]')).toHaveCount(0);
   });
 
+  test('the offline dialog points to every send path and the policy, and its link swaps dialogs', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('#offline .fcard-link').click();
+    const offline = page.locator('dialog#about-offline');
+    await expect(offline).toContainText('billing component');
+    await expect(offline).toContainText('Crash reports and usage counts stay off');
+    await expect(offline.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy');
+    await offline.getByRole('link', { name: 'What leaves your phone' }).click();
+    await expect(page.locator('dialog#about-privacy')).toBeVisible();
+    await expect(page.locator('dialog[open]')).toHaveCount(1);
+  });
+
+  test('deep links open their dialog', async ({ page }) => {
+    await page.goto('/#about-privacy');
+    await expect(page.locator('dialog#about-privacy')).toBeVisible();
+    await expect.poll(() => page.locator('dialog#about-privacy').evaluate((d) => d.matches(':modal'))).toBe(true);
+  });
+
   test('a link to a dialog opens it', async ({ page }) => {
     await page.goto('/#about-shared');
     await expect(page.locator('dialog#about-shared')).toBeVisible();
+    await expect.poll(() => page.locator('dialog#about-shared').evaluate((d) => d.matches(':modal'))).toBe(true);
     await expect(page.locator('dialog#about-shared .ticks')).toBeVisible();
   });
 
@@ -451,6 +475,7 @@ test.describe('homepage', () => {
     await page.goto('/');
     await page.mouse.wheel(0, 3000);
     // Try the composer too: its steps must not animate either.
+    await page.locator('#record .fcard-link').click();
     await page.locator('[data-type-demo]').getByRole('button', { name: 'Send it' }).click();
     await page.waitForTimeout(400);
     const moving = await page.evaluate(() => {

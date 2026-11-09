@@ -4,6 +4,7 @@
   --color-paper: #FFFDF5;
   --color-sky: #FFFDF5;
   --color-haze: #FCF5EA;
+  --color-band: #FCF5EA;
   --color-card: #FFFFFF;
   --color-raised: #FFFFFF;
   --color-dusk: #FFF4D1;
@@ -136,6 +137,7 @@
     --color-paper: #0B1229;
     --color-sky: #0B1229;
     --color-haze: #091226;
+    --color-band: #111A33;
     --color-card: #17233F;
     --color-raised: #202E4D;
     --color-dusk: #151A31;
@@ -175,6 +177,7 @@
   --color-paper: #0B1229;
   --color-sky: #0B1229;
   --color-haze: #091226;
+  --color-band: #111A33;
   --color-card: #17233F;
   --color-raised: #202E4D;
   --color-dusk: #151A31;
@@ -214,6 +217,7 @@
   --color-paper: #0B1229;
   --color-sky: #0B1229;
   --color-haze: #091226;
+  --color-band: #111A33;
   --color-card: #17233F;
   --color-raised: #202E4D;
   --color-dusk: #151A31;
