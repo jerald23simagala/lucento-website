@@ -9,6 +9,7 @@
  */
 
 import type { APIRoute } from 'astro';
+import { methodGuard } from '../../../server/http';
 import { json } from '../../../server/billing';
 import { emailConfig, sendOnce, signedInAccount, welcomeDue } from '../../../server/email';
 import { welcomeEmail } from '../../../server/email-templates';
@@ -30,4 +31,5 @@ export const POST: APIRoute = async ({ request }) => {
   return outcome === 'failed' ? json(502, { error: 'send_failed' }) : json(200, { result: outcome });
 };
 
-export const GET: APIRoute = () => json(405, { error: 'method_not_allowed' });
+// Every other method, OPTIONS included: 405 (204 for OPTIONS) with Allow; never a crash (security audit F-08).
+export const ALL = methodGuard(['POST']);

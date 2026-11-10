@@ -10,6 +10,7 @@
  */
 
 import type { APIRoute } from 'astro';
+import { methodGuard } from '../../../server/http';
 import { billingConfig, json, revokePurchase } from '../../../server/billing';
 import { listVoided, playAccessToken } from '../../../server/play-api';
 import { sameSecret } from '../../../server/play-state';
@@ -55,3 +56,6 @@ export const GET: APIRoute = async ({ request }) => {
   console.log(`voided: ${seen} voided purchases checked, ${revoked} rows revoked, ${failed} failed`);
   return json(failed > 0 ? 502 : 200, { seen, revoked, failed });
 };
+
+// Every other method, OPTIONS included: 405 (204 for OPTIONS) with Allow; never a crash (security audit F-08).
+export const ALL = methodGuard(['GET']);

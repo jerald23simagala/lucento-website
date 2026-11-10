@@ -17,6 +17,7 @@
  */
 
 import type { APIRoute } from 'astro';
+import { methodGuard } from '../../server/http';
 import { generate } from '../../server/gemini';
 
 declare const process: { env: Record<string, string | undefined> };
@@ -202,4 +203,5 @@ export const POST: APIRoute = async ({ request }) => {
   return json(200, { items, remaining: allowance.remaining, plan: allowance.plan });
 };
 
-export const GET: APIRoute = () => json(405, { error: 'method_not_allowed' });
+// Every other method, OPTIONS included: 405 (204 for OPTIONS) with Allow; never a crash (security audit F-08).
+export const ALL = methodGuard(['POST']);

@@ -1,0 +1,57 @@
+name: Website CI
+
+# Security audit F-15: the website had no CI. Every push and pull request is linted, type-checked, unit-tested, built and
+# tested end to end, and its production dependencies are audited. Third-party actions are pinned by commit SHA.
+
+on:
+  push:
+    branches: [main, "feature/**", "fix/**", "security/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, types, unit tests, build, e2e, dependency audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Verify (tokens, lint, astro check, unit tests, build)
+        run: npm run verify
+
+      # Fails on a high or critical advisory in what ships. Moderate build-time advisories are tracked in
+      # lucento-android docs/security/REMEDIATION_REPORT.md (F-04) and by Dependabot.
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      # Google Chrome is preinstalled on GitHub's Ubuntu runners (playwright.config.ts uses channel "chrome").
+      - name: End-to-end tests (dev server, and the built site with vercel.json's headers)
+        run: npx playwright test --reporter=line
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

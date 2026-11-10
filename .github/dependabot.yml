@@ -1,0 +1,28 @@
+# Dependency update pull requests (security audit F-15). Each runs Website CI and is reviewed and merged by hand; Astro
+# and its integrations move together.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      lint:
+        patterns:
+          - "eslint*"
+          - "typescript-eslint"
+          - "@typescript-eslint/*"
+    labels: ["dependencies"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    labels: ["dependencies"]

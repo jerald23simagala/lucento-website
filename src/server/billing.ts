@@ -68,6 +68,10 @@ export type ApplyOutcome =
   | { kind: 'unlinked' }
   | { kind: 'linked_elsewhere' }
   | { kind: 'review_required' }
+  // Security audit F-03: Play says the purchase was made for a different Lucento account; nothing was linked.
+  | { kind: 'other_account' }
+  // Security audit F-12: a license tester's purchase, on a project that doesn't accept them.
+  | { kind: 'test_purchase_refused' }
   | { kind: 'not_found' }
   | { kind: 'mismatch' }
   | { kind: 'play_unavailable' }
@@ -107,6 +111,7 @@ export async function verifyAndStore(
     p_base_plan_id: reading.basePlanId,
     p_purchased_at: reading.purchasedAt,
     p_expires_at: reading.expiresAt,
+    p_test_purchase: reading.testPurchase,
   });
   if (!stored.ok) return { kind: 'store_unavailable' };
   const result = (stored.body as { result?: unknown } | null)?.result;
@@ -119,6 +124,10 @@ export async function verifyAndStore(
       return { kind: 'linked_elsewhere' };
     case 'review_required':
       return { kind: 'review_required' };
+    case 'other_account':
+      return { kind: 'other_account' };
+    case 'test_purchase_refused':
+      return { kind: 'test_purchase_refused' };
     default:
       return { kind: 'store_unavailable' };
   }
