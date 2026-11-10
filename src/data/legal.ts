@@ -12,8 +12,8 @@ export interface LegalDocument {
   sections: LegalSection[];
 }
 
-export const VERSION = "2026-11-09";
-export const UPDATED = "8 November 2026";
+export const VERSION = "2026-11-10";
+export const UPDATED = "10 November 2026";
 export const CONTACT_EMAIL = "lucentoapp@gmail.com";
 export const DELETE_ACCOUNT_URL = "https://www.lucentoapp.com/delete-account";
 
@@ -156,7 +156,8 @@ export const privacy: LegalDocument = {
       "items": [
         "Read messages with Gemini sends the message you type or speak, today’s date, your main currency and your category and account names to Lucento’s server, which asks Google’s Gemini to read it.",
         "Ask Lucento’s AI answers send your question with a summary of your finances, including recent transactions, as its consent screen explains before you agree.",
-        "Lucento’s server doesn’t keep these messages; it counts requests per account per day for the daily allowance. You can turn either feature off at any time."
+        "Lucento’s server doesn’t keep these messages; it counts requests per account per day for the daily allowance. You can turn either feature off at any time.",
+        "Lucento uses Gemini’s free service for now: Google may keep what Gemini receives and use it to improve its products, and people at Google may read it for that purpose. If that isn’t acceptable to you, leave both features off: everything else in Lucento works without them."
       ]
     },
     {
