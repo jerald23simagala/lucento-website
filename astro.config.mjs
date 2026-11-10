@@ -2,9 +2,10 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
+import { injectScriptPolicy } from './scripts/csp.mjs';
 
 // The production domain is not decided yet. Set SITE_URL to enable canonical
 // URLs and the sitemap; until then neither is emitted rather than pointing at a guess.
@@ -35,7 +36,8 @@ function rewriteHtmlTree(dir) {
     }
     if (!name.endsWith('.html')) continue;
     const html = readFileSync(path, 'utf8');
-    const next = deferStylesheetLinks(html);
+    // Then each page's script policy, hashing the final HTML (deferral adds onload handlers; scripts/csp.mjs).
+    const next = injectScriptPolicy(deferStylesheetLinks(html));
     if (next !== html) writeFileSync(path, next);
   }
 }
@@ -77,6 +79,9 @@ export default defineConfig({
   integrations: [...(site ? [sitemap()] : []), deferBuiltStyles()],
   // Pages stay static; only on-demand routes (src/pages/api/interpret.ts, prerender = false) become Vercel Functions.
   adapter: vercel(),
+  // The site uses no astro:assets images. The pass-through service keeps Astro's on-demand optimizer (sharp/libvips,
+  // behind /_image) out of the function that also serves the billing and AI endpoints (security audit F-04).
+  image: { service: passthroughImageService() },
   build: {
     // Keep the built stylesheets external (the demo's phone styles). SiteLayout inlines the site's own CSS itself.
     inlineStylesheets: 'never',

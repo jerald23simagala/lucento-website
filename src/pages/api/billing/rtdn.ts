@@ -11,11 +11,18 @@
  * same rows.
  *
  * Environment: as src/server/billing.ts, plus LUCENTO_RTDN_PUSH_TOKEN (secret, any long random string).
+ *
+ * Security audit F-10, Pub/Sub push authentication (OIDC): once LUCENTO_RTDN_OIDC_AUDIENCE and
+ * LUCENTO_RTDN_OIDC_SERVICE_ACCOUNT are set, every push must also carry a valid Google-signed token for that audience and
+ * service account (src/server/pubsub-auth.ts). The query-string token stays required while LUCENTO_RTDN_PUSH_TOKEN is set,
+ * so it is removed only after the OIDC token has been seen working (docs/security/OWNER_ACTIONS_REQUIRED.md §12).
  */
 
 import type { APIRoute } from 'astro';
+import { methodGuard } from '../../../server/http';
 import { billingConfig, json, revokePurchase, verifyAndStore } from '../../../server/billing';
 import { isProductId, readNotification, sameSecret } from '../../../server/play-state';
+import { verifyPushToken } from '../../../server/pubsub-auth';
 
 declare const process: { env: Record<string, string | undefined> };
 
@@ -23,7 +30,18 @@ export const prerender = false;
 
 export const POST: APIRoute = async ({ request, url }) => {
   const secret = process.env.LUCENTO_RTDN_PUSH_TOKEN ?? '';
-  if (!sameSecret(url.searchParams.get('token') ?? '', secret)) return json(401, { error: 'unauthorized' });
+  const audience = process.env.LUCENTO_RTDN_OIDC_AUDIENCE ?? '';
+  const serviceAccount = process.env.LUCENTO_RTDN_OIDC_SERVICE_ACCOUNT ?? '';
+  const oidc = audience !== '' && serviceAccount !== '';
+  // The shared token: required whenever it is set, and always while OIDC isn't configured (an unset secret matches nothing).
+  if ((secret !== '' || !oidc) && !sameSecret(url.searchParams.get('token') ?? '', secret)) return json(401, { error: 'unauthorized' });
+  if (oidc) {
+    const checked = await verifyPushToken(request.headers.get('authorization') ?? '', { audience, serviceAccountEmail: serviceAccount });
+    if (!checked.ok) {
+      console.error(`rtdn: push authentication refused (${checked.reason})`);
+      return json(401, { error: 'unauthorized' });
+    }
+  }
   const config = billingConfig();
   if (!config) return json(503, { error: 'not_configured' });
 
@@ -57,6 +75,8 @@ export const POST: APIRoute = async ({ request, url }) => {
     case 'mismatch':
     case 'linked_elsewhere':
     case 'review_required':
+    case 'other_account':
+    case 'test_purchase_refused':
       return json(200, { result: 'ignored' });
     case 'play_unavailable':
     case 'store_unavailable':
@@ -64,4 +84,5 @@ export const POST: APIRoute = async ({ request, url }) => {
   }
 };
 
-export const GET: APIRoute = () => json(405, { error: 'method_not_allowed' });
+// Every other method, OPTIONS included: 405 (204 for OPTIONS) with Allow; never a crash (security audit F-08).
+export const ALL = methodGuard(['POST']);

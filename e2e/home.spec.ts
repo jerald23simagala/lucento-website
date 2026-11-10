@@ -354,7 +354,8 @@ test.describe('homepage', () => {
     // Closing leaves no copy of it in the page, drops the hash and focuses the card that opens it.
     await page.keyboard.press('Escape');
     await expect(page.locator('dialog#about-privacy')).toBeHidden();
-    expect(new URL(page.url()).hash).toBe('');
+    // The dialog's close event (which drops the hash) is dispatched as a task after the dialog hides: wait for it.
+    await expect.poll(() => new URL(page.url()).hash).toBe('');
     await expect(page.locator('#privacy .fcard-link')).toBeFocused();
   });
 
