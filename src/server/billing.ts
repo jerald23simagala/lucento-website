@@ -13,7 +13,7 @@
  */
 
 import { getProduct, getSubscription, playAccessToken } from './play-api';
-import { isSubscription, readProductV2, readSubscriptionV2, sha256Hex, type PlayReading, type ProductId } from './play-state';
+import { isSubscription, readProductV2, readSubscriptionV2, sha256Hex, type LucentoStatus, type PlayReading, type ProductId } from './play-state';
 
 declare const process: { env: Record<string, string | undefined> };
 
@@ -77,21 +77,22 @@ export type ApplyOutcome =
   | { kind: 'play_unavailable' }
   | { kind: 'store_unavailable' };
 
-/** Reads [purchaseToken] from Play and stores it for [user] (null: the account it is already linked to). */
-export async function verifyAndStore(
-  c: BillingConfig,
-  user: string | null,
-  purchaseToken: string,
-  productId: ProductId,
-  now = Date.now(),
-): Promise<ApplyOutcome> {
+export type PlayReadOutcome =
+  | { kind: 'ok'; reading: PlayReading }
+  // gone: Play answered 410, a purchase that ended long ago (a subscription expired for months).
+  | { kind: 'not_found'; gone: boolean }
+  | { kind: 'mismatch' }
+  | { kind: 'play_unavailable' };
+
+/** Asks Play for [purchaseToken]'s current state. Nothing the app said is trusted beyond the token and the product. */
+export async function readPlayPurchase(c: BillingConfig, purchaseToken: string, productId: ProductId, now = Date.now()): Promise<PlayReadOutcome> {
   const access = await playAccessToken(c.serviceAccountJson, now);
   if (!access) return { kind: 'play_unavailable' };
   const answer = isSubscription(productId)
     ? await getSubscription(access, c.packageName, purchaseToken)
     : await getProduct(access, c.packageName, purchaseToken);
   // 400 / 404 / 410: Play doesn't know this token for this app (made up, another app's, or long gone).
-  if (answer.status === 400 || answer.status === 404 || answer.status === 410) return { kind: 'not_found' };
+  if (answer.status === 400 || answer.status === 404 || answer.status === 410) return { kind: 'not_found', gone: answer.status === 410 };
   if (!answer.ok) {
     console.error(`billing: Play answered HTTP ${answer.status}`);
     return { kind: 'play_unavailable' };
@@ -100,6 +101,21 @@ export async function verifyAndStore(
   if (!reading) return { kind: 'play_unavailable' };
   // The app said which product; Play's answer must agree (a token from one product can't buy another).
   if (reading.productId !== productId) return { kind: 'mismatch' };
+  return { kind: 'ok', reading };
+}
+
+/** Reads [purchaseToken] from Play and stores it for [user] (null: the account it is already linked to). */
+export async function verifyAndStore(
+  c: BillingConfig,
+  user: string | null,
+  purchaseToken: string,
+  productId: ProductId,
+  now = Date.now(),
+): Promise<ApplyOutcome> {
+  const read = await readPlayPurchase(c, purchaseToken, productId, now);
+  if (read.kind === 'not_found') return { kind: 'not_found' };
+  if (read.kind !== 'ok') return read;
+  const reading = read.reading;
 
   const stored = await rpc(c, 'apply_play_purchase', {
     p_user: user,
@@ -131,6 +147,18 @@ export async function verifyAndStore(
     default:
       return { kind: 'store_unavailable' };
   }
+}
+
+/** What Lucento last heard about a purchase (public.purchase_check_status, SERVER_CONTRACT §3b), or null when unreachable. */
+export async function purchaseCheckStatus(c: BillingConfig, tokenHash: string): Promise<unknown> {
+  const res = await rpc(c, 'purchase_check_status', { p_token_hash: tokenHash });
+  return res.ok ? res.body : null;
+}
+
+/** Keeps Google's reading of a purchase; answers the status to report (REVOKED once refunded), or null on failure. */
+export async function recordPurchaseCheck(c: BillingConfig, tokenHash: string, productId: ProductId, status: LucentoStatus): Promise<LucentoStatus | null> {
+  const res = await rpc(c, 'record_purchase_check', { p_token_hash: tokenHash, p_product_id: productId, p_status: status });
+  return res.ok && typeof res.body === 'string' ? (res.body as LucentoStatus) : null;
 }
 
 /** Ends every row of a refunded purchase (public.revoke_play_purchase). Returns how many rows changed, or null on failure. */

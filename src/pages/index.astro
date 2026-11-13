@@ -37,7 +37,7 @@ const privacyRows = [
   { term: 'AI features (Gemini)', when: 'off until you turn them on', detail: 'Reading a message sends it with today’s date, your main currency and your category and wallet names. Asking the AI adviser sends your question with a summary of your finances, including recent transactions. Lucento uses Gemini’s free service for now, so Google may keep what it receives to improve its products, and people at Google may read it.' },
   { term: 'Password check', when: 'when you choose a password', detail: 'The first five characters of a scrambled version go to Have I Been Pwned to check it against known leaks. Your password is never sent there.' },
   { term: 'Exchange rates', when: 'on by default', detail: `When you record something in another currency: two currency codes and a date, never an amount. Off in Settings${nbsp}›${nbsp}Money.` },
-  { term: 'Google Play', when: 'built into the app', detail: 'Its billing component sends Google its own diagnostics. When you buy Pro, Google takes the payment and Lucento’s server checks the purchase, never your card.' },
+  { term: 'Google Play', when: 'built into the app', detail: 'Its billing component sends Google its own diagnostics. When you buy Pro, Google takes the payment and Lucento’s server checks the purchase, never your card, then checks it again every few hours while you’re online, signed in or not, so a refunded purchase doesn’t stay unlocked.' },
 ];
 
 const jsonLd = [
@@ -444,14 +444,14 @@ const jsonLd = [
               <li><span>Lucento Shared with one partner <span class="pro-tag">Pro</span></span></li>
               <li>The AI adviser, and Smarter reading with Pro (Gemini)</li>
             </ul>
-            <p class="fine">Even without an account, two things reach the network by default: an exchange-rate lookup when you record something in another currency (two currency codes and a date; offline, you type the rate), and Google Play’s billing component, which sends Google its own diagnostics. Crash reports and usage counts stay off until you turn them on. <a href="#about-privacy" data-dialog="about-privacy">What leaves your phone</a> lists every path; the <a href="/privacy">privacy policy</a> has every detail.</p>
+            <p class="fine">Even without an account, two things reach the network by default: an exchange-rate lookup when you record something in another currency (two currency codes and a date; offline, you type the rate), and Google Play’s billing component, which sends Google its own diagnostics. If you buy Pro, the app also checks that purchase with Lucento’s server every few hours while online. Crash reports and usage counts stay off until you turn them on. <a href="#about-privacy" data-dialog="about-privacy">What leaves your phone</a> lists every path; the <a href="/privacy">privacy policy</a> has every detail.</p>
           </div>
         </div>
       </Dialog>
       <Dialog id="about-privacy" kicker="Security and privacy" title="Private by default. Locked when you want." night wide>
         <div class="detail">
           <div class="detail-copy">
-            <p class="lede">Without an account, Lucento’s only default lookup is an exchange rate when you record another currency, and Google Play’s billing component sends Google its own diagnostics. Everything else is off until you turn it on. On the phone itself, your figures stay yours.</p>
+            <p class="lede">Without an account, Lucento’s only default lookups are an exchange rate when you record another currency and, if you buy Pro, a check of that purchase with Lucento’s server; Google Play’s billing component sends Google its own diagnostics. Everything else is off until you turn it on. On the phone itself, your figures stay yours.</p>
             <ul class="safeguards">
               <li><b>Lock Lucento</b><span>Your fingerprint, face or screen lock when you open the app or come back after a minute away. It uses your phone’s own lock and stores nothing.</span></li>
               <li><b>Hide amounts</b><span>One tap blanks every amount; showing them again asks for your lock.</span></li>
