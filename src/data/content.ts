@@ -146,7 +146,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'Do I need an account?',
-        a: 'No. Lucento works fully without one. Without an account, the only default lookup is an exchange rate when you record something in another currency: two currency codes and a date, never an amount (you can turn it off in Settings › Money). An account (Google or email) is only for cloud sync, restoring from your account, Lucento Shared and the AI adviser.',
+        a: 'No. Lucento works fully without one. Without an account, Lucento’s only default lookups are an exchange rate when you record something in another currency (two currency codes and a date, never an amount; you can turn it off in Settings › Money) and, if you buy Pro, a check of that purchase with Lucento’s server. An account (Google or email) is only for cloud sync, restoring from your account, Lucento Shared and the AI adviser.',
       },
       {
         q: 'How do I record transactions?',

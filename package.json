@@ -13,7 +13,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "lint": "eslint .",
-    "test:unit": "node --experimental-strip-types --test src/server/play-state.test.ts src/server/play-api.test.ts src/lib/money.test.ts src/server/email.test.ts src/server/gemini.test.ts src/server/pubsub-auth.test.ts src/server/http.test.ts src/server/quota.test.ts scripts/csp.test.mjs",
+    "test:unit": "node --experimental-strip-types --test src/server/play-state.test.ts src/server/play-api.test.ts src/server/purchase-check.test.ts src/lib/money.test.ts src/server/email.test.ts src/server/gemini.test.ts src/server/pubsub-auth.test.ts src/server/http.test.ts src/server/quota.test.ts scripts/csp.test.mjs",
     "verify": "npm run tokens -- --check && npm run lint && npm run check && npm run test:unit && npm run build",
     "test:e2e": "playwright test"
   },
