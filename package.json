@@ -26,11 +26,11 @@
   "devDependencies": {
     "@astrojs/check": "0.9.12",
     "@playwright/test": "1.56.1",
-    "eslint": "10.12.0",
+    "eslint": "10.14.0",
     "eslint-plugin-astro": "3.2.1",
     "eslint-plugin-jsx-a11y-x": "0.2.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.71.1"
+    "typescript-eslint": "8.72.2"
   },
   "overrides": {
     "@vercel/routing-utils": {
