@@ -127,6 +127,9 @@ adviser's monthly ceiling beyond the plan copy; keep the Google Play mark.
   adding cognitive or visual load. The four directions explored that day (Month Sheet, Index Tabs, Payday Envelopes,
   Familiar Page) were not taken. The Google Play status keeps its badge look until the listing is live (owner
   reconfirmed 2026-11-13 after the critique flagged it; don't raise it again).
+- Website layout (owner, 2026-11-14): the original layout stays: the hero, the themes, twelve identical feature cards,
+  the section eyebrows and the theme switcher as they were. Enhancements are effects only: card hover and press, the
+  hero's warmer light and deeper phones, and section heads easing in once. A layout change needs the owner's say first.
 
 ## Evidence on Hand
 
