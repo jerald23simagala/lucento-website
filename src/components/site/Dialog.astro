@@ -21,7 +21,7 @@ const { id, title, kicker, wide = false, night = false } = Astro.props;
 <dialog id={id} class:list={['sheet', wide && 'is-wide', night && 'theme-night']} aria-labelledby={`${id}-title`} closedby="any">
   <div class="sheet-head">
     <div class="sheet-heading">
-      {kicker && <p class="kicker">{kicker}</p>}
+      {kicker && <p class="eyebrow">{kicker}</p>}
       <h2 id={`${id}-title`} class="title-lg">{title}</h2>
     </div>
     <form method="dialog">

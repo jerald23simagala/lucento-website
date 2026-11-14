@@ -482,12 +482,10 @@ a.play:hover { color: #fff; background: #111; }
 .type-demo .demo-action:disabled { opacity: 0.6; cursor: progress; }
 
 /* the replica: the app's dark Sunrise palette (lucento-android core/designsystem/theme/Color.kt), sized in dp */
-.sim, .lead-preview {
+.sim {
   --a-bg: #10182B; --a-surface: #17233F; --a-raised: #202E4D; --a-variant: #283859; --a-ink: #F8FAFF; --a-muted: #B8C5DC;
   --a-primary: #7C9AFF; --a-container: #26397A; --a-on-container: #E4EBFF; --a-line: #26365C; --a-border: #2D3D63;
   --a-outline: #6F7C99; --a-error: #FF8A8A; --a-positive: #3DD68C; --a-sun: #FFC928;
-}
-.sim {
   --u: calc(100cqw / 360);
   position: relative; container-type: inline-size; aspect-ratio: 720 / 1471; overflow: hidden;
   background: var(--a-bg); color: var(--a-ink); font-family: 'Plus Jakarta Sans', var(--font-sans);
@@ -990,77 +988,39 @@ html:not(.js) .sheet:target { display: block; position: static; width: auto; mar
 /* ---------------------------------------------------------------- pages that still use the app palette (SiteLayout appTokens) */
 .app-tokens { --page-max: 77.5rem; --page-gutter: clamp(20px, 5vw, 64px); --measure: 38rem; --min-touch: 48px; }
 
-/* ── Round 2 refinements (owner, 2026-11-13): the original site, refined ───────────────────────────────────────── */
+/* ── Effects kept from round 2 (owner, 2026-11-14: the original layout, with these effects) ─────────────────────── */
 
-/* Dialog and replica kickers are a plain line now; small capitals stay only in the hero. */
-.kicker { margin: 0; font-size: var(--text-body-small); font-weight: 700; letter-spacing: 0; color: var(--color-action); }
-.theme-night .kicker, .sheet .kicker { color: var(--color-sun); }
-
-/* 1 · The replica, visible on the page: Type your way leads the features across the grid's full width. */
-.fcards > li.lead { grid-column: 1 / -1; }
-.fcards > li.lead .fcard { grid-template-rows: auto auto auto 1fr; align-content: start; row-gap: 4px; padding: var(--space-5) var(--space-6) var(--space-6); }
-.fcards > li.lead .fcard-title { font-size: 1.35rem; }
-.fcards > li.lead .fcard-line { font-size: var(--text-body); }
-.lead-more { grid-column: 1 / -1; grid-row: 3; margin: var(--space-2) 0 0; color: var(--color-ink-muted); font-size: var(--text-body-small); line-height: 1.5; max-width: 34em; }
-.lead-preview { grid-column: 1 / -1; grid-row: 4; position: relative; margin-top: var(--space-4); display: grid; align-content: start; gap: 10px; padding: 34px 16px 16px; border-radius: 18px; background: var(--a-bg); color: var(--a-ink); font-family: 'Plus Jakarta Sans', var(--font-sans); overflow: hidden; }
-.lp-tag { position: absolute; top: 11px; left: 16px; font-size: 0.75rem; color: var(--a-muted); }
-.lp-try { position: absolute; top: 9px; right: 14px; font-size: 0.78rem; font-weight: 700; color: #10182B; background: var(--a-sun); border-radius: 999px; padding: 3px 10px; }
-.lp-msg { justify-self: end; max-width: 88%; margin: 0; background: var(--a-container); color: var(--a-on-container); border-radius: 16px 16px 4px 16px; padding: 10px 14px; font-size: 0.92rem; line-height: 1.45; }
-.lp-reply { margin: 0; font-size: 0.85rem; color: var(--a-muted); }
-.lp-rows { display: grid; gap: 6px; }
-.lp-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--a-raised); border-radius: 12px; padding: 9px 12px; font-size: 0.92rem; font-weight: 600; }
-.lp-row small { display: block; color: var(--a-muted); font-size: 0.75rem; font-weight: 500; }
-.lp-row b { font-variant-numeric: tabular-nums; color: var(--a-error); font-weight: 600; white-space: nowrap; }
-.lp-row.needs { box-shadow: inset 0 0 0 1.5px var(--a-error); }
-@media (min-width: 64em) {
-  .fcards > li.lead .fcard { grid-template-columns: auto minmax(0, 1fr) minmax(320px, 460px); grid-template-rows: auto auto auto 1fr; column-gap: var(--space-5); }
-  .fcards > li.lead .lead-more { grid-column: 2; grid-row: 3; }
-  .fcards > li.lead .lead-preview { grid-column: 3; grid-row: 1 / span 4; margin-top: 0; }
-  .fcards > li.lead .fcard-go { grid-column: 2; grid-row: 4; align-self: end; justify-self: start; }
-}
-@media (min-width: 48em) { .fcards { grid-auto-rows: auto; } }
-@media (min-width: 48em) and (max-width: 79.99em) { .fcards > li:last-child { grid-column: 1 / -1; } }
-@media (min-width: 80em) { .fcards > li:last-child { grid-column: span 2; } }
-@media (prefers-reduced-motion: no-preference) {
-  .lead-preview .lp-msg, .lead-preview .lp-reply, .lead-preview .lp-row { animation: lp-in 9s infinite both; animation-play-state: paused; }
-  .lead-preview.is-awake .lp-msg, .lead-preview.is-awake .lp-reply, .lead-preview.is-awake .lp-row { animation-play-state: running; }
-  .lead-preview .lp-reply { animation-delay: 0.9s; }
-  .lead-preview .lp-row:nth-child(1) { animation-delay: 1.5s; }
-  .lead-preview .lp-row:nth-child(2) { animation-delay: 1.9s; }
-  .lead-preview .lp-row:nth-child(3) { animation-delay: 2.3s; }
-  @keyframes lp-in { 0% { opacity: 0; transform: translateY(6px); } 5% { opacity: 1; transform: none; } 86% { opacity: 1; } 94%, 100% { opacity: 0; } }
-}
-
-/* 3 · Hero light and depth: warmer sunrise light behind the stage, deeper phones, the Dashboard a touch forward. */
+/* Hero light and depth: warmer sunrise light behind the stage, deeper phones, the Dashboard a touch forward. */
 .stage::before { content: ''; position: absolute; z-index: 0; left: 50%; top: -6%; width: min(1240px, 100vw); height: 112%; transform: translateX(-50%); background: radial-gradient(42% 50% at 50% 46%, rgba(255, 201, 40, 0.5), rgba(253, 150, 60, 0.2) 48%, transparent 76%); pointer-events: none; }
 .stage-layer { z-index: 1; }
 .sp-centre { --phone-w: calc(var(--cw) * 1.03); }
 .sp-centre .device { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8) inset, 0 0 0 calc(var(--phone-w) * 0.006) var(--color-device-edge), 0 80px 110px -50px rgba(16, 24, 52, 0.62), 0 30px 46px -26px rgba(16, 24, 52, 0.4); }
 .sp-side .device { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.75) inset, 0 0 0 calc(var(--phone-w) * 0.006) var(--color-device-edge), 0 64px 90px -46px rgba(16, 24, 52, 0.58), 0 26px 40px -26px rgba(16, 24, 52, 0.36); }
 
-/* 4 · Micro-interactions: cards lift and answer a press, their icon turns Lucento blue; buttons and chips respond. */
-.fcard:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -26px rgba(23, 35, 63, 0.5); }
+/* Hover and press: cards lift and answer a press, their icon fills with Lucento blue; buttons and theme chips respond.
+   Hover only where there is hover (no sticky lift after a tap on a phone). */
+@media (hover: hover) {
+  .fcard:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -26px rgba(23, 35, 63, 0.5); }
+  .fcard:hover .ficon { background: var(--color-action); color: var(--color-on-action, #fff); }
+  details summary:hover { color: var(--color-action); }
+}
 .fcard:active { transform: translateY(-1px) scale(0.99); }
-.ficon { transition: background-color var(--dur-base) var(--ease-standard), color var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-emphasised); }
-.fcard:hover .ficon { background: var(--color-action); color: var(--color-on-action, #fff); transform: rotate(-4deg) scale(1.05); }
+.ficon { transition: background-color var(--dur-base) var(--ease-standard), color var(--dur-base) var(--ease-standard); }
 .btn, .look { transition: transform var(--dur-quick) var(--ease-standard), background-color var(--dur-base) var(--ease-standard), border-color var(--dur-quick) var(--ease-standard); }
 .btn:active, .look:active { transform: scale(0.985); }
 details summary { transition: color var(--dur-quick) var(--ease-standard); }
-details summary:hover { color: var(--color-action); }
 @media (prefers-reduced-motion: reduce) {
   .fcard, .ficon, .btn, .look { transition: none; }
-  .fcard:hover, .fcard:active, .btn:active, .look:active, .fcard:hover .ficon { transform: none; }
+  .fcard:hover, .fcard:active, .btn:active, .look:active { transform: none; }
 }
 
-/* 5 · The theme switcher on phones: a compact preview first, so phone, themes and modes share one screen. */
-@media (max-width: 55.99em) {
-  .studio-grid { gap: var(--space-3); }
-  .studio-stage { order: -1; --phone-w: 172px; gap: var(--space-2); }
-  .studio-stage .device.is-angle { transform: none; }
-}
-
-/* 6 · Gentle section reveals: below the first screen, content eases in once as it arrives (Reveal.astro). */
+/* Gentle reveals: below the first screen, the section heads ease in once (Reveal.astro), on the motion tokens, and
+   never hide what has keyboard focus. */
 @media (prefers-reduced-motion: no-preference) {
-  .rv { opacity: 0; transform: translateY(18px); transition: opacity 0.7s var(--ease-emphasised), transform 0.7s var(--ease-emphasised); transition-delay: var(--rv-d, 0ms); }
-  .rv.rv-in { opacity: 1; transform: none; }
+  .rv { opacity: 0; transform: translateY(8px); transition: opacity var(--dur-enter) var(--ease-enter), transform var(--dur-enter) var(--ease-enter); }
+  .rv.rv-in, .rv:focus-within { opacity: 1; transform: none; }
+  .rv:focus-within { transition: none; }
 }
+
+/* The "After you buy" cards sat invisible on the light band (both #FCF5EA): a hairline gives them an edge. */
+.after > div { border: 1px solid var(--color-line); }

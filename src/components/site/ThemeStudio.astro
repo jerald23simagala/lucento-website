@@ -42,6 +42,7 @@ const css =
   <style is:inline set:html={css}></style>
   <div class="wrap">
     <div class="section-head">
+      <p class="eyebrow">Make Lucento yours</p>
       <h2 id="h-themes">Five themes. The same wallets, five ways.</h2>
       <p class="lede">Pick a theme and the real Wallets screen changes with it. Colours, surfaces and the landscape change; what money means doesn’t, so gains, losses and your wallet cards look the same in every theme.</p>
     </div>
@@ -124,4 +125,16 @@ const css =
     if (dark) dark.checked = true;
   }
   sync();
+</script>
+
+<script>
+  // The other themes' screens stay out of the first load and start loading as the section comes near, so the first
+  // switch never shows an empty phone (critic, 2026-11-13; the hide-amounts switch warms its view the same way).
+  const studio = document.querySelector('.studio');
+  const warmThemes = () => studio?.querySelectorAll<HTMLImageElement>('.studio-stage img[loading="lazy"]').forEach((img) => { img.loading = 'eager'; });
+  if (studio && 'IntersectionObserver' in window) {
+    new IntersectionObserver((entries, observer) => {
+      if (entries.some((entry) => entry.isIntersecting)) { warmThemes(); observer.disconnect(); }
+    }, { rootMargin: '600px' }).observe(studio);
+  }
 </script>

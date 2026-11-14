@@ -317,9 +317,8 @@ test.describe('homepage', () => {
     await page.goto('/');
     const links = page.locator('.fcard-link');
     await expect(links).toHaveCount(12);
-    // Identical cards, one line each: icon, name and a single line; the details only on click (owner review 3). Since
-    // round 2 (owner, 2026-11-13) Type your way leads at full width and the last card widens to close the final row.
-    const boxes = await page.locator('.fcards > li:not(.lead):not(:last-child) .fcard').evaluateAll((cards) => cards.map((c) => {
+    // Identical cards, one line each: icon, name and a single line; the details only on click (owner review 3).
+    const boxes = await page.locator('.fcard').evaluateAll((cards) => cards.map((c) => {
       const r = c.getBoundingClientRect();
       const line = c.querySelector('.fcard-line')!;
       return { w: Math.round(r.width), h: Math.round(r.height), lines: Math.round(line.getBoundingClientRect().height / parseFloat(getComputedStyle(line).lineHeight)), icon: !!c.querySelector('.ficon svg') };
@@ -349,52 +348,15 @@ test.describe('homepage', () => {
     await expect(page.locator('dialog[open]')).toHaveCount(0);
   });
 
-  test('round 2: Type your way leads the features with a still of the replica, and opens the working one', async ({ page }) => {
+  test('section heads below the first screen ease in once, and nothing in the hero waits', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
-    const lead = page.locator('.fcards > li.lead');
-    await expect(lead).toHaveAttribute('id', 'record');
-    const [leadBox, gridBox] = await Promise.all([lead.boundingBox(), page.locator('.fcards').boundingBox()]);
-    expect(Math.abs(leadBox!.width - gridBox!.width)).toBeLessThan(2);
-    const still = lead.locator('.lead-preview');
-    await expect(still).toHaveAttribute('aria-hidden', 'true');
-    await expect(still).toContainText('Replica');
-    await expect(still.locator('.lp-msg')).toHaveText(/Lunch 250\s*Groceries 1,200\s*Shampoo 180/);
-    await expect(still).toContainText('Here are 3 transactions — 1 needs a look:');
-    await expect(still.locator('.lp-row')).toHaveText([
-      `LunchRestaurants${MINUS}₱250.00`, `GroceriesGroceries${MINUS}₱1,200.00`, `ShampooChoose category${MINUS}₱180.00`,
-    ]);
-    await lead.locator('.fcard-link').click();
-    await expect(page.locator('dialog#about-record [data-type-demo]')).toBeVisible();
-  });
-
-  test('round 2: sections start with their headline; only the hero keeps its small capitals', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.locator('main .eyebrow')).toHaveCount(1);
-    await expect(page.locator('.hero .eyebrow')).toHaveText('Personal finance for Android');
-    const kickers = page.locator('dialog .kicker');
-    expect(await kickers.count()).toBeGreaterThan(10);
-    expect(await kickers.first().evaluate((el) => getComputedStyle(el).textTransform)).toBe('none');
-  });
-
-  test('round 2: on a phone the theme preview, the themes and the modes share one screen', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/');
-    const stage = page.locator('.studio-stage');
-    await stage.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 72));
-    const [s, modes] = await Promise.all([stage.boundingBox(), page.locator('.modes').boundingBox()]);
-    expect(s!.y).toBeGreaterThanOrEqual(60);
-    expect(modes!.y + modes!.height).toBeLessThanOrEqual(844);
-  });
-
-  test('round 2: content below the first screen eases in once, and is all there once seen', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/');
-    expect(await page.locator('.rv').count()).toBeGreaterThan(10);
+    expect(await page.locator('.rv').count()).toBeGreaterThanOrEqual(3);
+    await expect(page.locator('.rv:not(.section-head)')).toHaveCount(0);
     await expect(page.locator('.hero .rv')).toHaveCount(0);
-    await page.locator('#pricing').scrollIntoViewIfNeeded();
-    await expect.poll(() => page.locator('#pricing .plans > .rv:not(.rv-in)').count()).toBe(0);
-    await expect.poll(() => page.locator('#pricing .plans > *').first().evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+    const head = page.locator('#pricing .section-head');
+    await head.scrollIntoViewIfNeeded();
+    await expect.poll(() => head.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
   });
 
   test('the offline dialog points to every send path and the policy, and its link swaps dialogs', async ({ page }) => {
