@@ -348,6 +348,17 @@ test.describe('homepage', () => {
     await expect(page.locator('dialog[open]')).toHaveCount(0);
   });
 
+  test('section heads below the first screen ease in once, and nothing in the hero waits', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    expect(await page.locator('.rv').count()).toBeGreaterThanOrEqual(3);
+    await expect(page.locator('.rv:not(.section-head)')).toHaveCount(0);
+    await expect(page.locator('.hero .rv')).toHaveCount(0);
+    const head = page.locator('#pricing .section-head');
+    await head.scrollIntoViewIfNeeded();
+    await expect.poll(() => head.evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+  });
+
   test('the offline dialog points to every send path and the policy, and its link swaps dialogs', async ({ page }) => {
     await page.goto('/');
     await page.locator('#offline .fcard-link').click();

@@ -16,6 +16,7 @@ import FeatureIcon from '../components/site/FeatureIcon.astro';
 import SharedArt from '../components/site/SharedArt.astro';
 import Dialog from '../components/site/Dialog.astro';
 import DialogScript from '../components/site/DialogScript.astro';
+import Reveal from '../components/site/Reveal.astro';
 import { faq, foreignWallets, netWorthWithForeign } from '../data/content';
 import { formatMinor } from '../lib/money';
 import { site } from '../data/site';
@@ -218,7 +219,7 @@ const jsonLd = [
           <div class="detail-copy">
             <p class="lede">Build each wallet to match the real one: its kind, name, currency, bank or e-wallet logo, and whether new entries go there by default. When the real balance doesn’t match, Adjust balance trues it up: enter what’s really there on a day, and the gap is recorded as one adjustment, never as income or spending, and never by rewriting your history.</p>
             <ul class="ticks">
-              <li>Eight kinds: cash, bank, e-wallet, savings, credit card, loan, money owed to you, and assets you value yourself</li>
+              <li>Eight kinds: cash, bank, e-wallet, savings, credit card and loan, and with Pro, money owed to you and assets you value yourself</li>
               <li>Logos for more than 400 banks and e-wallets</li>
               <li>A default wallet for new entries, changeable in the composer</li>
               <li>A balance that can’t be right, like cash below zero, is flagged with the fix</li>
@@ -559,4 +560,5 @@ const jsonLd = [
     <div class="hero-ground" aria-hidden="true"></div>
   </section>
   <DialogScript />
+  <Reveal />
 </SiteLayout>

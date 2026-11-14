@@ -16,7 +16,8 @@ Lucento's marketing website (Astro on Vercel) for the Android app in `../lucento
   story, and no full flows of Ask Lucento, card mechanics, Shared's rules or sync internals. Delete unused screens.
   Dialog phones always carry a `Phone` treatment (window, focus, angle, lift); see docs/WEBSITE_DESIGN.md.
 - Every section has one clear job; alternate compositions instead of repeating one.
-- Motion only where it explains the product; always respect reduced motion; never trade performance for animation.
+- Motion only where it explains the product, plus the owner's kept effects (section heads easing in once, card hover
+  and press, the hero's light); always respect reduced motion; never trade performance for animation.
 - Mobile layouts are designed (swipe, folded menu, labelled table rows), not compressed desktop.
 - Keep Lucento's palette, logo and brand assets; tokens come from `design/horizon.tokens.json`.
 

@@ -987,3 +987,40 @@ html:not(.js) .sheet:target { display: block; position: static; width: auto; mar
 
 /* ---------------------------------------------------------------- pages that still use the app palette (SiteLayout appTokens) */
 .app-tokens { --page-max: 77.5rem; --page-gutter: clamp(20px, 5vw, 64px); --measure: 38rem; --min-touch: 48px; }
+
+/* ── Effects kept from round 2 (owner, 2026-11-14: the original layout, with these effects) ─────────────────────── */
+
+/* Hero light and depth: warmer sunrise light behind the stage, deeper phones, the Dashboard a touch forward. */
+.stage::before { content: ''; position: absolute; z-index: 0; left: 50%; top: -6%; width: min(1240px, 100vw); height: 112%; transform: translateX(-50%); background: radial-gradient(42% 50% at 50% 46%, rgba(255, 201, 40, 0.5), rgba(253, 150, 60, 0.2) 48%, transparent 76%); pointer-events: none; }
+.stage-layer { z-index: 1; }
+.sp-centre { --phone-w: calc(var(--cw) * 1.03); }
+.sp-centre .device { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8) inset, 0 0 0 calc(var(--phone-w) * 0.006) var(--color-device-edge), 0 80px 110px -50px rgba(16, 24, 52, 0.62), 0 30px 46px -26px rgba(16, 24, 52, 0.4); }
+.sp-side .device { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.75) inset, 0 0 0 calc(var(--phone-w) * 0.006) var(--color-device-edge), 0 64px 90px -46px rgba(16, 24, 52, 0.58), 0 26px 40px -26px rgba(16, 24, 52, 0.36); }
+
+/* Hover and press: cards lift and answer a press, their icon fills with Lucento blue; buttons and theme chips respond.
+   Hover only where there is hover (no sticky lift after a tap on a phone). */
+@media (hover: hover) {
+  .fcard:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -26px rgba(23, 35, 63, 0.5); }
+  .fcard:hover .ficon { background: var(--color-action); color: var(--color-on-action, #fff); }
+  details summary:hover { color: var(--color-action); }
+}
+.fcard:active { transform: translateY(-1px) scale(0.99); }
+.ficon { transition: background-color var(--dur-base) var(--ease-standard), color var(--dur-base) var(--ease-standard); }
+.btn, .look { transition: transform var(--dur-quick) var(--ease-standard), background-color var(--dur-base) var(--ease-standard), border-color var(--dur-quick) var(--ease-standard); }
+.btn:active, .look:active { transform: scale(0.985); }
+details summary { transition: color var(--dur-quick) var(--ease-standard); }
+@media (prefers-reduced-motion: reduce) {
+  .fcard, .ficon, .btn, .look { transition: none; }
+  .fcard:hover, .fcard:active, .btn:active, .look:active { transform: none; }
+}
+
+/* Gentle reveals: below the first screen, the section heads ease in once (Reveal.astro), on the motion tokens, and
+   never hide what has keyboard focus. */
+@media (prefers-reduced-motion: no-preference) {
+  .rv { opacity: 0; transform: translateY(8px); transition: opacity var(--dur-enter) var(--ease-enter), transform var(--dur-enter) var(--ease-enter); }
+  .rv.rv-in, .rv:focus-within { opacity: 1; transform: none; }
+  .rv:focus-within { transition: none; }
+}
+
+/* The "After you buy" cards sat invisible on the light band (both #FCF5EA): a hairline gives them an edge. */
+.after > div { border: 1px solid var(--color-line); }

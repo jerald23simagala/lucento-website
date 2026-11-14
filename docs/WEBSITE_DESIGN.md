@@ -32,8 +32,11 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
 9. **Motion tells the story or stays still.** Allowed: the hero's one-time rise, single light sweep, slow float
    and drift of the supporting phones and gentle scroll parallax (transform only; paused off screen), the theme
    crossfade, the replica's rows arriving and its screen change after Save, a dialog rising into place, the newest
-   Shared row lighting on both phones. Not allowed: decorative scroll reveals, parallax for its own sake. Everything
-   respects `prefers-reduced-motion`.
+   Shared row lighting on both phones. Since 2026-11-13/14 (owner: keep the original layout, add
+   effects) also: the section heads below the first screen easing in once (`Reveal.astro`, on the motion tokens;
+   nothing on the first screen waits; nothing is hidden without JavaScript or from keyboard focus), cards lifting on
+   hover and answering a press (hover only on devices that hover), and the hero's warmer light and deeper phones. Not
+   allowed: other decorative scroll reveals, parallax for its own sake. Everything respects `prefers-reduced-motion`.
 10. **Every section has a job.** If you can't say what a section proves, cut it.
 11. **Mobile is designed, not shrunk.** The hero becomes a swipeable phone with a scrolling tab row; the replica
     sits between its heading and its steps, so the phone is in view as you tap; cards stack; dialogs become bottom

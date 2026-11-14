@@ -1,0 +1,20 @@
+---
+/**
+ * Gentle reveals (owner, round 2, 2026-11-13; trimmed after critic r1): below the first screen, the section heads ease
+ * in once as they arrive. Nothing visible at load waits; without JavaScript, or with reduced motion, nothing is hidden
+ * at all (the hidden state is added here, never in the markup).
+ */
+---
+
+<script>
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('rv-in'); io.unobserve(e.target); }
+    }), { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll<HTMLElement>('main .section-head').forEach((el) => {
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.92) return;
+      el.classList.add('rv');
+      io.observe(el);
+    });
+  }
+</script>

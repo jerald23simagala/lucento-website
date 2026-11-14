@@ -126,3 +126,15 @@ const css =
   }
   sync();
 </script>
+
+<script>
+  // The other themes' screens stay out of the first load and start loading as the section comes near, so the first
+  // switch never shows an empty phone (critic, 2026-11-13; the hide-amounts switch warms its view the same way).
+  const studio = document.querySelector('.studio');
+  const warmThemes = () => studio?.querySelectorAll<HTMLImageElement>('.studio-stage img[loading="lazy"]').forEach((img) => { img.loading = 'eager'; });
+  if (studio && 'IntersectionObserver' in window) {
+    new IntersectionObserver((entries, observer) => {
+      if (entries.some((entry) => entry.isIntersecting)) { warmThemes(); observer.disconnect(); }
+    }, { rootMargin: '600px' }).observe(studio);
+  }
+</script>
