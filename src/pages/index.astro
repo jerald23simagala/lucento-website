@@ -16,6 +16,7 @@ import FeatureIcon from '../components/site/FeatureIcon.astro';
 import SharedArt from '../components/site/SharedArt.astro';
 import Dialog from '../components/site/Dialog.astro';
 import DialogScript from '../components/site/DialogScript.astro';
+import Reveal from '../components/site/Reveal.astro';
 import { faq, foreignWallets, netWorthWithForeign } from '../data/content';
 import { formatMinor } from '../lib/money';
 import { site } from '../data/site';
@@ -105,17 +106,29 @@ const jsonLd = [
   <section class="band" id="features" aria-labelledby="h-features">
     <div class="wrap">
       <div class="section-head center">
-        <p class="eyebrow">Features</p>
         <h2 id="h-features">From today’s coffee to a loan’s last payment.</h2>
         <p class="lede">Record it fast, see it clearly, and stay ahead of it. Open any feature for the details and the real screens.</p>
       </div>
 
       <ul class="fcards">
-        <li id="record">
+        <li id="record" class="lead">
           <a class="fcard fcard-link" href="#about-record" data-dialog="about-record" aria-haspopup="dialog">
             <FeatureIcon kind="type" />
             <h3 class="fcard-title">Type your way</h3>
             <p class="fcard-line">Say it once. The rows fill in.</p>
+            <p class="lead-more">Tap +, then type, speak or scan. Lucento fills in the rows, flags what’s missing, and saves nothing until you’ve checked it.</p>
+            {/* Round 2 (owner, 2026-11-13): the replica shows on the page. A still of the replica's own first answer; the
+                working replica opens in the dialog. Decorative for assistive tech: the card's text says the same. */}
+            <div class="lead-preview" aria-hidden="true">
+              <span class="lp-tag">Replica</span><span class="lp-try">Try it</span>
+              <p class="lp-msg">Lunch 250<br />Groceries 1,200<br />Shampoo 180</p>
+              <p class="lp-reply">Here are 3 transactions — 1 needs a look:</p>
+              <div class="lp-rows">
+                <div class="lp-row"><span>Lunch<small>Restaurants</small></span><b>{formatMinor(-25_000)}</b></div>
+                <div class="lp-row"><span>Groceries<small>Groceries</small></span><b>{formatMinor(-120_000)}</b></div>
+                <div class="lp-row needs"><span>Shampoo<small>Choose category</small></span><b>{formatMinor(-18_000)}</b></div>
+              </div>
+            </div>
             <span class="fcard-go" aria-hidden="true"><Fragment set:html={arrow} /></span>
           </a>
         </li>
@@ -512,7 +525,6 @@ const jsonLd = [
   <section class="band band-haze" id="pricing" aria-labelledby="h-pricing">
     <div class="wrap">
       <div class="section-head center">
-        <p class="eyebrow">Pricing</p>
         <h2 id="h-pricing">Free to start. Pro when you want more.</h2>
         <p class="lede">Free is a complete budget app, with no account needed. Pro removes the limits and adds the online services. Here is exactly what each plan includes.</p>
       </div>
@@ -524,7 +536,6 @@ const jsonLd = [
   <section class="band" id="faq" aria-labelledby="h-faq">
     <div class="wrap-narrow">
       <div class="section-head">
-        <p class="eyebrow">FAQ</p>
         <h2 id="h-faq">Questions, answered plainly.</h2>
       </div>
       <div class="faq">
@@ -559,4 +570,5 @@ const jsonLd = [
     <div class="hero-ground" aria-hidden="true"></div>
   </section>
   <DialogScript />
+  <Reveal />
 </SiteLayout>

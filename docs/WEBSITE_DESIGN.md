@@ -7,8 +7,10 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
 
 ## Permanent principles
 
-1. **Typography first.** Headings carry the page: Inter at 800 with tight negative tracking, uppercase tracked
-   eyebrows, generous line height for reading. The owner's ApplyFast site is the reference for this treatment.
+1. **Typography first.** Headings carry the page: Inter at 800 with tight negative tracking and generous line height
+   for reading. The owner's ApplyFast site is the reference for this treatment. Since round 2 (owner, 2026-11-13)
+   sections start with their headline: only the hero keeps a small-capitals eyebrow ("Personal finance for Android"),
+   and dialog and replica kickers are a plain line (`.kicker`).
 2. **The product is the picture.** Real app screens come before any illustration. Every screen on the site is a
    capture from the app (see *Screens* below), shown in **dark mode** (Sunrise, dark; owner, 2026-11-08) except in the
    theme switcher, inside the **one phone template**: a light device frame (owner review 3: the screens are dark, so the
@@ -26,14 +28,20 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
    cards, each an icon (`FeatureIcon`), the feature's name and one line, in a 3 × 4 grid (1 column on phones, 2 from
    48em, 3 from 80em: columns step up only where each line fits on one row). The whole card is the link (one focus stop, a card-sized touch target). Everything else, the real
    screens and the full copy (a currency ledger, the AI tiers, two lanes for offline and online, the privacy ledger),
-   opens only on click, in a dialog. Type your way is the first card; its dialog holds the working replica.
+   opens only on click, in a dialog. Type your way is the first card; its dialog holds the working replica. Round 2 (owner, 2026-11-13): Type your
+   way leads at the grid's full width with a still of the replica's first answer (marked "Replica"; the message, the
+   three rows and the uncategorised shampoo, in the app's palette), and the last card widens to close the final row.
+   The other cards stay identical one-liners.
 7. **Whitespace is a tool.** Sections breathe (`--section`), and a section holds one idea.
-8. **Editorial hierarchy.** Eyebrow → headline → lede → proof. Alternate compositions; let one element lead.
+8. **Editorial hierarchy.** Headline → lede → proof (the hero alone keeps its eyebrow). Alternate compositions; let one element lead.
 9. **Motion tells the story or stays still.** Allowed: the hero's one-time rise, single light sweep, slow float
    and drift of the supporting phones and gentle scroll parallax (transform only; paused off screen), the theme
    crossfade, the replica's rows arriving and its screen change after Save, a dialog rising into place, the newest
-   Shared row lighting on both phones. Not allowed: decorative scroll reveals, parallax for its own sake. Everything
-   respects `prefers-reduced-motion`.
+   Shared row lighting on both phones. Since round 2 (owner, 2026-11-13) also: gentle one-time reveals below the
+   first screen (`Reveal.astro`: section heads, cards, plans and FAQ entries ease up once as they arrive; nothing on the
+   first screen waits; nothing is hidden without JavaScript), the lead card's replica still bringing in its rows while
+   it is on screen, cards lifting and answering a press, and the hero's warmer light and deeper phones. Not allowed:
+   parallax for its own sake. Everything respects `prefers-reduced-motion`.
 10. **Every section has a job.** If you can't say what a section proves, cut it.
 11. **Mobile is designed, not shrunk.** The hero becomes a swipeable phone with a scrolling tab row; the replica
     sits between its heading and its steps, so the phone is in view as you tap; cards stack; dialogs become bottom
