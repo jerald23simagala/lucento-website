@@ -229,8 +229,10 @@ test.describe('homepage', () => {
     await page.locator('#privacy .fcard-link').click();
     const sheet = page.locator('dialog#about-privacy');
     await expect(sheet).toBeVisible();
-    // Every send path from the policy's short version is still listed, with the link to the policy.
-    await expect(sheet.locator('.ledger > div')).toHaveCount(8);
+    // Every send path from the policy's short version is still listed, with the link to the policy. Online voice joined
+    // with lucento-android 0.5.8 (the app's Privacy Policy 2026-11-14).
+    await expect(sheet.locator('.ledger > div')).toHaveCount(9);
+    await expect(sheet.locator('.ledger')).toContainText('Online voice');
     await expect(sheet.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy');
     const toggle = page.getByRole('switch', { name: 'Hide amounts' });
     const shown = page.locator('.reveal-toggle picture.is-shown');

@@ -12,8 +12,8 @@ export interface LegalDocument {
   sections: LegalSection[];
 }
 
-export const VERSION = "2026-11-13";
-export const UPDATED = "13 November 2026";
+export const VERSION = "2026-11-14";
+export const UPDATED = "14 November 2026";
 export const CONTACT_EMAIL = "lucentoapp@gmail.com";
 export const DELETE_ACCOUNT_URL = "https://www.lucentoapp.com/delete-account";
 
@@ -112,6 +112,14 @@ export const privacy: LegalDocument = {
         "Your wallets, transactions, budgets, goals, debts, scheduled payments and settings are stored in a database on your phone. Every core feature works offline.",
         "Receipt scanning reads the photo on your phone; the photo isn’t uploaded. A profile photo stays on your phone too.",
         "Lucento doesn’t use Android’s automatic cloud backup, so nothing is copied to a backup you didn’t choose."
+      ]
+    },
+    {
+      "title": "Voice input",
+      "items": [
+        "When you tap the microphone, your phone’s speech service — Google’s on most phones, not Lucento — turns what you say into text, and Lucento receives only the text. Lucento asks it to work offline.",
+        "Lucento asks for Android’s microphone permission so it can listen until you’ve finished, and uses it only while its listening screen is open. It never keeps or sends a recording. If you don’t allow it, the speech service’s own window listens instead.",
+        "Some phones can’t do that offline. If you turn on online voice (Lucento asks first, and you can turn it off in Settings › Privacy), the speech service may send your recording to Google to turn it into text, under Google’s own privacy policy."
       ]
     },
     {
