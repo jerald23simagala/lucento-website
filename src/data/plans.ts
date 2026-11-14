@@ -53,7 +53,7 @@ export const planCards: PlanCard[] = [
       'Up to 20 active goals; Insights over 6 and 12 months',
       'Statements as PDF; all five themes',
       'Cloud sync between phones, and restore from your account',
-      'Lucento Shared: one Partner records in your ledger from their own phone',
+      'Lucento Shared: one Partner records in your ledger from their own Android phone',
       'AI adviser, 50 questions a day, and Smarter reading',
     ],
     note: 'Renews until you cancel in Google Play. Cancel during the trial and you pay nothing.',
@@ -119,7 +119,9 @@ export const compareGroups: CompareGroup[] = [
     title: 'Understanding your money',
     rows: [
       { what: 'Insights: income against spending, month by month', free: 'Last 3 months', pro: '3, 6 or 12 months', lifetime: '3, 6 or 12 months' },
-      { what: 'What your net worth is made of', free: no, pro: yes, lifetime: yes },
+      // App 0.5.8 (tester round 3): Insights shows where the money went and month-end net worth on every plan, for the
+      // period you pick; "what your net worth is made of" left Insights for Wallets and is no longer a Pro feature.
+      { what: 'Where your money went and net worth over time', free: 'Last 3 months', pro: '3, 6 or 12 months', lifetime: '3, 6 or 12 months' },
       { what: 'Ask Lucento: answers from your own figures, on the phone', free: yes, pro: yes, lifetime: yes },
       { what: 'Statements as PDF', free: no, pro: yes, lifetime: yes },
       { what: 'AI adviser (Gemini; sign-in, consent and internet needed)', free: '10 a month', pro: '50 a day', lifetime: '50 a day for 12 months, then 10 a month or Lucento Cloud' },

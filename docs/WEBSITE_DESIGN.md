@@ -106,15 +106,25 @@ status on wide screens; phones get an icon menu.
 
 ## Screens
 
-All screens are 1080 × 2400 API 36 captures in peso mode, cropped by lucento-studio `qa/crop-screen.mjs` (the real
-status and navigation bars removed; 400/560/720 px, AVIF + WebP). Then run `node scripts/screen-tops.mjs`.
+All screens are 1080 × 2400 **API 35** captures in peso mode (owner, 2026-11-13: website screenshots come from API 35),
+cropped by lucento-studio `qa/crop-screen.mjs` (the real status and navigation bars removed; 400/560/720 px, AVIF +
+WebP). Then run `node scripts/screen-tops.mjs`. Last capture: app 0.5.8 on 2026-11-13.
+
+The emulator: AVD `Lucento_Shots_API35` (medium phone, 420 dpi, `google_apis_playstore` image), 3-button navigation
+(`cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.threebutton`), system animations off,
+`settings put secure show_ime_with_hard_keyboard 0` (otherwise the keyboard covers onboarding's currency result and
+the tour silently stays in dollars), and the clock set to the demo month's day (`settings put global auto_time 0`,
+`cmd alarm set-time <ms>` for Sunday 2026-11-08 10:00) so the dates and percentages match the copy (26 % of the month,
+rent on the 20th). Install the app fresh before each run. API 35 screenshots in the guest, so no host capture.
 
 - The hide-amounts pair (`f-shown`, `f-hidden`): WebsiteShowcaseTest, one run, so only the amounts differ.
 - The demo month, the hero stage and the feature screens: lucento-android `ScreenshotTourTest` with
-  `-e demoCurrency PHP -e demoDark true -e hostCapture true` (artifacts/website-tour-api36-php-dark).
+  `-e demoCurrency PHP -e demoDark true`. "What your net worth is made of" left Insights in 0.5.8, so `f-networth` is
+  gone and the Wallets dialog shows the rows view alone, focused on net worth and the assets/liabilities split (the
+  card's page stays off the site: principle 13).
 - Theme, multicurrency and hide-amounts screens: lucento-android `WebsiteShowcaseTest` with
-  `-e websiteShowcase true` (artifacts/website-showcase-api36-dark; the theme loop covers both modes). Its foreign wallets use fixed rates; the site's figures are the app's own
-  conversions of them.
+  `-e websiteShowcase true -e demoDark true` (the theme loop covers both modes). Its foreign wallets use fixed rates; the
+  site's figures are the app's own conversions of them.
 
 When the app's UI changes, re-capture and re-crop; never edit a screenshot by hand.
 

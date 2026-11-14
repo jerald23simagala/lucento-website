@@ -1,6 +1,7 @@
 /**
  * Homepage content (2026-11-08 reimagination). Every claim here was checked against the app (lucento-android main
- * dbbb901): screens come from the API 36 screenshot tour and WebsiteShowcaseTest in peso mode, theme names and
+ * dbbb901; screens re-captured from 0.5.8 on 2026-11-13): screens come from the API 35 screenshot tour and
+ * WebsiteShowcaseTest in peso mode, theme names and
  * descriptions from core/designsystem/theme/Themes.kt, gates and limits from domain/entitlement (PlanCatalog, ProGates),
  * Shared from docs/shared/PERMISSION_MATRIX.md, multicurrency from docs/MULTICURRENCY.md, backup from docs/BACKUP.md.
  */
@@ -37,7 +38,7 @@ export const screens: AppScreen[] = [
     file: 's-insights',
     title: 'Where the money went, month by month',
     caption: 'Income against spending over 3, 6 or 12 months.',
-    alt: 'Insights over the last 6 months: net +₱60,020.10 from income ₱126,000.00 and expenses −₱65,979.90, with monthly income and expense bars from June to November.',
+    alt: 'Insights over the last 6 months: money in +₱126,000.00 and money out −₱65,979.90, so you kept +₱60,020.10, 48% of what came in, with monthly income and expense bars from June to November.',
   },
   {
     id: 'budgets',
@@ -53,7 +54,7 @@ export const screens: AppScreen[] = [
     file: 's-dashboard',
     title: 'The whole month on one screen',
     caption: 'Net wallet balance, wallets against debts, and how the budget is pacing.',
-    alt: 'The Lucento Dashboard: net wallet balance ₱62,120.10, wallets ₱176,520.10, debts and loans −₱114,400.00, shortcuts to goals, insights, milestones, debts and scheduled bills, and the monthly budget 89% spent: ₱22,979.90 of ₱25,900.00.',
+    alt: 'The Lucento Dashboard: net wallet balance ₱62,120.10, wallets ₱176,520.10, debts and loans −₱114,400.00, shortcuts to goals, insights, awards, debts and scheduled bills, and the monthly budget 89% spent: ₱22,979.90 of ₱25,900.00.',
   },
   {
     id: 'wallets',
@@ -150,7 +151,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'How do I record transactions?',
-        a: 'Tap +, then type, speak or scan. “Lunch 150, groceries 1200, and paid the electricity bill” becomes three rows with the amount, category and wallet filled in where Lucento can tell; anything missing is flagged, and nothing is saved until you’ve checked it. Speaking uses your phone’s own speech service, and receipts are read on the phone.',
+        a: 'Tap + (or the Quick add widget on your home screen), then type, speak or scan. “Lunch 150, groceries 1200, and paid the electricity bill” becomes three rows with the amount, category and wallet filled in where Lucento can tell; anything missing is flagged, and nothing is saved until you’ve checked it. Speaking uses your phone’s own speech service, and receipts are read on the phone.',
       },
       {
         q: 'Can I use my own budget categories?',
@@ -166,7 +167,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'What is Lucento Shared?',
-        a: 'A Shared Space for two people: you (the Owner) and one Partner, each with their own account and phone. Both see the same wallets, budgets, goals, debts and schedules, and both can add, edit and delete any transaction, with who added or changed it shown. The Owner manages the structure: wallets, budgets, goals, categories, schedules and who’s in the Space. Wallets can be labelled Shared or Personal to keep things organised; the label never hides anything. It needs Pro on the Owner’s side; the Partner needs no plan.',
+        a: 'A Shared Space for two people: you (the Owner) and one Partner, each with their own account and Android phone. Both see the same wallets, budgets, goals, debts and schedules, and both can add, edit and delete any transaction, with who added or changed it shown. The Owner manages the structure: wallets, budgets, goals, categories, schedules and who’s in the Space. Wallets can be labelled Shared or Personal to keep things organised; the label never hides anything. It needs Pro on the Owner’s side; the Partner needs no plan.',
       },
       {
         q: 'What does the AI do, and what does it send?',
@@ -187,7 +188,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'How does cloud sync work?',
-        a: 'Sync is part of Pro. Sign in and keep sync on, and your phone stays the source of your records while a copy in Lucento’s cloud keeps your phones in step; changes made offline go up when you’re back online. Access rules let only your account, and your Partner in a Shared Space, open it. Signing out removes the records from that phone, and asks first if anything hasn’t synced.',
+        a: 'Sync is part of Pro. Sign in and keep sync on, and your phone stays the source of your records while a copy in Lucento’s cloud keeps your phones in step; changes made offline go up when you’re back online. Access rules let only your account, and your Partner in a Shared Space, open it. Signing out takes your synced records off that phone; your account keeps them. If anything hasn’t synced, Lucento offers to sync it or save a backup first, and records that were only ever on that phone can stay there.',
       },
       {
         q: 'How is Lucento protected on my phone?',

@@ -11,10 +11,6 @@
     "bg": "#0F172B",
     "dark": true
   },
-  "f-networth": {
-    "bg": "#18233F",
-    "dark": true
-  },
   "f-schedules": {
     "bg": "#0F172B",
     "dark": true
@@ -52,7 +48,7 @@
     "dark": true
   },
   "s-insights": {
-    "bg": "#0F172B",
+    "bg": "#1F2E4E",
     "dark": true
   },
   "s-transactions": {
