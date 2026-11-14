@@ -1,6 +1,7 @@
 /**
  * Homepage content (2026-11-08 reimagination). Every claim here was checked against the app (lucento-android main
- * dbbb901): screens come from the API 36 screenshot tour and WebsiteShowcaseTest in peso mode, theme names and
+ * dbbb901; screens re-captured from 0.5.8 on 2026-11-13): screens come from the API 35 screenshot tour and
+ * WebsiteShowcaseTest in peso mode, theme names and
  * descriptions from core/designsystem/theme/Themes.kt, gates and limits from domain/entitlement (PlanCatalog, ProGates),
  * Shared from docs/shared/PERMISSION_MATRIX.md, multicurrency from docs/MULTICURRENCY.md, backup from docs/BACKUP.md.
  */
@@ -37,7 +38,7 @@ export const screens: AppScreen[] = [
     file: 's-insights',
     title: 'Where the money went, month by month',
     caption: 'Income against spending over 3, 6 or 12 months.',
-    alt: 'Insights over the last 6 months: net +₱60,020.10 from income ₱126,000.00 and expenses −₱65,979.90, with monthly income and expense bars from June to November.',
+    alt: 'Insights over the last 6 months: money in +₱126,000.00 and money out −₱65,979.90, so you kept +₱60,020.10, 48% of what came in, with monthly income and expense bars from June to November.',
   },
   {
     id: 'budgets',
@@ -53,7 +54,7 @@ export const screens: AppScreen[] = [
     file: 's-dashboard',
     title: 'The whole month on one screen',
     caption: 'Net wallet balance, wallets against debts, and how the budget is pacing.',
-    alt: 'The Lucento Dashboard: net wallet balance ₱62,120.10, wallets ₱176,520.10, debts and loans −₱114,400.00, shortcuts to goals, insights, milestones, debts and scheduled bills, and the monthly budget 89% spent: ₱22,979.90 of ₱25,900.00.',
+    alt: 'The Lucento Dashboard: net wallet balance ₱62,120.10, wallets ₱176,520.10, debts and loans −₱114,400.00, shortcuts to goals, insights, awards, debts and scheduled bills, and the monthly budget 89% spent: ₱22,979.90 of ₱25,900.00.',
   },
   {
     id: 'wallets',
