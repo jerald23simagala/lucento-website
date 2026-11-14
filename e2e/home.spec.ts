@@ -290,6 +290,28 @@ test.describe('homepage', () => {
     await expect(demo.getByRole('button', { name: 'Send it' })).toBeFocused();
   });
 
+  test('type your way: Escape closes the category menu, not the dialog around it', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    await page.locator('#record .fcard-link').click();
+    const dialog = page.locator('dialog#about-record');
+    await expect(dialog).toBeVisible();
+    const demo = dialog.locator('[data-type-demo]');
+    const sim = demo.locator('[data-sim]');
+    await demo.getByRole('button', { name: 'Send it' }).click();
+    await expect(sim.locator('.sim-bar-title .when-open')).toBeVisible();
+    const chooser = sim.getByRole('button', { name: 'Choose category' });
+    await chooser.click();
+    await expect(chooser).toHaveAttribute('aria-expanded', 'true');
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeVisible();
+    await expect(chooser).toHaveAttribute('aria-expanded', 'false');
+    await expect(chooser).toBeFocused();
+    // A second Escape, with the menu closed, closes the dialog as usual.
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+  });
+
   test('each feature card opens its details in a dialog that closes and returns focus', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 860 });
     await page.goto('/');
@@ -418,6 +440,20 @@ test.describe('homepage', () => {
     }
     await expect(page.locator('#pricing')).toContainText('Up to 3');
     await expect(page.locator('#pricing')).toContainText('50 a day');
+  });
+
+  test('the copy follows app 0.5.8: free net-worth history, Android-only Shared, sign-out keeps phone-only records', async ({ page }) => {
+    await page.goto('/');
+    // Tester round 3 removed the Pro "what your net worth is made of" view from Insights (it lives on Wallets now).
+    await expect(page.locator('main')).not.toContainText(/net worth is made of|net worth make-up/);
+    await page.getByRole('link', { name: 'Compare the plans' }).first().click();
+    const row = page.locator('dialog#compare tr', { hasText: 'Where your money went and net worth over time' });
+    await expect(row).toHaveCount(1);
+    await expect(row).toContainText('Last 3 months');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#shared .fcard-line')).toHaveText('One budget, two Android phones.');
+    await expect(page.locator('#faq')).toContainText('records that were only ever on that phone can stay there');
+    await expect(page.locator('#faq')).toContainText('Quick add widget');
   });
 
   test('the FAQ opens, and its structured data matches it', async ({ page }) => {

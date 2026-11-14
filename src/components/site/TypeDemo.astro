@@ -157,6 +157,7 @@ const { headless = false } = Astro.props as { headless?: boolean };
     <ul class="ways-inline" aria-label="Other ways in">
       <li><b>Say it:</b> your phone’s own speech service turns your voice into text you review.</li>
       <li><b>Scan it:</b> receipts are read on your phone; the photo never leaves it.</li>
+      <li><b>From your home screen:</b> the Quick add widget opens Type, Speak or Scan in one tap.</li>
     </ul>
     <p class="fine">A working replica of the app’s Add transactions screen with the demo month’s example figures. With Pro, Smarter reading (Google’s Gemini, off until you turn it on) handles messier messages.</p>
   </div>
@@ -472,11 +473,16 @@ const { headless = false } = Astro.props as { headless?: boolean };
     menu.addEventListener('keydown', (event) => {
       const items = [...menu.querySelectorAll<HTMLButtonElement>('button')];
       const i = items.indexOf(document.activeElement as HTMLButtonElement);
-      if (event.key === 'Escape') { closeMenu(); menuButton.focus(); }
+      // Escape closes the menu only; without this the dialog around the replica closed too.
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeMenu(); menuButton.focus(); }
       else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
         event.preventDefault();
         items[(i + (event.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length]?.focus();
       }
+    });
+    // The dialog's own close request (Escape) while the menu is open closes just the menu.
+    root.closest('dialog')?.addEventListener('cancel', (event) => {
+      if (root.dataset.menu === 'open') { event.preventDefault(); closeMenu(); menuButton.focus(); }
     });
     root.classList.add('is-live');
   }

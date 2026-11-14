@@ -150,7 +150,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'How do I record transactions?',
-        a: 'Tap +, then type, speak or scan. “Lunch 150, groceries 1200, and paid the electricity bill” becomes three rows with the amount, category and wallet filled in where Lucento can tell; anything missing is flagged, and nothing is saved until you’ve checked it. Speaking uses your phone’s own speech service, and receipts are read on the phone.',
+        a: 'Tap + (or the Quick add widget on your home screen), then type, speak or scan. “Lunch 150, groceries 1200, and paid the electricity bill” becomes three rows with the amount, category and wallet filled in where Lucento can tell; anything missing is flagged, and nothing is saved until you’ve checked it. Speaking uses your phone’s own speech service, and receipts are read on the phone.',
       },
       {
         q: 'Can I use my own budget categories?',
@@ -166,7 +166,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'What is Lucento Shared?',
-        a: 'A Shared Space for two people: you (the Owner) and one Partner, each with their own account and phone. Both see the same wallets, budgets, goals, debts and schedules, and both can add, edit and delete any transaction, with who added or changed it shown. The Owner manages the structure: wallets, budgets, goals, categories, schedules and who’s in the Space. Wallets can be labelled Shared or Personal to keep things organised; the label never hides anything. It needs Pro on the Owner’s side; the Partner needs no plan.',
+        a: 'A Shared Space for two people: you (the Owner) and one Partner, each with their own account and Android phone. Both see the same wallets, budgets, goals, debts and schedules, and both can add, edit and delete any transaction, with who added or changed it shown. The Owner manages the structure: wallets, budgets, goals, categories, schedules and who’s in the Space. Wallets can be labelled Shared or Personal to keep things organised; the label never hides anything. It needs Pro on the Owner’s side; the Partner needs no plan.',
       },
       {
         q: 'What does the AI do, and what does it send?',
@@ -187,7 +187,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'How does cloud sync work?',
-        a: 'Sync is part of Pro. Sign in and keep sync on, and your phone stays the source of your records while a copy in Lucento’s cloud keeps your phones in step; changes made offline go up when you’re back online. Access rules let only your account, and your Partner in a Shared Space, open it. Signing out removes the records from that phone, and asks first if anything hasn’t synced.',
+        a: 'Sync is part of Pro. Sign in and keep sync on, and your phone stays the source of your records while a copy in Lucento’s cloud keeps your phones in step; changes made offline go up when you’re back online. Access rules let only your account, and your Partner in a Shared Space, open it. Signing out takes your synced records off that phone; your account keeps them. If anything hasn’t synced, Lucento offers to sync it or save a backup first, and records that were only ever on that phone can stay there.',
       },
       {
         q: 'How is Lucento protected on my phone?',
