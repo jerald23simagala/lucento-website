@@ -21,6 +21,10 @@ const groups = [
       { href: `mailto:${site.contactEmail}`, label: site.contactEmail },
     ],
   },
+  {
+    title: 'Follow',
+    links: site.social.map((s) => ({ href: s.href, label: s.label })),
+  },
 ];
 ---
 
@@ -39,7 +43,13 @@ const groups = [
               <ul>
                 {group.links.map((link) => (
                   <li>
-                    <a href={link.href} class:list={[link.href.startsWith('mailto:') && 'email']}>{link.label}</a>
+                    <a
+                      href={link.href}
+                      class:list={[link.href.startsWith('mailto:') && 'email']}
+                      rel={link.href.startsWith('https://') ? 'me noopener' : undefined}
+                    >
+                      {link.label}
+                    </a>
                   </li>
                 ))}
               </ul>
