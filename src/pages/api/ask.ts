@@ -1,6 +1,7 @@
 /**
  * Ask Lucento's AI answers for the Lucento app — served on demand as a Vercel Function (Astro endpoint, @astrojs/vercel).
- * Opt-in: the app calls this only after the user turned AI answers on (see lucento-android docs/ASK.md).
+ * The app calls this only after the person confirmed AI answers: on by default for a signed-in account, they confirm
+ * their first question before anything is sent (owner, 2026-11-17; see lucento-android docs/ASK.md "Consent (v3)").
  *
  * POST /api/ask with the signed-in user's Supabase access token. The body carries the question, the last few turns of
  * the conversation, today's date, the main currency, and the user's figures — each one a labelled value with an id.
