@@ -230,9 +230,12 @@ test.describe('homepage', () => {
     const sheet = page.locator('dialog#about-privacy');
     await expect(sheet).toBeVisible();
     // Every send path from the policy's short version is still listed, with the link to the policy. Online voice joined
-    // with lucento-android 0.5.8 (the app's Privacy Policy 2026-11-14).
-    await expect(sheet.locator('.ledger > div')).toHaveCount(9);
+    // with lucento-android 0.5.8 (the app's Privacy Policy 2026-11-14); AI answers and Smarter reading became separate
+    // rows when AI answers turned on by default, confirmed once (Privacy Policy 2026-11-17).
+    await expect(sheet.locator('.ledger > div')).toHaveCount(10);
     await expect(sheet.locator('.ledger')).toContainText('Online voice');
+    await expect(sheet.locator('.ledger')).toContainText('Nothing is sent until you confirm your first question');
+    await expect(sheet.locator('.ledger')).toContainText('Pro, off until you turn it on');
     await expect(sheet.getByRole('link', { name: 'privacy policy' })).toHaveAttribute('href', '/privacy');
     const toggle = page.getByRole('switch', { name: 'Hide amounts' });
     const shown = page.locator('.reveal-toggle picture.is-shown');

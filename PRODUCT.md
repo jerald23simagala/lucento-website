@@ -93,10 +93,13 @@ Shipped on `main` (0.5.8):
 - Signing out: synced records leave the phone (the account keeps them) after the app offers to sync or back up
   unsynced changes; records that only ever lived on this phone can be kept.
 
-Privacy (Privacy Policy 2026-11-14, `feature/legal/LegalDocuments.kt`; re-read it before writing any privacy line):
+Privacy (Privacy Policy 2026-11-17, `feature/legal/LegalDocuments.kt`; re-read it before writing any privacy line):
 
-- Opt-ins, off until chosen: cloud sync after sign-in; Smarter reading (sends the typed message); AI adviser answers
-  (a summary of the person's finances including recent transactions); anonymous usage counts; crash reports; online
+- On by default, confirmed once (owner, 2026-11-17): AI adviser answers in Ask Lucento for a signed-in account (a
+  summary of the person's finances including the last 60 days of transactions). Nothing is sent until the person
+  confirms their first question; they can turn it off. Never write "off until you turn it on" for the AI adviser.
+- Opt-ins, off until chosen: cloud sync after sign-in; Smarter reading (Pro; sends the typed message); anonymous usage
+  counts; crash reports; online
   voice (the phone's speech service may send the recording to Google). Signed-in accounts get account emails (verify,
   welcome, Pro confirmation). Gemini's free tier: Google may keep and read what Gemini receives.
 - On by default: exchange rates when something is recorded in another currency (two currency codes and a date, never
