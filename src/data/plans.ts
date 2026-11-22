@@ -8,7 +8,7 @@
  */
 
 /** Pro's two billing periods, in integer minor units (CUSTOMER_COPY.md): ₱149 a month, or ₱1,190 a year with a 7-day trial. */
-export const proBilling = { monthlyMinor: 14_900, yearlyMinor: 119_000, lifetimeMinor: 349_000, trialDays: 7 } as const;
+export const proBilling = { monthlyMinor: 14_900, yearlyMinor: 119_000, lifetimeMinor: 249_000, trialDays: 7 } as const;
 
 export const priceNote = 'Indicative prices in the Philippines. Google Play shows the exact price in your currency before you pay.';
 
@@ -62,7 +62,7 @@ export const planCards: PlanCard[] = [
     id: 'lifetime',
     name: 'Pro Lifetime',
     tagline: 'Pay once. Own every Pro feature that runs on your phone.',
-    price: '₱3,490 once',
+    price: '₱2,490 once',
     priceDetail: 'No renewal, ever.',
     highlights: [
       'Every on-phone Pro feature, forever, fully offline',

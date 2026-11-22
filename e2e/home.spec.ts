@@ -436,7 +436,7 @@ test.describe('homepage', () => {
     await pro.locator('label', { hasText: 'Monthly' }).click();
     await expect(pro.locator('.price-monthly .plan-price')).toHaveText(/₱149\s*a month/);
     await expect(pro.locator('.price-yearly')).toBeHidden();
-    await expect(page.locator('.plan-lifetime .plan-price')).toHaveText(/₱3,490\s*once/);
+    await expect(page.locator('.plan-lifetime .plan-price')).toHaveText(/₱2,490\s*once/);
     // Nothing promises a free plan without ads (owner, 2026-11-08: ads may come to Free).
     await expect(page.locator('main')).not.toContainText(/no ads/i);
     // The comparison opens in a dialog, not inline.
