@@ -62,7 +62,7 @@ export const planCards: PlanCard[] = [
     id: 'lifetime',
     name: 'Pro Lifetime',
     tagline: 'Pay once. Own every Pro feature that runs on your phone.',
-    price: '₱3,490 once',
+    price: '₱2,490 once',
     priceDetail: 'No renewal, ever.',
     highlights: [
       'Every on-phone Pro feature, forever, fully offline',

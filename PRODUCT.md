@@ -64,7 +64,7 @@ for Free (ads may come to Free; owner, 2026-11-08).
     Lucento, backups, CSV, app lock, two themes (Sunrise, Midnight), 10 AI adviser questions a month when signed in.
     Limits apply only to adding new items.
   - Pro: ₱149 a month, or ₱1,190 a year with a 7-day free trial (once per Google account).
-  - Pro Lifetime: ₱3,490 once; every on-phone Pro feature forever plus 12 months of the online services, then Lucento
+  - Pro Lifetime: ₱2,490 once; every on-phone Pro feature forever plus 12 months of the online services, then Lucento
     Cloud (₱59 a month or ₱490 a year) or carry on without them.
   - Purchases happen in the app through Google Play. After a confirmed purchase the app plays "Welcome to Pro", a deck
     of perk cards (replayable from the Pro page).
