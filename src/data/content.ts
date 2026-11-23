@@ -143,7 +143,7 @@ export const faq: FaqGroup[] = [
     items: [
       {
         q: 'Does Lucento work offline?',
-        a: 'Yes. Recording, budgets, wallets, debts, goals, schedules, Insights and Ask Lucento’s answers all run on your phone with no internet and no account. Only sign-in, cloud sync, Lucento Shared and the Gemini features need a connection, and exchange rates are fetched online when something is recorded in another currency (offline, you type the rate).',
+        a: 'Yes. Recording, budgets, wallets, debts, goals, schedules, Insights and Ask Lucento’s answers all run on your phone with no internet and no account. Only sign-in, cloud sync, Lucento Shared and the Gemini features need a connection. Exchange rates are fetched online when something is recorded in another currency (offline, you type the rate), and the first “Scan pages” has Google Play services download the document scanner.',
       },
       {
         q: 'Do I need an account?',
