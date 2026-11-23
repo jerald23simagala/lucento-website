@@ -16,7 +16,7 @@ export const site = {
    * that link this site lead somewhere. The Facebook Page has no username yet, so it's linked by its profile ID.
    */
   social: [
-    { label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61596187720039' },
+    { label: 'Facebook', href: 'https://www.facebook.com/lucentoapp' },
     { label: 'Instagram', href: 'https://www.instagram.com/lucentoapp/' },
     { label: 'TikTok', href: 'https://www.tiktok.com/@lucentoapp' },
     { label: 'YouTube', href: 'https://www.youtube.com/channel/UCg8f6wbVTgYPnXBeMvD0FyA' },
