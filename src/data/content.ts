@@ -188,7 +188,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'How does cloud sync work?',
-        a: 'Sync is part of Pro. Sign in and keep sync on, and your phone stays the source of your records while a copy in Lucento’s cloud keeps your phones in step; changes made offline go up when you’re back online. Access rules let only your account, and your Partner in a Shared Space, open it. Signing out takes your synced records off that phone; your account keeps them. If anything hasn’t synced, Lucento offers to sync it or save a backup first, and records that were only ever on that phone can stay there.',
+        a: 'Sync is part of Pro. Sign in and keep sync on, and your phone stays the source of your records while a copy in Lucento’s cloud keeps your phones in step; changes made offline go up when you’re back online. Access rules let only your account, and your Partner in a Shared Space, open it. Your settings come along too (your theme, the features you use, your name, your default wallet and similar choices), so a new phone starts the way you left the old one; only your account can open them. What you allowed on a phone, like crash reports, online voice or AI answers, and your app lock stay on that phone. Signing out takes your synced records off that phone; your account keeps them. If anything hasn’t synced, Lucento offers to sync it or save a backup first, and records that were only ever on that phone can stay there.',
       },
       {
         q: 'How is Lucento protected on my phone?',
