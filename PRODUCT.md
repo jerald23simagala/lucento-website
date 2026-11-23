@@ -61,7 +61,7 @@ for Free (ads may come to Free; owner, 2026-11-08).
 - Prices on the site are indicative Philippine prices; Google Play shows each country's price before purchase.
 - Plans (lucento-android `PlanCatalog`, `docs/monetization/CUSTOMER_COPY.md`):
   - Free: no account needed; 3 money wallets and 2 cards or loans, 2 active goals, Insights over 3 months, Ask
-    Lucento, backups, CSV, app lock, two themes (Sunrise, Midnight), 10 AI adviser questions a month when signed in.
+    Lucento, backups, CSV, app lock, two themes (Sunrise, Midnight), 5 AI adviser questions a month when signed in.
     Limits apply only to adding new items.
   - Pro: ₱149 a month, or ₱1,190 a year with a 7-day free trial (once per Google account).
   - Pro Lifetime: ₱2,490 once; every on-phone Pro feature forever plus 12 months of the online services, then Lucento
