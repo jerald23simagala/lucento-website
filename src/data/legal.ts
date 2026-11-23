@@ -12,8 +12,8 @@ export interface LegalDocument {
   sections: LegalSection[];
 }
 
-export const VERSION = "2026-11-17";
-export const UPDATED = "17 November 2026";
+export const VERSION = "2026-11-22";
+export const UPDATED = "22 November 2026";
 export const CONTACT_EMAIL = "lucentoapp@gmail.com";
 export const DELETE_ACCOUNT_URL = "https://www.lucentoapp.com/delete-account";
 
@@ -134,6 +134,7 @@ export const privacy: LegalDocument = {
       "title": "Cloud sync (with an account)",
       "items": [
         "With sync on, a copy of your records is kept in Lucento’s cloud database (Supabase), so they’re backed up and the same on every phone you sign in to.",
+        "Your settings are kept there too — your theme, the features you use, your name, your default wallet and similar choices — so a new phone starts the way you left the old one. What you allowed on a phone, like crash reports, online voice, AI answers or reading messages with Gemini, and your app lock stay on that phone.",
         "Database rules let only your signed-in account — and people you share with through Lucento Shared — read or change your records.",
         "Signing out removes your account’s data from that phone; the cloud copy stays for when you sign in again. The cloud copy is kept while your account exists."
       ]
