@@ -150,7 +150,7 @@ export interface Faq {
 export const pricingFaq: Faq[] = [
   {
     q: 'Does Lucento work offline?',
-    a: 'Yes. Recording, budgets, wallets, debts, goals, schedules, Insights and Ask Lucento’s on-phone answers all run with no internet and no account. Only sign-in, the AI adviser, cloud sync and Lucento Shared need a connection.',
+    a: 'Yes. Recording, budgets, wallets, debts, goals, schedules, Insights and Ask Lucento’s on-phone answers all run with no internet and no account. Only sign-in, the AI adviser, cloud sync and Lucento Shared need a connection, as does the first “Scan pages”, when Google Play services downloads the document scanner.',
   },
   {
     q: 'Can I try Pro for free?',

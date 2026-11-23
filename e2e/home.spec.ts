@@ -231,8 +231,10 @@ test.describe('homepage', () => {
     await expect(sheet).toBeVisible();
     // Every send path from the policy's short version is still listed, with the link to the policy. Online voice joined
     // with lucento-android 0.5.8 (the app's Privacy Policy 2026-11-14); AI answers and Smarter reading became separate
-    // rows when AI answers turned on by default, confirmed once (Privacy Policy 2026-11-17).
-    await expect(sheet.locator('.ledger > div')).toHaveCount(10);
+    // rows when AI answers turned on by default, confirmed once (Privacy Policy 2026-11-17). Scanning joined with
+    // lucento-android 0.5.16 (Privacy Policy 2026-11-23: ML Kit's and the document scanner's diagnostics).
+    await expect(sheet.locator('.ledger > div')).toHaveCount(11);
+    await expect(sheet.locator('.ledger')).toContainText('never the images or the text');
     await expect(sheet.locator('.ledger')).toContainText('Online voice');
     await expect(sheet.locator('.ledger')).toContainText('Nothing is sent until you confirm your first question');
     await expect(sheet.locator('.ledger')).toContainText('Pro, off until you turn it on');
