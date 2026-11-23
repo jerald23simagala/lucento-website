@@ -171,7 +171,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'What does the AI do, and what does it send?',
-        a: 'Ask Lucento’s reports work out your figures on your phone, send nothing, and are free. Two features use Google’s Gemini. The AI adviser in Ask Lucento is on once you sign in (10 questions a month on Free, 50 a day with Pro), but nothing is sent until you confirm your first question; then it sends your question with a summary of your finances, including your transactions from the last 60 days, and you can turn it off any time. Smarter reading, with Pro, stays off until you turn it on and sends a message you type with today’s date, your main currency and your category and wallet names. Lucento uses Gemini’s free service for now, so Google may keep what it receives to improve its products, and people at Google may read it.',
+        a: 'Ask Lucento’s reports work out your figures on your phone, send nothing, and are free. Two features use Google’s Gemini. The AI adviser in Ask Lucento is on once you sign in (5 questions a month on Free, 45 a month with Pro), but nothing is sent until you confirm your first question; then it sends your question with a summary of your finances, including your transactions from the last 60 days, and you can turn it off any time. Smarter reading, with Pro, stays off until you turn it on in Settings; each message then uses one of those questions and is sent with today’s date, your main currency and your category and wallet names. Lucento uses Gemini’s free service for now, so Google may keep what it receives to improve its products, and people at Google may read it.',
       },
     ],
   },
@@ -205,7 +205,7 @@ export const faq: FaqGroup[] = [
     items: [
       {
         q: 'What’s free, and what needs Pro?',
-        a: 'Free covers everyday money: unlimited recording and history, budgets, scheduled bills, 3 money wallets and 2 cards or loans, 2 savings goals, 3 months of Insights, Ask Lucento, backups, app lock and two themes. Pro removes the wallet limits and adds wallets in other currencies, receivables and valued assets, 20 goals, 6- and 12-month Insights, PDF statements, all five themes, cloud sync and restore, Lucento Shared, and the AI adviser at 50 questions a day.',
+        a: 'Free covers everyday money: unlimited recording and history, budgets, scheduled bills, 3 money wallets and 2 cards or loans, 2 savings goals, 3 months of Insights, Ask Lucento, backups, app lock and two themes. Pro removes the wallet limits and adds wallets in other currencies, receivables and valued assets, 20 goals, 6- and 12-month Insights, PDF statements, all five themes, cloud sync and restore, Lucento Shared, and the AI adviser at 45 questions a month.',
       },
       {
         q: 'Can I try Pro for free?',

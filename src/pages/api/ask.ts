@@ -12,14 +12,14 @@
  * powers, so their adviser may project with the user's own amounts and with rates it knows or assumes. Never receipts or
  * photos. This function:
  *   1. checks the token with Supabase Auth (no service key: the user's own token and the publishable key),
- *   2. counts the request against the user's daily allowance (public.consume_ai_quota, shared with /api/interpret),
+ *   2. counts the request against the user's monthly allowance (public.consume_ai_request, shared with /api/interpret),
  *   3. asks Gemini for a short answer that quotes figures by id ([[id]]), and for version 2 calculates only through
  *      [[= expression ]] — the app fills in its own values, works out every expression, flags any amount the model
  *      wrote itself, and builds any report the answer asks for on the phone.
  * Nothing is stored here; request and response bodies are never logged.
  *
  * Environment: the same as /api/interpret (GEMINI_API_KEY, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, optional
- * AI_DAILY_LIMIT and GEMINI_MODEL; unset, the model is the newest stable Flash model the key can use — see
+ * GEMINI_MODEL; unset, the model is the newest stable Flash model the key can use — see
  * src/server/gemini.ts). See .env.example.
  */
 
@@ -270,9 +270,9 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (!parsed) return json(400, { error: 'bad_request' });
 
-  // 2. Today's allowance, shared with Smarter reading, counted by a database function the user can't use to lower it.
-  // The allowance follows the plan (Lucento Pro, supabase/migrations/20261107090000_entitlements.sql): Free accounts get
-  // ai_free_monthly a month, AI_PRO accounts ai_pro_daily a day under ai_pro_monthly_ceiling. The function counts the
+  // 2. This month's allowance, shared with Smarter reading, counted by a database function the user can't use to lower
+  // it. The allowance follows the plan (lucento-android supabase/migrations/20261123120000_ai_allowance_monthly.sql):
+  // Free accounts get ai_free_monthly a month, AI_PRO accounts ai_pro_monthly a month. The function counts the
   // request (a refused one too) and decides; this proxy only relays its answer. AI_DAILY_LIMIT is no longer read.
   const quota = await fetch(`${supabaseUrl}/rest/v1/rpc/consume_ai_request`, {
     method: 'POST',

@@ -455,7 +455,7 @@ test.describe('homepage', () => {
       await expect(cell.locator('.sr-only')).toHaveText(/^(Included|Not included)$/);
     }
     await expect(page.locator('#pricing')).toContainText('Up to 3');
-    await expect(page.locator('#pricing')).toContainText('50 a day');
+    await expect(page.locator('#pricing')).toContainText('45 a month');
   });
 
   test('the copy follows app 0.5.8: free net-worth history, Android-only Shared, sign-out keeps phone-only records', async ({ page }) => {

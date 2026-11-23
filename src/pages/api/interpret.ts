@@ -4,7 +4,7 @@
  * POST /api/interpret with the signed-in user's Supabase access token. The body carries one composer message, today's
  * date, the main currency and the user's category and wallet names with their app-local ids. This function:
  *   1. checks the token with Supabase Auth (no service key: the user's own token and the publishable key),
- *   2. counts the request against the user's daily allowance (public.consume_ai_quota, migration 20261027090000),
+ *   2. counts the request against the user's monthly allowance (public.consume_ai_request, shared with /api/ask),
  *   3. asks Gemini for structured rows and returns them. The app validates every row again and the user reviews it.
  * Nothing is stored here; request bodies are never logged.
  *
@@ -12,7 +12,6 @@
  *   GEMINI_API_KEY            secret, from Google AI Studio
  *   SUPABASE_URL              https://<project>.supabase.co
  *   SUPABASE_PUBLISHABLE_KEY  the same publishable key the app ships with
- *   AI_DAILY_LIMIT            optional, requests per user per UTC day (default 50)
  *   GEMINI_MODEL              optional; unset, the newest stable Flash model the key can use (src/server/gemini.ts)
  */
 
@@ -147,9 +146,9 @@ export const POST: APIRoute = async ({ request }) => {
   }
   if (!parsed) return json(400, { error: 'bad_request' });
 
-  // 2. Today's allowance, counted in the user's own row by a database function they can't use to lower it.
-  // The allowance follows the plan (Lucento Pro, supabase/migrations/20261107090000_entitlements.sql): Free accounts get
-  // ai_free_monthly a month, AI_PRO accounts ai_pro_daily a day under ai_pro_monthly_ceiling. The function counts the
+  // 2. This month's allowance (shared with Ask Lucento), counted in the user's own row by a database function they can't
+  // use to lower it. The allowance follows the plan (lucento-android supabase/migrations/20261123120000_ai_allowance_monthly.sql):
+  // Free accounts get ai_free_monthly a month, AI_PRO accounts ai_pro_monthly a month. The function counts the
   // request (a refused one too) and decides; this proxy only relays its answer. AI_DAILY_LIMIT is no longer read.
   const quota = await fetch(`${supabaseUrl}/rest/v1/rpc/consume_ai_request`, {
     method: 'POST',
