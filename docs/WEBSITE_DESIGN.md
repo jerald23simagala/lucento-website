@@ -111,7 +111,7 @@ status on wide screens; phones get an icon menu.
 
 All screens are 1080 × 2400 **API 35** captures in peso mode (owner, 2026-11-13: website screenshots come from API 35),
 cropped by lucento-studio `qa/crop-screen.mjs` (the real status and navigation bars removed; 400/560/720 px, AVIF +
-WebP). Then run `node scripts/screen-tops.mjs`. Last capture: app 0.5.8 on 2026-11-13.
+WebP). Then run `node scripts/screen-tops.mjs`. Last capture: app 0.5.19 on 2026-11-24, with the demo year's history (`demoHistory`).
 
 The emulator: AVD `Lucento_Shots_API35` (medium phone, 420 dpi, `google_apis_playstore` image), 3-button navigation
 (`cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.threebutton`), system animations off,
@@ -129,7 +129,28 @@ rent on the 20th). Install the app fresh before each run. API 35 screenshots in 
   `-e websiteShowcase true -e demoDark true` (the theme loop covers both modes). Its foreign wallets use fixed rates; the
   site's figures are the app's own conversions of them.
 
-When the app's UI changes, re-capture and re-crop; never edit a screenshot by hand.
+When the app's UI changes, re-capture and re-crop; never edit a screenshot by hand. lucento-android
+`tools/screenshots/capture_marketing.sh` runs the captures (with `demoHistory`, so Milestones has a year to show); each
+site screen comes from one shot:
+
+| Site screen | Run › shot |
+|---|---|
+| `s-dashboard` | tour › `06-home-within-budget` |
+| `s-transactions` | tour › `11-transactions` |
+| `s-wallets` | tour › `12-wallets` |
+| `s-insights` | tour › `14-insights-spending` (Income and expenses at the top) |
+| `s-budget` | tour › `15-budget` |
+| `s-goals` | tour › `17a-goals` |
+| `f-bell` | tour › `06b-home-bell` |
+| `f-milestones` | tour › `07a-milestones` |
+| `f-wallet-new` | tour › `12g-new-wallet` |
+| `f-wallet-rows` | tour › `12b-wallets-rows` |
+| `f-loan` | tour › `12c-wallet-loan` |
+| `f-wallet-adjust` | tour › `12f-wallet-bank` |
+| `f-schedules` | tour › `18c-recurring-schedules` |
+| `f-shown`, `f-hidden` | showcase › `home-shown`, `home-hidden` |
+| `mc-rows` | showcase › `mc-wallets-rows` |
+| `t-<theme>-<mode>` | showcase › `theme-<theme>-<mode>` |
 
 ## Checks before shipping
 

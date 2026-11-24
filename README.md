@@ -52,7 +52,7 @@ layouts) and the system. `CLAUDE.md` summarises them for Claude.
   plus an 8 KB currency subset in `src/assets/fonts/` for ₱), so no page needs a stylesheet request.
 - `src/components/site/` holds the parts; `src/data/content.ts` the screens, themes and FAQ (each with its source in
   the app); `src/data/plans.ts` the plans. Amounts are formatted by `src/lib/money.ts` (U+2212 minus).
-- `public/screens/` are API 36 captures from lucento-android's `ScreenshotTourTest` and `WebsiteShowcaseTest` in peso
+- `public/screens/` are API 35 captures from lucento-android's `ScreenshotTourTest` and `WebsiteShowcaseTest` in peso
   mode (dark), cropped with lucento-studio `qa/crop-screen.mjs`; `node scripts/screen-tops.mjs` then records each
   screen's top colour for the phone template's status bar. `public/og-lucento.png` is the link
   preview, composed from the same screens.

@@ -38,7 +38,7 @@ export const screens: AppScreen[] = [
     file: 's-insights',
     title: 'Where the money went, month by month',
     caption: 'Income against spending over 3, 6 or 12 months.',
-    alt: 'Insights over the last 6 months: money in +₱126,000.00 and money out −₱65,979.90, so you kept +₱60,020.10, 48% of what came in, with monthly income and expense bars from June to November.',
+    alt: 'Insights over the last 6 months: money in +₱252,000.00 and money out −₱125,549.90, so you kept +₱126,450.10, 50% of what came in, with monthly income and expense bars from June to November.',
   },
   {
     id: 'budgets',
@@ -54,7 +54,7 @@ export const screens: AppScreen[] = [
     file: 's-dashboard',
     title: 'The whole month on one screen',
     caption: 'Net wallet balance, wallets against debts, and how the budget is pacing.',
-    alt: 'The Lucento Dashboard: net wallet balance ₱62,120.10, wallets ₱176,520.10, debts and loans −₱114,400.00, shortcuts to goals, insights, awards, debts and scheduled bills, and the monthly budget 89% spent: ₱22,979.90 of ₱25,900.00.',
+    alt: 'The Lucento Dashboard: net worth ₱217,350.10, assets ₱331,750.10, debts and loans −₱114,400.00, shortcuts to goals, insights, milestones, debts and scheduled bills, and the monthly budget 89% spent: ₱22,979.90 of ₱25,900.00.',
   },
   {
     id: 'wallets',
@@ -62,7 +62,7 @@ export const screens: AppScreen[] = [
     file: 's-wallets',
     title: 'Every account as a card you recognise',
     caption: 'Cash, banks, savings, cards and loans as a gallery, with net worth on top.',
-    alt: 'The Wallets gallery: net worth ₱62,120.10, assets ₱176,520.10 and liabilities −₱114,400.00, with cards for Cash ₱5,630.00, Everyday bank ₱86,890.10 and Savings ₱84,000.00.',
+    alt: 'The Wallets gallery: net worth ₱217,350.10, assets ₱331,750.10 and liabilities −₱114,400.00, with cards for Cash ₱5,630.00, Everyday bank ₱242,120.10 and Savings ₱84,000.00.',
   },
   {
     id: 'goals',
