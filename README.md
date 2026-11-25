@@ -6,7 +6,8 @@ repository (`lucento-android`); nothing here changes it.
 
 ## Stack
 
-- [Astro](https://astro.build) 5 (static output, no client-side framework)
+- [Astro](https://astro.build) 7 (pages prerendered, no client-side framework; `src/pages/api/*` run as Vercel
+  functions in Seoul, `icn1` in `vercel.json`, next to the Supabase database in ap-northeast-2)
 - TypeScript (strict) with `astro check`
 - ESLint with `eslint-plugin-astro` and its strict accessibility rules
 - Inter (self-hosted via `@fontsource-variable/inter`), the website's face
