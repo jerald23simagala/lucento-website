@@ -12,8 +12,8 @@ export interface LegalDocument {
   sections: LegalSection[];
 }
 
-export const VERSION = "2026-11-23";
-export const UPDATED = "23 November 2026";
+export const VERSION = "2026-11-26";
+export const UPDATED = "26 November 2026";
 export const CONTACT_EMAIL = "lucentoapp@gmail.com";
 export const DELETE_ACCOUNT_URL = "https://www.lucentoapp.com/delete-account";
 
@@ -185,6 +185,13 @@ export const privacy: LegalDocument = {
       "items": [
         "Crash reports send what went wrong in the app’s code — never amounts, names or notes — to Google Firebase Crashlytics.",
         "Usage counts send event names and timings (such as which setup screen was opened), with a random number for this install and the app version — never amounts or what you type. They’re kept for 90 days, and turning them off deletes what was sent."
+      ]
+    },
+    {
+      "title": "Rating, sharing and contacting us",
+      "items": [
+        "Once Lucento is public on Google Play, it may ask Google Play to show its rating card after you save — only after a week of use, and at most once every 90 days. Google Play decides whether the card appears. A rating or review you give goes to Google Play under your Google account; Lucento never learns whether or how you rated it.",
+        "Rate Lucento, Share Lucento, Contact support and Lucento’s pages open Google Play, your share sheet, your email app or your browser, only when you tap them; Lucento itself sends nothing. A support email starts with the app version, Android version and phone model below your message, and you can delete them before sending."
       ]
     },
     {

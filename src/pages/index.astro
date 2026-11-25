@@ -41,7 +41,7 @@ const privacyRows = [
   { term: 'Password check', when: 'when you choose a password', detail: 'The first five characters of a scrambled version go to Have I Been Pwned to check it against known leaks. Your password is never sent there.' },
   { term: 'Exchange rates', when: 'on by default', detail: `When you record something in another currency: two currency codes and a date, never an amount. Off in Settings${nbsp}›${nbsp}Money.` },
   { term: 'Scanning', when: 'when you scan or import', detail: 'Photos, scans and PDFs are read on your phone and never uploaded. ML Kit and Google’s document scanner may send Google technical diagnostics, such as your phone model, versions, how long a scan took and error codes, never the images or the text. The first “Scan pages” has Google Play services download the scanner.' },
-  { term: 'Google Play', when: 'built into the app', detail: 'Its billing component sends Google its own diagnostics. When you buy Pro, Google takes the payment and Lucento’s server checks the purchase, never your card, then checks it again every few hours while you’re online, signed in or not, so a refunded purchase doesn’t stay unlocked.' },
+  { term: 'Google Play', when: 'built into the app', detail: 'Its billing component sends Google its own diagnostics. When you buy Pro, Google takes the payment and Lucento’s server checks the purchase, never your card, then checks it again every few hours while you’re online, signed in or not, so a refunded purchase doesn’t stay unlocked. Once Lucento is public on Google Play, it may ask Play to show its rating card after you save, at most every 90 days; a rating goes to Google Play, and Lucento never learns it.' },
 ];
 
 const jsonLd = [
