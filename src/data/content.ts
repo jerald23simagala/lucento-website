@@ -178,7 +178,7 @@ export const faq: FaqGroup[] = [
         // Fold7 (832 dp in landscape, 750 upright) and Fold8 (933 dp in landscape), KNOWN_ISSUES WW-5. Under 480 dp tall
         // (a flip phone opened sideways) it keeps the dock; large tablets can split upright too, so only "smaller".
         q: 'Does Lucento work on tablets and foldables?',
-        a: 'Yes. On a tablet, or a foldable that opens like a book (such as a Galaxy Z Fold), held in landscape, Lucento shows a side menu and two panes: the list stays on the left and what you open appears beside it. Held upright, a Galaxy Z Fold or a smaller tablet shows one pane beside the menu. Flip phones, and any foldable when it’s folded, use the phone layout. It’s the same app with the same records in every layout.',
+        a: 'Yes. On a tablet, or a foldable that opens like a book (such as a Galaxy Z Fold), held in landscape, Lucento shows a side menu and two panes: the screen you’re on stays on the left and what you open appears beside it. Held upright, a Galaxy Z Fold or a smaller tablet shows one pane beside the menu. Flip phones, and any foldable when it’s folded, use the phone layout. It’s the same app with the same records in every layout.',
       },
     ],
   },

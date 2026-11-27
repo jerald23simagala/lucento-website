@@ -731,7 +731,7 @@ a.play:hover { color: #fff; background: #111; }
 /* The size container is this inner box: containment on the figure would switch its subgrid off. */
 .ls-box { width: 100%; align-self: end; container-type: inline-size; }
 .ls-dev figcaption { align-self: start; color: var(--color-ink-muted); font-size: var(--text-caption); line-height: 1.4; text-align: center; text-wrap: balance; }
-#tablets .lede { text-wrap: pretty; }
+#tablets .lede { max-width: 34em; text-wrap: pretty; }
 .ls-frame {
   position: relative; width: 100%; background: var(--color-device);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.75) inset, 0 0 0 max(1px, 0.25cqw) var(--color-device-edge), var(--shadow-device);
@@ -756,7 +756,9 @@ a.play:hover { color: #fff; background: #111; }
 .ls-tablet .statusbar-wide svg { height: 1.8cqw; }
 
 .ls-fold .ls-frame { border-radius: 5.2cqw; padding: 2.8cqw; perspective: 220cqw; }
-.ls-halves { display: grid; grid-template-columns: 1fr 1fr; }
+/* Behind the halves, the unlit inner screen: while the right half is still turned away, the device reads as folded,
+   not as a picture that failed to load (critic r2). */
+.ls-halves { display: grid; grid-template-columns: 1fr 1fr; background: var(--sb-bg, #10182B); border-radius: 2.6cqw; }
 .ls-half-l { border-radius: 2.6cqw 0 0 2.6cqw; }
 .ls-half-r { border-radius: 0 2.6cqw 2.6cqw 0; transform-origin: left center; backface-visibility: hidden; }
 .ls-fold .statusbar-wide { height: 4cqw; padding: 0 2.4cqw; font-size: 2.1cqw; }

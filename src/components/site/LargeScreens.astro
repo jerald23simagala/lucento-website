@@ -36,7 +36,7 @@ const icons = {
     <div class="section-head center">
       <p class="eyebrow">Tablets and foldables</p>
       <h2 id="h-tablets">On a bigger screen, <span class="accent">two views side by side.</span></h2>
-      <p class="lede">On a tablet, or a foldable that opens like a book, held in landscape, the list stays on the left and what you open appears beside it. Folded, it’s the same phone app.</p>
+      <p class="lede">Hold a tablet, or a foldable that opens like a book, in landscape: the screen you’re on stays on the left and what you open appears beside it. Folded, it’s the same phone app.</p>
     </div>
 
     <div class="ls-stage">
@@ -53,14 +53,14 @@ const icons = {
                 sizes={tabletSizes}
                 width="1200"
                 height="698"
-                alt="Lucento on a tablet held sideways: the dashboard on the left, with ₱7,979.90 spent of a ₱25,900.00 budget, and Milestones open beside it, showing each month of 2026 against its budget."
+                alt="Lucento on a tablet held in landscape: the dashboard on the left, with ₱7,979.90 spent of a ₱25,900.00 budget, and Milestones open beside it, showing each month of 2026 against its budget."
                 loading="lazy"
                 decoding="async"
               />
             </picture>
           </div>
         </div></div>
-        <figcaption>Tablet, held in landscape. The budget year is Pro.</figcaption>
+        <figcaption>Tablet, held in landscape (the budget year is Pro)</figcaption>
       </figure>
 
       <figure class="ls-dev ls-fold" data-unfold>
@@ -113,12 +113,14 @@ const icons = {
   // simply open: the folded state is added here, only while the band is still below the screen, never in the markup.
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
     const fold = document.querySelector<HTMLElement>('[data-unfold]');
-    if (fold && fold.getBoundingClientRect().top > window.innerHeight) {
+    const device = fold?.querySelector<HTMLElement>('.ls-box');
+    if (fold && device && fold.getBoundingClientRect().top > window.innerHeight) {
       fold.classList.add('is-folded');
+      // Watch the device itself, not the figure with its caption, so it opens as soon as a third of it shows.
       const io = new IntersectionObserver((entries) => entries.forEach((e) => {
         if (e.isIntersecting) { fold.classList.remove('is-folded'); io.disconnect(); }
-      }), { threshold: 0.5 });
-      io.observe(fold);
+      }), { threshold: 0.35 });
+      io.observe(device);
     }
   }
 </script>

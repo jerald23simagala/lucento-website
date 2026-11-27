@@ -483,10 +483,10 @@ test.describe('homepage', () => {
     await expect(band.getByRole('heading', { level: 2 })).toHaveText('On a bigger screen, two views side by side.');
     // A Galaxy Z Fold held upright keeps one pane, so the claim is "held in landscape" (lucento-android WW-5); a flip
     // phone opened sideways keeps the phone layout, so it names foldables that open like a book.
-    await expect(band.locator('.lede')).toContainText('a foldable that opens like a book, held in landscape');
+    await expect(band.locator('.lede')).toContainText('a foldable that opens like a book, in landscape');
     await expect(band.locator('.lede')).not.toContainText('unfolded phone');
     // The budget year is Pro, so the tablet's caption says so (principle 14).
-    await expect(band.locator('figcaption')).toHaveText(['Tablet, held in landscape. The budget year is Pro.', 'Foldable, unfolded in landscape', 'Folded: the phone app']);
+    await expect(band.locator('figcaption')).toHaveText(['Tablet, held in landscape (the budget year is Pro)', 'Foldable, unfolded in landscape', 'Folded: the phone app']);
     // Three described captures; the foldable's second half repeats the first half's file and stays silent.
     const alts = await band.locator('img').evaluateAll((imgs) => imgs.map((img) => (img as HTMLImageElement).alt));
     expect(alts.filter(Boolean)).toHaveLength(3);
