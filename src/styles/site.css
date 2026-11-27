@@ -737,12 +737,18 @@ a.play:hover { color: #fff; background: #111; }
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.75) inset, 0 0 0 max(1px, 0.25cqw) var(--color-device-edge), var(--shadow-device);
 }
 .ls-screen, .ls-half { overflow: hidden; background: var(--sb-bg, #10182B); }
-.ls-screen picture, .ls-screen img, .ls-crop img { display: block; width: 100%; height: auto; }
+.ls-screen picture, .ls-screen img, .ls-shot img { display: block; width: 100%; height: auto; }
 .ls-crop { overflow: hidden; }
-/* Each half shows the whole capture at twice its width (one file for both); max-width lifts the global reset's
-   picture cap, which otherwise squeezed both panes into the left half (critic r1, P0). */
-.ls-crop picture { display: block; width: 200%; max-width: none; }
-.ls-half-r .ls-crop picture { margin-left: -100%; }
+/* Each half shows the whole capture at twice its width (one file for both). The 200 % box is .ls-shot, a div, so the
+   global reset's picture cap can't squeeze both panes into the left half (critic r1, P0), and the sharp copies line up
+   with the picture under them. */
+.ls-crop .ls-shot { width: 200%; }
+.ls-half-r .ls-crop .ls-shot { margin-left: -100%; }
+/* Principle 13, as on every phone screen (owner, 2026-11-27): never flat and whole. The dialogs' focus values: the
+   screen soft and dim, its story sharp (LargeScreens.astro lists the regions). */
+.ls-shot { position: relative; }
+.ls-shot > picture:first-child img { filter: blur(3px) saturate(0.85) brightness(0.8); }
+.ls-sharp { position: absolute; inset: 0; clip-path: inset(calc(var(--y) * 100%) calc((1 - var(--x) - var(--w)) * 100%) calc((1 - var(--y) - var(--h)) * 100%) calc(var(--x) * 100%) round 1.2cqw); }
 /* The wide status bars: the phone template's bar (9:41, icons; the time is drawn, not text), sized per device. */
 .statusbar-wide { display: flex; align-items: center; justify-content: space-between; background: var(--sb-bg, #10182B); color: var(--sb-ink, #F4F6FC); font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
 .statusbar-wide .sb-icons { display: inline-flex; align-items: center; }

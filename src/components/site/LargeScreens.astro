@@ -16,11 +16,22 @@
  * Each device sits in its own size container (.ls-box), so its bezel, status bar and camera scale with whatever width
  * the layout gives it; the figure itself stays a plain subgrid (containment would switch subgrid off), so the devices
  * share one floor and the captions one line.
+ *
+ * Protected like every phone screen on the site (principle 13; owner, 2026-11-27): none is shown flat and whole. As
+ * with the dialogs' `focus` treatment, each device keeps its story sharp and lets the rest go soft: the tablet's budget
+ * card and budget year, the foldable's net worth and the wallet it opened (that region runs across the hinge), the
+ * folded phone's net worth. The sharp copies use the same files, so the browser downloads each file once. Files stop at
+ * about twice the largest width a device is shown at: tablet 1200 px (600), foldable 840 px (420), phone 560.
  */
 import Phone from './Phone.astro';
 
+type Region = readonly [number, number, number, number];
+/** Sharp regions as fractions x, y, w, h of the capture, like Phone's `region`. */
+const tabletSharp: Region[] = [[0.082, 0.17, 0.344, 0.34], [0.496, 0.255, 0.449, 0.392]];
+const foldSharp: Region[] = [[0.103, 0.1, 0.419, 0.232], [0.563, 0.097, 0.418, 0.378]];
+const vars = ([x, y, w, h]: Region) => `--x:${x};--y:${y};--w:${w};--h:${h}`;
 const tabletSet = (format: 'avif' | 'webp') => [720, 1200].map((w) => `/screens/l-tablet-milestones-${w}.${format} ${w}w`).join(', ');
-const foldSet = (format: 'avif' | 'webp') => [640, 1000].map((w) => `/screens/l-fold-wallets-${w}.${format} ${w}w`).join(', ');
+const foldSet = (format: 'avif' | 'webp') => [640, 840].map((w) => `/screens/l-fold-wallets-${w}.${format} ${w}w`).join(', ');
 const tabletSizes = '(min-width: 80em) 600px, (min-width: 64em) 46vw, 92vw';
 // Each half shows the whole capture at twice its own width, so both halves share one file.
 const foldSizes = '(min-width: 80em) 420px, (min-width: 64em) 32vw, 58vw';
@@ -45,19 +56,29 @@ const icons = {
           <span class="ls-cam" aria-hidden="true"></span>
           <div class="ls-screen">
             <div class="statusbar-wide" aria-hidden="true"><span class="sb-time"></span><span class="sb-icons" set:html={icons.wifi + icons.battery} /></div>
-            <picture>
-              <source type="image/avif" srcset={tabletSet('avif')} sizes={tabletSizes} />
-              <img
-                src="/screens/l-tablet-milestones-1200.webp"
-                srcset={tabletSet('webp')}
-                sizes={tabletSizes}
-                width="1200"
-                height="698"
-                alt="Lucento on a tablet held in landscape: the dashboard on the left, with ₱7,979.90 spent of a ₱25,900.00 budget, and Milestones open beside it, showing each month of 2026 against its budget."
-                loading="lazy"
-                decoding="async"
-              />
-            </picture>
+            <div class="ls-shot">
+              <picture>
+                <source type="image/avif" srcset={tabletSet('avif')} sizes={tabletSizes} />
+                <img
+                  src="/screens/l-tablet-milestones-1200.webp"
+                  srcset={tabletSet('webp')}
+                  sizes={tabletSizes}
+                  width="1200"
+                  height="698"
+                  alt="Lucento on a tablet held in landscape: the dashboard on the left, with ₱7,979.90 spent of a ₱25,900.00 budget, and Milestones open beside it, showing each month of 2026 against its budget."
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+              {
+                tabletSharp.map((r) => (
+                  <picture class="ls-sharp" style={vars(r)}>
+                    <source type="image/avif" srcset={tabletSet('avif')} sizes={tabletSizes} />
+                    <img src="/screens/l-tablet-milestones-1200.webp" srcset={tabletSet('webp')} sizes={tabletSizes} width="1200" height="698" alt="" loading="lazy" decoding="async" />
+                  </picture>
+                ))
+              }
+            </div>
           </div>
         </div></div>
         <figcaption>Tablet, held in landscape (the budget year is Pro)</figcaption>
@@ -70,30 +91,46 @@ const icons = {
           <div class="ls-halves">
             <div class="ls-half ls-half-l">
               <div class="statusbar-wide" aria-hidden="true"><span class="sb-time"></span></div>
-              <div class="ls-crop">
+              <div class="ls-crop"><div class="ls-shot">
                 <picture>
                   <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
                   <img
-                    src="/screens/l-fold-wallets-1000.webp"
+                    src="/screens/l-fold-wallets-840.webp"
                     srcset={foldSet('webp')}
                     sizes={foldSizes}
-                    width="1000"
-                    height="695"
+                    width="840"
+                    height="584"
                     alt="Lucento on an unfolded foldable held in landscape: the wallets list, with net worth ₱232,350.10, and the Everyday bank wallet open beside it."
                     loading="lazy"
                     decoding="async"
                   />
                 </picture>
-              </div>
+                {
+                  foldSharp.map((r) => (
+                    <picture class="ls-sharp" style={vars(r)}>
+                      <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
+                      <img src="/screens/l-fold-wallets-840.webp" srcset={foldSet('webp')} sizes={foldSizes} width="840" height="584" alt="" loading="lazy" decoding="async" />
+                    </picture>
+                  ))
+                }
+              </div></div>
             </div>
             <div class="ls-half ls-half-r">
               <div class="statusbar-wide" aria-hidden="true"><span></span><span class="sb-icons" set:html={icons.signal + icons.wifi + icons.battery} /></div>
-              <div class="ls-crop">
+              <div class="ls-crop"><div class="ls-shot">
                 <picture>
                   <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
-                  <img src="/screens/l-fold-wallets-1000.webp" srcset={foldSet('webp')} sizes={foldSizes} width="1000" height="695" alt="" loading="lazy" decoding="async" />
+                  <img src="/screens/l-fold-wallets-840.webp" srcset={foldSet('webp')} sizes={foldSizes} width="840" height="584" alt="" loading="lazy" decoding="async" />
                 </picture>
-              </div>
+                {
+                  foldSharp.map((r) => (
+                    <picture class="ls-sharp" style={vars(r)}>
+                      <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
+                      <img src="/screens/l-fold-wallets-840.webp" srcset={foldSet('webp')} sizes={foldSizes} width="840" height="584" alt="" loading="lazy" decoding="async" />
+                    </picture>
+                  ))
+                }
+              </div></div>
             </div>
           </div>
         </div></div>
@@ -101,7 +138,7 @@ const icons = {
       </figure>
 
       <figure class="ls-dev ls-phone">
-        <div class="ls-box"><Phone file="l-dashboard" max={560} sizes="(min-width: 64em) 160px, 30vw" alt="Folded, Lucento is the phone app: the dashboard, with net worth ₱232,350.10." /></div>
+        <div class="ls-box"><Phone file="l-dashboard" treatment="focus" region={[0.045, 0.13, 0.91, 0.28]} max={560} sizes="(min-width: 64em) 160px, 30vw" alt="Folded, Lucento is the phone app: the dashboard, with net worth ₱232,350.10." /></div>
         <figcaption>Folded: the phone app</figcaption>
       </figure>
     </div>

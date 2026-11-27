@@ -55,6 +55,10 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
     `focus` (one region sharp, the rest soft), `angle` (turned in space) and `lift` (key pieces raised out of a soft,
     dim screen; Multicurrency and Budget). Pairs are window + angle; single phones are focus or lift; the theme
     switcher is angled. Dialog screens stop at 560 px files. The footer says "App screens © Lucento".
+    The tablets band follows the same rule (owner, 2026-11-27): every device there uses `focus`, with one sharp region
+    per pane (the tablet's budget card and budget year, the foldable's net worth and the wallet it opened, the folded
+    phone's net worth). Its files stop at about twice the largest width a device is shown at: tablet 1200 px (600),
+    foldable 840 px (420), phone 560 px.
 14. **Premium, modern, confident, honest.** Every claim is checked against the app; signed amounts use U+2212; Pro
     features are tagged Pro; limits are the app's exact numbers. The demo month's figures are shown unlabelled, the
     same rule as the Play screenshots (owner, 2026-11-27).
@@ -104,7 +108,8 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
    copy says "Hold a tablet, or a foldable that opens like a book, in landscape": a Galaxy Z Fold or a smaller tablet
    held upright keeps one pane, and a flip phone opened sideways (under 480 dp tall) keeps the phone layout
    (lucento-android `NavLayout.kt`, split from 804 dp; read on a real Galaxy Z Fold7 and Fold8, KNOWN_ISSUES WW-5).
-   The unfold runs on `--dur-hero`. Not in the header
+   The unfold runs on `--dur-hero`. Every screen in the band is soft except one sharp region per pane (principle 13).
+   Not in the header
    (it isn't a section people jump to). Goes live only with an app release that has the split screen (PR #158).
 4. Pricing: Free, Pro and Pro Lifetime. Pro opens on yearly with its saving (Save 33%, ₱598 less than monthly for a
    year, computed from the prices); Lifetime has Pro's premium treatment in gold. What happens after buying and if
@@ -161,7 +166,7 @@ site screen comes from one shot:
 | `f-schedules` | tour › `18c-recurring-schedules` |
 | `l-dashboard` | tour › `06-home-within-budget` (the on-pace demo month of lucento-android PR #154, from `capture_foldable.sh`'s seeding run; the other screens move to that month when the band goes live) |
 | `l-tablet-milestones` | `capture_tablet.sh` › `t03-home-milestones` (Pixel Tablet 2560 × 1600; status bar 48 px and gesture bar 64 px cropped; 720 and 1200 px) |
-| `l-fold-wallets` | `capture_foldable.sh` › `wide-wallets` (2688 × 2016 at 420 dpi; bars from `wide.txt`, 63 and 84 px; 640 and 1000 px). Raw captures: lucento-studio `lab/captures/2026-11-27-large-screens/` |
+| `l-fold-wallets` | `capture_foldable.sh` › `wide-wallets` (2688 × 2016 at 420 dpi; bars from `wide.txt`, 63 and 84 px; 640 and 840 px). Raw captures: lucento-studio `lab/captures/2026-11-27-large-screens/` |
 | `f-shown`, `f-hidden` | showcase › `home-shown`, `home-hidden` |
 | `mc-rows` | showcase › `mc-wallets-rows` |
 | `t-<theme>-<mode>` | showcase › `theme-<theme>-<mode>` |
