@@ -56,7 +56,8 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
     dim screen; Multicurrency and Budget). Pairs are window + angle; single phones are focus or lift; the theme
     switcher is angled. Dialog screens stop at 560 px files. The footer says "App screens © Lucento".
 14. **Premium, modern, confident, honest.** Every claim is checked against the app; signed amounts use U+2212; Pro
-    features are tagged Pro; limits are the app's exact numbers.
+    features are tagged Pro; limits are the app's exact numbers. The demo month's figures are shown unlabelled, the
+    same rule as the Play screenshots (owner, 2026-11-27).
 
 ## System
 
