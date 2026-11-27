@@ -58,7 +58,7 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
     The tablets band follows the same rule (owner, 2026-11-27): every device there uses `focus`, with one sharp region
     per pane (the tablet's budget card and budget year, the foldable's net worth and the wallet it opened, the folded
     phone's net worth). Its files stop at about twice the largest width a device is shown at: tablet 1200 px (600),
-    foldable 840 px (420), phone 560 px.
+    foldable 840 px (420). The folded phone keeps the dialogs' 560 px cap.
 14. **Premium, modern, confident, honest.** Every claim is checked against the app; signed amounts use U+2212; Pro
     features are tagged Pro; limits are the app's exact numbers. The demo month's figures are shown unlabelled, the
     same rule as the Play screenshots (owner, 2026-11-27).
