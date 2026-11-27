@@ -12,8 +12,8 @@ export interface LegalDocument {
   sections: LegalSection[];
 }
 
-export const VERSION = "2026-11-26";
-export const UPDATED = "26 November 2026";
+export const VERSION = "2026-11-27";
+export const UPDATED = "27 November 2026";
 export const CONTACT_EMAIL = "lucentoapp@gmail.com";
 export const DELETE_ACCOUNT_URL = "https://www.lucentoapp.com/delete-account";
 
@@ -177,7 +177,7 @@ export const privacy: LegalDocument = {
         "Read messages with Gemini (Lucento Pro) is off until you turn it on. It sends the message you type or speak, today’s date, your main currency and your category and account names to Lucento’s server, which asks Google’s Gemini to read it.",
         "Ask Lucento’s AI answers are on for a signed-in account, but nothing is sent until you confirm your first question: Ask Lucento shows what would be sent and waits for you. From then on, your questions go with a summary of your finances, including your transactions from the last 60 days.",
         "Lucento’s server doesn’t keep these messages; it counts each account’s requests per day for the plan’s allowance. You can turn either feature off at any time, in Settings or, for AI answers, in Ask Lucento.",
-        "Lucento uses Gemini’s free service for now: Google may keep what Gemini receives and use it to improve its products, and people at Google may read it for that purpose. If that isn’t acceptable to you, keep Ask Lucento’s answers on your phone and leave Read messages with Gemini off: everything else in Lucento works without them."
+        "Lucento uses Gemini’s paid service: Google doesn’t use what Gemini receives to improve its products, and keeps it only for a limited time, to prevent misuse and where the law requires. If that isn’t acceptable to you, keep Ask Lucento’s answers on your phone and leave Read messages with Gemini off: everything else in Lucento works without them."
       ]
     },
     {

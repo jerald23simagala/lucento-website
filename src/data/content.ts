@@ -171,7 +171,7 @@ export const faq: FaqGroup[] = [
       },
       {
         q: 'What does the AI do, and what does it send?',
-        a: 'Ask Lucento’s reports work out your figures on your phone, send nothing, and are free. Two features use Google’s Gemini. The AI adviser in Ask Lucento is on once you sign in (5 questions a month on Free, 45 a month with Pro), but nothing is sent until you confirm your first question; then it sends your question with a summary of your finances, including your transactions from the last 60 days, and you can turn it off any time. Smarter reading, with Pro, stays off until you turn it on in Settings; each message then uses one of those questions and is sent with today’s date, your main currency and your category and wallet names. Lucento uses Gemini’s free service for now, so Google may keep what it receives to improve its products, and people at Google may read it.',
+        a: 'Ask Lucento’s reports work out your figures on your phone, send nothing, and are free. Two features use Google’s Gemini. The AI adviser in Ask Lucento is on once you sign in (5 questions a month on Free, 45 a month with Pro), but nothing is sent until you confirm your first question; then it sends your question with a summary of your finances, including your transactions from the last 60 days, and you can turn it off any time. Smarter reading, with Pro, stays off until you turn it on in Settings; each message then uses one of those questions and is sent with today’s date, your main currency and your category and wallet names. Lucento uses Gemini’s paid service, so Google doesn’t use what it receives to improve its products and keeps it only for a limited time, to prevent misuse and where the law requires.',
       },
     ],
   },
