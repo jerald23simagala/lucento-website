@@ -104,7 +104,8 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
 3b. Tablets and foldables (owner, 2026-11-27, approved from a preview; `LargeScreens.astro`): the app's wide-window
    layout in three real captures, in the phone template's light frame family on one floor: a tablet held sideways
    (the Dashboard with Milestones open; captioned "The budget year is Pro"), a foldable unfolded in landscape (Wallets
-   with a wallet open; its right half swings open once as the band arrives) and the folded phone (the Dashboard). The
+   with a wallet open; its right half swings open once as the band arrives) and the folded phone (the Dashboard: the
+   hero's own `s-dashboard`, so no capture is published twice). The
    copy says "Hold a tablet, or a foldable that opens like a book, in landscape": a Galaxy Z Fold or a smaller tablet
    held upright keeps one pane, and a flip phone opened sideways (under 480 dp tall) keeps the phone layout
    (lucento-android `NavLayout.kt`, split from 804 dp; read on a real Galaxy Z Fold7 and Fold8, KNOWN_ISSUES WW-5).
@@ -168,7 +169,6 @@ site screen comes from one shot:
 | `f-loan` | tour › `12c-wallet-loan` |
 | `f-wallet-adjust` | tour › `12f-wallet-bank` |
 | `f-schedules` | tour › `18c-recurring-schedules` |
-| `l-dashboard` | tour › `06-home-within-budget` (the on-pace demo month of lucento-android PR #154, from `capture_foldable.sh`'s seeding run; the other screens move to that month when the band goes live) |
 | `l-tablet-milestones` | `capture_tablet.sh` › `t03-home-milestones` (Pixel Tablet 2560 × 1600; status bar 48 px and gesture bar 64 px cropped; 720 and 1200 px) |
 | `l-fold-wallets` | `capture_foldable.sh` › `wide-wallets` (2688 × 2016 at 420 dpi; bars from `wide.txt`, 63 and 84 px; 640 and 840 px). Raw captures: lucento-studio `lab/captures/2026-11-27-large-screens/` |
 | `f-shown`, `f-hidden` | showcase › `home-shown`, `home-hidden` |

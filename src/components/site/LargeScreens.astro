@@ -12,7 +12,8 @@
  *   caption says so: principle 14);
  * - a foldable unfolded in landscape: Wallets with a wallet open (l-fold-wallets). Its right half swings open once as
  *   the band arrives (the one effect, principle 9); without JavaScript or with reduced motion it is simply open;
- * - the folded phone: the Dashboard (l-dashboard), in the one phone template.
+ * - the folded phone: the Dashboard, in the one phone template. It is the hero's own capture (s-dashboard), so no
+ *   screen is published twice.
  * Each device sits in its own size container (.ls-box), so its bezel, status bar and camera scale with whatever width
  * the layout gives it; the figure itself stays a plain subgrid (containment would switch subgrid off), so the devices
  * share one floor and the captions one line.
@@ -139,7 +140,7 @@ const icons = {
       </figure>
 
       <figure class="ls-dev ls-phone">
-        <div class="ls-box"><Phone file="l-dashboard" treatment="focus" region={[0.045, 0.13, 0.91, 0.28]} max={560} sizes="(min-width: 64em) 160px, 30vw" alt="Folded, Lucento is the phone app: the dashboard, with net worth ₱232,350.10." /></div>
+        <div class="ls-box"><Phone file="s-dashboard" treatment="focus" region={[0.045, 0.13, 0.91, 0.28]} max={560} sizes="(min-width: 64em) 160px, 30vw" alt="Folded, Lucento is the phone app: the dashboard, with net worth ₱232,350.10." /></div>
         <figcaption>Folded: the phone app</figcaption>
       </figure>
     </div>
