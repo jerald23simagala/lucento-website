@@ -101,7 +101,7 @@ Privacy (Privacy Policy 2026-11-17, `feature/legal/LegalDocuments.kt`; re-read i
 - Opt-ins, off until chosen: cloud sync after sign-in; Smarter reading (Pro; sends the typed message); anonymous usage
   counts; crash reports; online
   voice (the phone's speech service may send the recording to Google). Signed-in accounts get account emails (verify,
-  welcome, Pro confirmation). Gemini's free tier: Google may keep and read what Gemini receives.
+  welcome, Pro confirmation). Gemini's paid tier since 27 Nov 2026: Google doesn't use what Gemini receives to improve its products and keeps it only for a limited time (misuse, legal).
 - On by default: exchange rates when something is recorded in another currency (two currency codes and a date, never
   an amount; off in Settings › Money); Google Play billing's own diagnostics; while online, the app asks Lucento's
   server every few hours whether a Pro purchase is still valid (signed in or not; never the records).
