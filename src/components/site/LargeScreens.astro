@@ -18,21 +18,38 @@
  * the layout gives it; the figure itself stays a plain subgrid (containment would switch subgrid off), so the devices
  * share one floor and the captions one line.
  *
- * Protected like every phone screen on the site (principle 13; owner, 2026-11-27): none is shown flat and whole. Each
- * device keeps its story sharp and lets the rest go soft: the tablet's budget card and budget year, the foldable's net
- * worth and the wallet it opened (that region runs across the hinge), the folded phone's net worth. The softening is a
- * lighter version of the dialogs' `focus` (1.5 px, barely dimmed; site.css), because this band sells the layout: the
- * rail and both panes have to read (owner, 27 Nov). The sharp copies use the same files, so the browser downloads each
- * file once. Files stop at
- * about twice the largest width a device is shown at: tablet 1200 px (600), foldable 840 px (420). The folded phone
- * keeps the dialogs' 560 px cap.
+ * Protected like every phone screen on the site (principle 13; owner, 2026-11-27): none is shown flat and whole. What
+ * makes the layout legible stays sharp (owner, 27 Nov): the navigation (the rail; the folded phone's dock), each pane's
+ * header, and one story region per pane (the tablet's budget card and budget year, the foldable's net worth and the
+ * wallet it opened, the folded phone's net worth). The foldable's left-pane regions run across the hinge. The rest is a
+ * lighter version of the dialogs' `focus` (1.5 px, barely dimmed; site.css), so the panes read but the detail doesn't.
+ * The sharp copies use the same files, so the browser downloads each file once. Files stop at about twice the largest
+ * width a device is shown at: tablet 1200 px (600), foldable 840 px (420). The folded phone keeps the dialogs' 560 px
+ * cap.
  */
 import Phone from './Phone.astro';
 
 type Region = readonly [number, number, number, number];
-/** Sharp regions as fractions x, y, w, h of the capture, like Phone's `region`. */
-const tabletSharp: Region[] = [[0.082, 0.17, 0.344, 0.34], [0.496, 0.255, 0.449, 0.392]];
-const foldSharp: Region[] = [[0.103, 0.1, 0.419, 0.232], [0.563, 0.097, 0.418, 0.378]];
+/** Sharp regions as fractions x, y, w, h of the capture, like Phone's `region`: rail, headers, then the story. */
+const tabletSharp: Region[] = [
+  [0.004, 0.006, 0.064, 0.988], // the rail
+  [0.075, 0.02, 0.355, 0.06], // Dashboard's header
+  [0.497, 0.02, 0.448, 0.095], // Milestones' header and its line
+  [0.082, 0.17, 0.344, 0.34], // the budget card
+  [0.496, 0.255, 0.449, 0.392], // the budget year
+];
+const foldSharp: Region[] = [
+  [0.004, 0.006, 0.083, 0.988], // the rail
+  [0.095, 0.02, 0.429, 0.061], // Wallets' header
+  [0.56, 0.02, 0.424, 0.061], // View wallet's header
+  [0.103, 0.1, 0.419, 0.232], // net worth
+  [0.563, 0.097, 0.418, 0.378], // the wallet it opened
+];
+// Each half draws only the regions that reach into it.
+const foldLeft = foldSharp.filter(([x]) => x < 0.5);
+const foldRight = foldSharp.filter(([x, , w]) => x + w > 0.5);
+// The folded phone: its header, net worth, the dock and the + button over it.
+const phoneSharp: Region[] = [[0.03, 0.012, 0.94, 0.055], [0.045, 0.13, 0.91, 0.28], [0.025, 0.91, 0.95, 0.088], [0.42, 0.893, 0.16, 0.08]];
 const vars = ([x, y, w, h]: Region) => `--x:${x};--y:${y};--w:${w};--h:${h}`;
 const tabletSet = (format: 'avif' | 'webp') => [720, 1200].map((w) => `/screens/l-tablet-milestones-${w}.${format} ${w}w`).join(', ');
 const foldSet = (format: 'avif' | 'webp') => [640, 840].map((w) => `/screens/l-fold-wallets-${w}.${format} ${w}w`).join(', ');
@@ -110,7 +127,7 @@ const icons = {
                   />
                 </picture>
                 {
-                  foldSharp.map((r) => (
+                  foldLeft.map((r) => (
                     <picture class="ls-sharp" style={vars(r)}>
                       <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
                       <img src="/screens/l-fold-wallets-840.webp" srcset={foldSet('webp')} sizes={foldSizes} width="840" height="584" alt="" loading="lazy" decoding="async" />
@@ -127,7 +144,7 @@ const icons = {
                   <img src="/screens/l-fold-wallets-840.webp" srcset={foldSet('webp')} sizes={foldSizes} width="840" height="584" alt="" loading="lazy" decoding="async" />
                 </picture>
                 {
-                  foldSharp.map((r) => (
+                  foldRight.map((r) => (
                     <picture class="ls-sharp" style={vars(r)}>
                       <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
                       <img src="/screens/l-fold-wallets-840.webp" srcset={foldSet('webp')} sizes={foldSizes} width="840" height="584" alt="" loading="lazy" decoding="async" />
@@ -142,7 +159,7 @@ const icons = {
       </figure>
 
       <figure class="ls-dev ls-phone">
-        <div class="ls-box"><Phone file="s-dashboard" treatment="focus" region={[0.045, 0.13, 0.91, 0.28]} max={560} sizes="(min-width: 64em) 160px, 30vw" alt="Folded, Lucento is the phone app: the dashboard, with net worth ₱232,350.10." /></div>
+        <div class="ls-box"><Phone file="s-dashboard" treatment="focus" regions={phoneSharp} max={560} sizes="(min-width: 64em) 160px, 30vw" alt="Folded, Lucento is the phone app: the dashboard, with net worth ₱232,350.10." /></div>
         <figcaption>Folded: the phone app</figcaption>
       </figure>
     </div>

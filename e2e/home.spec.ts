@@ -540,15 +540,29 @@ test.describe('homepage', () => {
       const base = band.locator(`${scope} :is(.ls-shot, .shot) > picture:first-child img`);
       expect(await base.evaluate((el) => getComputedStyle(el).filter), scope).toContain('blur(1.5px)');
     }
-    for (const scope of ['.ls-tablet', '.ls-half-l', '.ls-half-r']) {
+    // What makes the layout legible stays sharp (owner, 27 Nov): the navigation, each pane's header, and one story region
+    // per pane. Each foldable half draws only the regions that reach into it.
+    const regions = (scope: string) =>
+      band.locator(scope).evaluateAll((els) =>
+        els.map((el) => Object.fromEntries(['x', 'y', 'w', 'h'].map((k) => [k, Number.parseFloat((el as HTMLElement).style.getPropertyValue(`--${k}`))]))),
+      );
+    for (const [scope, count] of [['.ls-tablet', 5], ['.ls-half-l', 3], ['.ls-half-r', 4]] as const) {
       const sharp = band.locator(`${scope} .ls-sharp`);
-      await expect(sharp, scope).toHaveCount(2);
+      await expect(sharp, scope).toHaveCount(count);
       for (const copy of await sharp.all()) {
         expect(await copy.evaluate((el) => getComputedStyle(el).clipPath), scope).toContain('inset(');
         await expect(copy.locator('img')).toHaveAttribute('alt', '');
       }
     }
+    for (const scope of ['.ls-tablet', '.ls-fold']) {
+      const r = await regions(`${scope} .ls-sharp`);
+      expect(r.some((b) => b.x < 0.01 && b.h > 0.9), `${scope}: the rail`).toBe(true);
+      expect(new Set(r.filter((b) => b.y <= 0.03 && b.h < 0.2).map((b) => b.x)).size, `${scope}: both headers`).toBe(2);
+    }
     await expect(band.locator('.ls-phone .device')).toHaveClass(/is-focus/);
+    const phone = await regions('.ls-phone .shot-sharp');
+    expect(phone.some((b) => b.y <= 0.03), 'the phone: its header').toBe(true);
+    expect(phone.some((b) => b.y >= 0.85 && b.w > 0.9), 'the phone: its dock').toBe(true);
     // Files stop at about twice the largest width each device is shown at: tablet 600 px, foldable 420, phone 160 (560
     // files, the dialogs' cap).
     const largest = (scope: string) =>

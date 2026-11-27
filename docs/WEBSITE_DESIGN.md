@@ -55,12 +55,12 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
     `focus` (one region sharp, the rest soft), `angle` (turned in space) and `lift` (key pieces raised out of a soft,
     dim screen; Multicurrency and Budget). Pairs are window + angle; single phones are focus or lift; the theme
     switcher is angled. Dialog screens stop at 560 px files. The footer says "App screens © Lucento".
-    The tablets band follows the same rule (owner, 2026-11-27): every device there uses `focus`, with one sharp region
-    per pane (the tablet's budget card and budget year, the foldable's net worth and the wallet it opened, the folded
-    phone's net worth). The band sells the layout, so its softening is lighter than the dialogs' (owner, 27 Nov):
-    1.5 px, dimmed to 92 %, against 3 px and 80 %. The rail and both panes read while the small text stays soft. Its
-    files stop at about twice the largest width a device is shown at: tablet 1200 px (600), foldable 840 px (420). The
-    folded phone keeps the dialogs' 560 px cap.
+    The tablets band follows the same rule (owner, 2026-11-27): every device there uses `focus`. The band sells the
+    layout, so what makes the layout legible stays sharp (owner, 27 Nov): the navigation (the rail; the folded phone's
+    dock), each pane's header, and one story region per pane (the tablet's budget card and budget year, the foldable's
+    net worth and the wallet it opened, the folded phone's net worth). Its softening is lighter than the dialogs':
+    1.5 px, dimmed to 92 %, against 3 px and 80 %. Its files stop at about twice the largest width a device is shown at:
+    tablet 1200 px (600), foldable 840 px (420). The folded phone keeps the dialogs' 560 px cap.
 14. **Premium, modern, confident, honest.** Every claim is checked against the app; signed amounts use U+2212; Pro
     features are tagged Pro; limits are the app's exact numbers. The demo month's figures are shown unlabelled, the
     same rule as the Play screenshots (owner, 2026-11-27).
@@ -111,7 +111,8 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
    copy says "Hold a tablet, or a foldable that opens like a book, in landscape": a Galaxy Z Fold or a smaller tablet
    held upright keeps one pane, and a flip phone opened sideways (under 480 dp tall) keeps the phone layout
    (lucento-android `NavLayout.kt`, split from 804 dp; read on a real Galaxy Z Fold7 and Fold8, KNOWN_ISSUES WW-5).
-   The unfold runs on `--dur-hero`. Every screen in the band is soft except one sharp region per pane (principle 13).
+   The unfold runs on `--dur-hero`. Every screen in the band is lightly soft except its navigation, its pane
+   headers and one story region per pane (principle 13).
    Not in the header
    (it isn't a section people jump to). Goes live only with an app release that has the split screen (PR #158).
 4. Pricing: Free, Pro and Pro Lifetime. Pro opens on yearly with its saving (Save 33%, ₱598 less than monthly for a
