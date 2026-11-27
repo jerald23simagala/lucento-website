@@ -534,10 +534,13 @@ test.describe('homepage', () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     const band = page.locator('#tablets');
-    // Principle 13 (owner, 2026-11-27): the whole screen soft, one region per pane sharp, with the dialogs' focus values.
+    // Principle 13 (owner, 2026-11-27): the whole screen soft, one region per pane sharp. It's a lighter focus than the
+    // dialogs' (1.5 px against 3 px), so the layout reads.
+    for (const scope of ['.ls-tablet', '.ls-half-l', '.ls-half-r', '.ls-phone']) {
+      const base = band.locator(`${scope} :is(.ls-shot, .shot) > picture:first-child img`);
+      expect(await base.evaluate((el) => getComputedStyle(el).filter), scope).toContain('blur(1.5px)');
+    }
     for (const scope of ['.ls-tablet', '.ls-half-l', '.ls-half-r']) {
-      const base = band.locator(`${scope} .ls-shot > picture:first-child img`);
-      expect(await base.evaluate((el) => getComputedStyle(el).filter), scope).toContain('blur(3px)');
       const sharp = band.locator(`${scope} .ls-sharp`);
       await expect(sharp, scope).toHaveCount(2);
       for (const copy of await sharp.all()) {

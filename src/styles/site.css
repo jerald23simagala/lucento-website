@@ -744,10 +744,13 @@ a.play:hover { color: #fff; background: #111; }
    with the picture under them. */
 .ls-crop .ls-shot { width: 200%; }
 .ls-half-r .ls-crop .ls-shot { margin-left: -100%; }
-/* Principle 13, as on every phone screen (owner, 2026-11-27): never flat and whole. The dialogs' focus values: the
-   screen soft and dim, its story sharp (LargeScreens.astro lists the regions). */
+/* Principle 13, as on every phone screen (owner, 2026-11-27): never flat and whole. This band shows a layout, so it
+   uses a lighter version of the dialogs' focus (owner, 27 Nov): 1.5 px and barely dimmed, against 3 px and 80 %. The
+   rail and both panes read, the small text stays soft, and the story regions stay sharp (LargeScreens.astro lists them).
+   The folded phone, in the phone template, gets the same lighter softening. */
+#tablets { --ls-soft: blur(1.5px) saturate(0.95) brightness(0.92); }
 .ls-shot { position: relative; }
-.ls-shot > picture:first-child img { filter: blur(3px) saturate(0.85) brightness(0.8); }
+.ls-shot > picture:first-child img, .ls-phone .device.is-focus .shot > picture:first-child img { filter: var(--ls-soft); }
 .ls-sharp { position: absolute; inset: 0; clip-path: inset(calc(var(--y) * 100%) calc((1 - var(--x) - var(--w)) * 100%) calc((1 - var(--y) - var(--h)) * 100%) calc(var(--x) * 100%) round 1.2cqw); }
 /* The wide status bars: the phone template's bar (9:41, icons; the time is drawn, not text), sized per device. */
 .statusbar-wide { display: flex; align-items: center; justify-content: space-between; background: var(--sb-bg, #10182B); color: var(--sb-ink, #F4F6FC); font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
