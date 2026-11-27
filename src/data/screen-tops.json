@@ -35,6 +35,10 @@
     "bg": "#0F172B",
     "dark": true
   },
+  "l-dashboard": {
+    "bg": "#0F172B",
+    "dark": true
+  },
   "mc-rows": {
     "bg": "#0F172B",
     "dark": true

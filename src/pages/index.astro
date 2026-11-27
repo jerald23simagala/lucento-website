@@ -17,6 +17,7 @@ import SharedArt from '../components/site/SharedArt.astro';
 import Dialog from '../components/site/Dialog.astro';
 import DialogScript from '../components/site/DialogScript.astro';
 import Reveal from '../components/site/Reveal.astro';
+import LargeScreens from '../components/site/LargeScreens.astro';
 import { faq, foreignWallets, netWorthWithForeign } from '../data/content';
 import { formatMinor } from '../lib/money';
 import { site } from '../data/site';
@@ -63,6 +64,7 @@ const jsonLd = [
       'Insights and plain-language answers about your money',
       'Shared budget for two people',
       'Works offline, no bank login',
+      'Side-by-side layout on tablets and foldables held in landscape',
     ],
     ...(site.playListed ? { downloadUrl: site.playUrl, installUrl: site.playUrl } : {}),
   },
@@ -513,6 +515,9 @@ const jsonLd = [
       </Dialog>
     </div>
   </section>
+
+  <!-- 03b · Tablets and foldables (owner, 2026-11-27): the wide-window layout, real captures, the foldable opens once -->
+  <LargeScreens />
 
   <!-- 04 · Pricing -->
   <section class="band band-haze" id="pricing" aria-labelledby="h-pricing">

@@ -472,6 +472,48 @@ test.describe('homepage', () => {
     await expect(page.locator('#faq')).toContainText('Quick add widget');
   });
 
+  test('tablets and foldables: three real screens, honest captions, and the foldable opens once as it arrives', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const band = page.locator('#tablets');
+    // It sits between Features and Pricing.
+    const order = await page.evaluate(() => [...document.querySelectorAll('main > section[id]')].map((s) => s.id));
+    expect(order.indexOf('tablets')).toBe(order.indexOf('features') + 1);
+    expect(order.indexOf('pricing')).toBe(order.indexOf('tablets') + 1);
+    await expect(band.getByRole('heading', { level: 2 })).toHaveText('On a bigger screen, two views side by side.');
+    // A Galaxy Z Fold held upright keeps one pane, so the claim is "held in landscape" (lucento-android WW-5).
+    await expect(band.locator('.lede')).toContainText('held in landscape');
+    // The budget year is Pro, so the tablet's caption says so (principle 14).
+    await expect(band.locator('figcaption')).toHaveText(['Tablet, held sideways. The budget year is Pro.', 'Foldable, unfolded in landscape', 'Folded: the phone app']);
+    // Three described captures; the foldable's second half repeats the first half's file and stays silent.
+    const alts = await band.locator('img').evaluateAll((imgs) => imgs.map((img) => (img as HTMLImageElement).alt));
+    expect(alts.filter(Boolean)).toHaveLength(3);
+    expect(alts).toHaveLength(4);
+    await expect(band.locator('.device .statusbar')).toHaveCount(1);
+    // Folded only while below the screen; open once it arrives.
+    const fold = band.locator('[data-unfold]');
+    await expect(fold).toHaveClass(/is-folded/);
+    await fold.scrollIntoViewIfNeeded();
+    await expect(fold).not.toHaveClass(/is-folded/);
+    await expect.poll(() => fold.locator('.ls-half-r').evaluate((el) => getComputedStyle(el).transform), { timeout: 4000 }).toBe('none');
+    for (const img of await band.locator('img').all()) {
+      await img.scrollIntoViewIfNeeded();
+      await expect.poll(() => img.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    }
+  });
+
+  test('tablets and foldables: without JavaScript, or with reduced motion, the foldable is simply open', async ({ browser }) => {
+    for (const options of [{ javaScriptEnabled: false }, { reducedMotion: 'reduce' as const }]) {
+      const context = await browser.newContext({ ...options, viewport: { width: 1440, height: 900 } });
+      const page = await context.newPage();
+      await page.goto('/');
+      const half = page.locator('#tablets .ls-half-r');
+      await expect(page.locator('#tablets [data-unfold]')).not.toHaveClass(/is-folded/);
+      expect(await half.evaluate((el) => getComputedStyle(el).transform)).toBe('none');
+      await context.close();
+    }
+  });
+
   test('the FAQ opens, and its structured data matches it', async ({ page }) => {
     await page.goto('/');
     const first = page.locator('.faq details').first();

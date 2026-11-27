@@ -32,7 +32,8 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
 9. **Motion tells the story or stays still.** Allowed: the hero's one-time rise, single light sweep, slow float
    and drift of the supporting phones and gentle scroll parallax (transform only; paused off screen), the theme
    crossfade, the replica's rows arriving and its screen change after Save, a dialog rising into place, the newest
-   Shared row lighting on both phones. Since 2026-11-13/14 (owner: keep the original layout, add
+   Shared row lighting on both phones, the foldable in Tablets and foldables opening once as it arrives (owner,
+   2026-11-27; folded only while below the screen, so nothing waits and nothing is hidden without JavaScript). Since 2026-11-13/14 (owner: keep the original layout, add
    effects) also: the section heads below the first screen easing in once (`Reveal.astro`, on the motion tokens;
    nothing on the first screen waits; nothing is hidden without JavaScript or from keyboard focus), cards lifting on
    hover and answering a press (hover only on devices that hover), and the hero's warmer light and deeper phones. Not
@@ -95,6 +96,13 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
    and the policy) · **Security and privacy** (owner review 3): lock, hide amounts (a real switch between two captures
    from one run), recents, backups, and what leaves the phone in the policy's words (every send path, linked to
    /privacy). Links to a dialog (`/#about-debts`) open it as a modal.
+3b. Tablets and foldables (owner, 2026-11-27, approved from a preview; `LargeScreens.astro`): the app's wide-window
+   layout in three real captures, in the phone template's light frame family on one floor: a tablet held sideways
+   (the Dashboard with Milestones open; captioned "The budget year is Pro"), a foldable unfolded in landscape (Wallets
+   with a wallet open; its right half swings open once as the band arrives) and the folded phone (the Dashboard). The
+   copy says "held in landscape": a tablet or a Galaxy Z Fold held upright keeps one pane (lucento-android
+   `NavLayout.kt`, split from 804 dp; read on a real Galaxy Z Fold7 and Fold8, KNOWN_ISSUES WW-5). Not in the header
+   (it isn't a section people jump to). Goes live only with an app release that has the split screen (PR #158).
 4. Pricing: Free, Pro and Pro Lifetime. Pro opens on yearly with its saving (Save 33%, ₱598 less than monthly for a
    year, computed from the prices); Lifetime has Pro's premium treatment in gold. What happens after buying and if
    Pro ends; the full comparison opens in a dialog. Nothing on the site promises "no ads" (ads may come to Free;
@@ -148,6 +156,9 @@ site screen comes from one shot:
 | `f-loan` | tour › `12c-wallet-loan` |
 | `f-wallet-adjust` | tour › `12f-wallet-bank` |
 | `f-schedules` | tour › `18c-recurring-schedules` |
+| `l-dashboard` | tour › `06-home-within-budget` (the on-pace demo month of lucento-android PR #154, from `capture_foldable.sh`'s seeding run; the other screens move to that month when the band goes live) |
+| `l-tablet-milestones` | `capture_tablet.sh` › `t03-home-milestones` (Pixel Tablet 2560 × 1600; status bar 48 px and gesture bar 64 px cropped; 720 and 1200 px) |
+| `l-fold-wallets` | `capture_foldable.sh` › `wide-wallets` (2688 × 2016 at 420 dpi; bars from `wide.txt`, 63 and 84 px; 640 and 1000 px). Raw captures: lucento-studio `lab/captures/2026-11-27-large-screens/` |
 | `f-shown`, `f-hidden` | showcase › `home-shown`, `home-hidden` |
 | `mc-rows` | showcase › `mc-wallets-rows` |
 | `t-<theme>-<mode>` | showcase › `theme-<theme>-<mode>` |
