@@ -76,7 +76,9 @@ export default defineConfig({
     // Browsers still ask for /favicon.ico; the SVG icon is the only one.
     '/favicon.ico': { status: 308, destination: '/favicon.svg' },
   },
-  integrations: [...(site ? [sitemap()] : []), deferBuiltStyles()],
+  // The sitemap lists only pages meant for search. /auth/ pages (the email-confirmed landing) carry noindex, and a
+  // noindex page in the sitemap is a mixed signal Search Console reports as "Submitted URL marked noindex".
+  integrations: [...(site ? [sitemap({ filter: (page) => !new URL(page).pathname.startsWith('/auth/') })] : []), deferBuiltStyles()],
   // Pages stay static; only on-demand routes (src/pages/api/interpret.ts, prerender = false) become Vercel Functions.
   adapter: vercel(),
   // The site uses no astro:assets images. The pass-through service keeps Astro's on-demand optimizer (sharp/libvips,
