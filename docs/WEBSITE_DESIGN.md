@@ -111,14 +111,18 @@ status on wide screens; phones get an icon menu.
 
 All screens are 1080 × 2400 **API 35** captures in peso mode (owner, 2026-11-13: website screenshots come from API 35),
 cropped by lucento-studio `qa/crop-screen.mjs` (the real status and navigation bars removed; 400/560/720 px, AVIF +
-WebP). Then run `node scripts/screen-tops.mjs`. Last capture: app 0.5.19 on 2026-11-24, with the demo year's history (`demoHistory`).
+WebP). Then run `node scripts/screen-tops.mjs`. Last capture: app main ecec362 (after 0.5.20, with android #154's
+on-pace demo month) on 2026-11-27, with the demo year's history (`demoHistory`). `f-wallet-rows` comes from a second
+`tour-php` run of the same build, because the first run's 12b caught the card gallery (android #165 makes the tour wait
+for the rows). Only files the page shows are published: dialog screens have no 720 px file, and an e2e test checks every
+file in `public/screens`.
 
 The emulator: AVD `Lucento_Shots_API35` (medium phone, 420 dpi, `google_apis_playstore` image), 3-button navigation
 (`cmd overlay enable-exclusive --category com.android.internal.systemui.navbar.threebutton`), system animations off,
 `settings put secure show_ime_with_hard_keyboard 0` (otherwise the keyboard covers onboarding's currency result and
 the tour silently stays in dollars), and the clock set to the demo month's day (`settings put global auto_time 0`,
-`cmd alarm set-time <ms>` for Sunday 2026-11-08 10:00) so the dates and percentages match the copy (26 % of the month,
-rent on the 20th). Install the app fresh before each run. API 35 screenshots in the guest, so no host capture.
+`cmd alarm set-time <ms>` for Sunday 2026-11-08 10:00) so the dates and percentages match the copy (26 % of the month
+gone, ₱98.70 a day for 23 days). Install the app fresh before each run. API 35 screenshots in the guest, so no host capture.
 
 - The hide-amounts pair (`f-shown`, `f-hidden`): WebsiteShowcaseTest, one run, so only the amounts differ.
 - The demo month, the hero stage and the feature screens: lucento-android `ScreenshotTourTest` with

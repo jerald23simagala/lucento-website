@@ -8,8 +8,8 @@
  * Faithful to lucento-android feature/capture (TransactionComposerScreen.kt, ComposerRows.kt), domain/capture
  * (BatchEntryParser splits at line breaks; QuickEntryParser maps "lunch" → Restaurants and "groceries" → Groceries;
  * BatchReview.summarize totals ready rows only) and the dark Sunrise palette (core/designsystem/theme/Color.kt).
- * The categories, wallets and the Transactions figures are the demo month's (s-transactions: 11 transactions,
- * income +₱42,000.00, expenses −₱22,979.90), so the screen after saving adds up with the real capture. It is labelled
+ * The categories, wallets and the Transactions figures are the demo month's (s-transactions: 10 transactions,
+ * income +₱42,000.00, expenses −₱7,979.90), so the screen after saving adds up with the real capture. It is labelled
  * as a replica with example figures. Without JavaScript it shows the message and the controls are hidden.
  */
 import StatusBar from './StatusBar.astro';
@@ -81,9 +81,9 @@ const readyAfter = formatMinor(sumMinor(rows.map((r) => r.minor)));
 const added = sumMinor(rows.map((r) => r.minor));
 
 // The Transactions screen of the demo month (s-transactions), then the same month with the three rows saved.
-const month = { count: 11, incomeMinor: 4_200_000, expensesMinor: -2_297_990 };
+const month = { count: 10, incomeMinor: 4_200_000, expensesMinor: -797_990 };
 const today = [
-  { name: 'Uncategorized', sub: 'Uncategorized · Cash', minor: -24_000, icon: 'shapes', hue: '#8C9BBA' },
+  { name: 'Gift wrap', sub: 'Uncategorized · Cash', minor: -24_000, icon: 'shapes', hue: '#8C9BBA' },
   { name: 'Shoes', sub: 'Clothing and shoes · Everyday bank', minor: -89_000, icon: 'bag', hue: '#D86A9E' },
   { name: 'Streaming', sub: 'Streaming services · Everyday bank', minor: -15_990, icon: 'tv', hue: '#9A86E6' },
   { name: 'Market', sub: 'Groceries · Everyday bank', minor: -107_600, icon: 'cart', hue: '#D9823C' },
@@ -262,7 +262,7 @@ const { headless = false } = Astro.props as { headless?: boolean };
           </div>
 
           <!-- Transactions, after saving -->
-          <div class="sim-screen sim-list" data-screen="list" aria-hidden="true">
+          <div class="sim-screen sim-list" data-screen="list" data-after-count={after.count} aria-hidden="true">
             <div class="sim-list-top">
               <b class="sim-title is-big">Transactions</b>
               <Fragment set:html={svg(I.search, 'sim-icon')} />
@@ -427,7 +427,7 @@ const { headless = false } = Astro.props as { headless?: boolean };
         el.dataset.was = el.textContent ?? '';
         el.textContent = el.dataset.swap ?? '';
       });
-      say.textContent = '3 transactions saved. Transactions now shows 14 this month, with Shampoo, Groceries and Lunch at the top of today.';
+      say.textContent = `3 transactions saved. Transactions now shows ${list.dataset.afterCount} this month, with Shampoo, Groceries and Lunch at the top of today.`;
       busy = false;
       root.querySelector<HTMLButtonElement>('[data-act="reset"]')?.focus({ preventScroll: true });
     };

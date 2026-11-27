@@ -30,7 +30,7 @@ export const screens: AppScreen[] = [
     file: 's-transactions',
     title: 'Every transaction, in order',
     caption: 'Income, expenses and transfers, searchable, with the month’s totals on top.',
-    alt: 'The Transactions screen for this month: income +₱42,000.00, expenses −₱22,979.90 and net inflow +₱19,020.10; today an uncategorised −₱240.00, shoes −₱890.00, streaming −₱159.90 and market −₱1,076.00.',
+    alt: 'The Transactions screen for this month: income +₱42,000.00, expenses −₱7,979.90 and net inflow +₱34,020.10; today an uncategorised gift wrap −₱240.00, shoes −₱890.00, streaming −₱159.90 and market −₱1,076.00.',
   },
   {
     id: 'insights',
@@ -38,7 +38,7 @@ export const screens: AppScreen[] = [
     file: 's-insights',
     title: 'Where the money went, month by month',
     caption: 'Income against spending over 3, 6 or 12 months.',
-    alt: 'Insights over the last 6 months: money in +₱252,000.00 and money out −₱125,549.90, so you kept +₱126,450.10, 50% of what came in, with monthly income and expense bars from June to November.',
+    alt: 'Insights over the last 6 months: money in +₱252,000.00 and money out −₱110,549.90, so you kept +₱141,450.10, 56% of what came in, with monthly income and expense bars from June to November.',
   },
   {
     id: 'budgets',
@@ -46,7 +46,7 @@ export const screens: AppScreen[] = [
     file: 's-budget',
     title: 'A budget that knows what’s coming',
     caption: 'What’s left, what’s safe to spend after bills, and how the month is pacing.',
-    alt: 'The Budget screen for November 2026: ₱2,920.10 remaining of a ₱25,900.00 budget, 26% of the month elapsed and 89% of the budget spent, marked “Ahead of pace” because spending is running ahead of the month; ₱22,979.90 spent and ₱0.00 safe to spend because the bills due take what’s left.',
+    alt: 'The Budget screen for November 2026: ₱7,979.90 spent of a ₱25,900.00 budget, 31% of the budget spent with 26% of the month elapsed, marked “On track”; ₱17,920.10 unspent, and ₱2,270.20 safe to spend, ₱98.70 a day for 23 days, once the bills still to come are set aside.',
   },
   {
     id: 'dashboard',
@@ -54,7 +54,7 @@ export const screens: AppScreen[] = [
     file: 's-dashboard',
     title: 'The whole month on one screen',
     caption: 'Net wallet balance, wallets against debts, and how the budget is pacing.',
-    alt: 'The Lucento Dashboard: net worth ₱217,350.10, assets ₱331,750.10, debts and loans −₱114,400.00, shortcuts to goals, insights, milestones, debts and scheduled bills, and the monthly budget 89% spent: ₱22,979.90 of ₱25,900.00.',
+    alt: 'The Lucento Dashboard: net worth ₱232,350.10, assets ₱346,750.10, debts and loans −₱114,400.00, shortcuts to goals, insights, milestones, debts and scheduled bills, and the monthly budget on track, 31% spent: ₱7,979.90 of ₱25,900.00.',
   },
   {
     id: 'wallets',
@@ -62,7 +62,7 @@ export const screens: AppScreen[] = [
     file: 's-wallets',
     title: 'Every account as a card you recognise',
     caption: 'Cash, banks, savings, cards and loans as a gallery, with net worth on top.',
-    alt: 'The Wallets gallery: net worth ₱217,350.10, assets ₱331,750.10 and liabilities −₱114,400.00, with cards for Cash ₱5,630.00, Everyday bank ₱242,120.10 and Savings ₱84,000.00.',
+    alt: 'The Wallets gallery: net worth ₱232,350.10, assets ₱346,750.10 and liabilities −₱114,400.00, with cards for Cash ₱5,630.00, Everyday bank ₱257,120.10 and Savings ₱84,000.00.',
   },
   {
     id: 'goals',
@@ -129,8 +129,8 @@ export const foreignWallets = [
   { name: 'Dubai account', kind: 'Bank account', currency: 'AED', minor: 420_000, rate: '15.74', pesoMinor: 6_610_800 },
   { name: 'Japan trip yen', kind: 'Cash', currency: 'JPY', minor: 60_000, rate: '0.3825', pesoMinor: 2_295_000 },
 ] as const;
-/** Net worth in pesos once those wallets join the demo month (mc-home). */
-export const netWorthWithForeign = 25_810_810;
+/** Net worth in pesos once those wallets join the demo month (mc-home, mc-rows): ₱232,350.10 plus the three. */
+export const netWorthWithForeign = 42_833_810;
 
 export interface FaqGroup {
   title: string;
