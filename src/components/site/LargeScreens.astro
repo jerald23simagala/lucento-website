@@ -1,0 +1,184 @@
+---
+/**
+ * Tablets and foldables (owner, 2026-11-27, approved from a preview): the app's wide-window layout. On a window at
+ * least 804 dp wide (a tablet held sideways, an unfolded foldable held in landscape) Lucento shows a side rail and two
+ * panes, the list on the left and what was opened from it on the right (lucento-android navigation/NavLayout.kt;
+ * read on a real Galaxy Z Fold7 and Fold8, KNOWN_ISSUES WW-5). Held upright, a Galaxy Fold or a smaller tablet keeps
+ * one pane, so the copy says "held in landscape"; a flip phone opened sideways is under 480 dp tall and keeps the phone
+ * layout, so it says "a foldable that opens like a book" (critic r1). Folded, it is the phone app.
+ *
+ * Three real captures in the phone template's light frame family (docs/WEBSITE_DESIGN.md, principle 2):
+ * - a tablet held sideways: the Dashboard with Milestones open (l-tablet-milestones; the budget year is Pro, so the
+ *   caption says so: principle 14);
+ * - a foldable unfolded in landscape: Wallets with a wallet open (l-fold-wallets). Its right half swings open once as
+ *   the band arrives (the one effect, principle 9); without JavaScript or with reduced motion it is simply open;
+ * - the folded phone: the Dashboard, in the one phone template. It is the hero's own capture (s-dashboard), so no
+ *   screen is published twice.
+ * Each device sits in its own size container (.ls-box), so its bezel, status bar and camera scale with whatever width
+ * the layout gives it; the figure itself stays a plain subgrid (containment would switch subgrid off), so the devices
+ * share one floor and the captions one line.
+ *
+ * Protected like every phone screen on the site (principle 13; owner, 2026-11-27): none is shown flat and whole. What
+ * makes the layout legible stays sharp (owner, 27 Nov): the navigation (the rail; the folded phone's dock), each pane's
+ * header, and one story region per pane (the tablet's budget card and budget year, the foldable's net worth and the
+ * wallet it opened, the folded phone's net worth). The foldable's left-pane regions run across the hinge. The rest is a
+ * lighter version of the dialogs' `focus` (1.5 px, barely dimmed; site.css), so the panes read but the detail doesn't.
+ * The sharp copies use the same files, so the browser downloads each file once. Files stop at about twice the largest
+ * width a device is shown at: tablet 1200 px (600), foldable 840 px (420). The folded phone keeps the dialogs' 560 px
+ * cap.
+ */
+import Phone from './Phone.astro';
+
+type Region = readonly [number, number, number, number];
+/** Sharp regions as fractions x, y, w, h of the capture, like Phone's `region`: rail, headers, then the story. */
+const tabletSharp: Region[] = [
+  [0.004, 0.006, 0.064, 0.988], // the rail
+  [0.075, 0.02, 0.355, 0.06], // Dashboard's header
+  [0.497, 0.02, 0.448, 0.095], // Milestones' header and its line
+  [0.082, 0.17, 0.344, 0.34], // the budget card
+  [0.496, 0.255, 0.449, 0.392], // the budget year
+];
+const foldSharp: Region[] = [
+  [0.004, 0.006, 0.083, 0.988], // the rail
+  [0.095, 0.02, 0.429, 0.061], // Wallets' header
+  [0.56, 0.02, 0.424, 0.061], // View wallet's header
+  [0.103, 0.1, 0.419, 0.232], // net worth
+  [0.563, 0.097, 0.418, 0.378], // the wallet it opened
+];
+// Each half draws only the regions that reach into it.
+const foldLeft = foldSharp.filter(([x]) => x < 0.5);
+const foldRight = foldSharp.filter(([x, , w]) => x + w > 0.5);
+// The folded phone: its header, net worth, the dock and the + button over it.
+const phoneSharp: Region[] = [[0.03, 0.012, 0.94, 0.055], [0.045, 0.13, 0.91, 0.28], [0.025, 0.91, 0.95, 0.088], [0.42, 0.893, 0.16, 0.08]];
+const vars = ([x, y, w, h]: Region) => `--x:${x};--y:${y};--w:${w};--h:${h}`;
+const tabletSet = (format: 'avif' | 'webp') => [720, 1200].map((w) => `/screens/l-tablet-milestones-${w}.${format} ${w}w`).join(', ');
+const foldSet = (format: 'avif' | 'webp') => [640, 840].map((w) => `/screens/l-fold-wallets-${w}.${format} ${w}w`).join(', ');
+const tabletSizes = '(min-width: 80em) 600px, (min-width: 64em) 46vw, 92vw';
+// Each half shows the whole capture at twice its own width, so both halves share one file.
+const foldSizes = '(min-width: 80em) 420px, (min-width: 64em) 32vw, 58vw';
+const icons = {
+  signal: '<svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" /><rect x="5" y="5.5" width="3" height="6.5" rx="1" /><rect x="10" y="3" width="3" height="9" rx="1" /><rect x="15" y="0" width="3" height="12" rx="1" /></svg>',
+  wifi: '<svg viewBox="0 0 16 12"><path d="M8 11.5 5.6 8.9a3.4 3.4 0 0 1 4.8 0Z" /><path d="M2.9 6.2a7.3 7.3 0 0 1 10.2 0l-1.4 1.5a5.3 5.3 0 0 0-7.4 0Z" /><path d="M0 3.3a11.4 11.4 0 0 1 16 0l-1.4 1.5a9.4 9.4 0 0 0-13.2 0Z" /></svg>',
+  battery: '<svg viewBox="0 0 26 12"><rect x="0.6" y="0.6" width="22" height="10.8" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5" /><rect x="2.4" y="2.4" width="18.4" height="7.2" rx="1.6" /><rect x="23.8" y="4" width="1.8" height="4" rx="0.9" opacity="0.5" /></svg>',
+};
+---
+
+<section class="band" id="tablets" aria-labelledby="h-tablets">
+  <div class="wrap">
+    <div class="section-head center">
+      <p class="eyebrow">Tablets and foldables</p>
+      <h2 id="h-tablets">On a bigger screen, two views side by side.</h2>
+      <p class="lede">Hold a tablet, or a foldable that opens like a book, in landscape: the screen you’re on stays on the left and what you open appears beside it. Folded, it’s the same phone app.</p>
+    </div>
+
+    <div class="ls-stage">
+      <figure class="ls-dev ls-tablet">
+        <div class="ls-box"><div class="ls-frame">
+          <span class="ls-cam" aria-hidden="true"></span>
+          <div class="ls-screen">
+            <div class="statusbar-wide" aria-hidden="true"><span class="sb-time"></span><span class="sb-icons" set:html={icons.wifi + icons.battery} /></div>
+            <div class="ls-shot">
+              <picture>
+                <source type="image/avif" srcset={tabletSet('avif')} sizes={tabletSizes} />
+                <img
+                  src="/screens/l-tablet-milestones-1200.webp"
+                  srcset={tabletSet('webp')}
+                  sizes={tabletSizes}
+                  width="1200"
+                  height="698"
+                  alt="Lucento on a tablet held in landscape: the dashboard on the left, with ₱7,979.90 spent of a ₱25,900.00 budget, and Milestones open beside it, showing each month of 2026 against its budget."
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+              {
+                tabletSharp.map((r) => (
+                  <picture class="ls-sharp" style={vars(r)}>
+                    <source type="image/avif" srcset={tabletSet('avif')} sizes={tabletSizes} />
+                    <img src="/screens/l-tablet-milestones-1200.webp" srcset={tabletSet('webp')} sizes={tabletSizes} width="1200" height="698" alt="" loading="lazy" decoding="async" />
+                  </picture>
+                ))
+              }
+            </div>
+          </div>
+        </div></div>
+        <figcaption>Tablet, held in landscape (the budget year is Pro)</figcaption>
+      </figure>
+
+      <figure class="ls-dev ls-fold" data-unfold>
+        <div class="ls-box"><div class="ls-frame">
+          <span class="ls-hinge ls-hinge-t" aria-hidden="true"></span>
+          <span class="ls-hinge ls-hinge-b" aria-hidden="true"></span>
+          <div class="ls-halves">
+            <div class="ls-half ls-half-l">
+              <div class="statusbar-wide" aria-hidden="true"><span class="sb-time"></span></div>
+              <div class="ls-crop"><div class="ls-shot">
+                <picture>
+                  <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
+                  <img
+                    src="/screens/l-fold-wallets-840.webp"
+                    srcset={foldSet('webp')}
+                    sizes={foldSizes}
+                    width="840"
+                    height="584"
+                    alt="Lucento on an unfolded foldable held in landscape: the wallets list, with net worth ₱232,350.10, and the Everyday bank wallet open beside it."
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
+                {
+                  foldLeft.map((r) => (
+                    <picture class="ls-sharp" style={vars(r)}>
+                      <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
+                      <img src="/screens/l-fold-wallets-840.webp" srcset={foldSet('webp')} sizes={foldSizes} width="840" height="584" alt="" loading="lazy" decoding="async" />
+                    </picture>
+                  ))
+                }
+              </div></div>
+            </div>
+            <div class="ls-half ls-half-r">
+              <div class="statusbar-wide" aria-hidden="true"><span></span><span class="sb-icons" set:html={icons.signal + icons.wifi + icons.battery} /></div>
+              <div class="ls-crop"><div class="ls-shot">
+                <picture>
+                  <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
+                  <img src="/screens/l-fold-wallets-840.webp" srcset={foldSet('webp')} sizes={foldSizes} width="840" height="584" alt="" loading="lazy" decoding="async" />
+                </picture>
+                {
+                  foldRight.map((r) => (
+                    <picture class="ls-sharp" style={vars(r)}>
+                      <source type="image/avif" srcset={foldSet('avif')} sizes={foldSizes} />
+                      <img src="/screens/l-fold-wallets-840.webp" srcset={foldSet('webp')} sizes={foldSizes} width="840" height="584" alt="" loading="lazy" decoding="async" />
+                    </picture>
+                  ))
+                }
+              </div></div>
+            </div>
+          </div>
+        </div></div>
+        <figcaption>Foldable, unfolded in landscape</figcaption>
+      </figure>
+
+      <figure class="ls-dev ls-phone">
+        <div class="ls-box"><Phone file="s-dashboard" treatment="focus" regions={phoneSharp} max={560} sizes="(min-width: 64em) 160px, 30vw" alt="Folded, Lucento is the phone app: the dashboard, with net worth ₱232,350.10." /></div>
+        <figcaption>Folded: the phone app</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<script>
+  // The foldable opens once as the band arrives (owner, 2026-11-27). Without JavaScript or with reduced motion it is
+  // simply open: the folded state is added here, only while the band is still below the screen, never in the markup.
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const fold = document.querySelector<HTMLElement>('[data-unfold]');
+    const device = fold?.querySelector<HTMLElement>('.ls-box');
+    if (fold && device && fold.getBoundingClientRect().top > window.innerHeight) {
+      fold.classList.add('is-folded');
+      // Watch the device itself, not the figure with its caption, so it opens as soon as a third of it shows.
+      const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { fold.classList.remove('is-folded'); io.disconnect(); }
+      }), { threshold: 0.35 });
+      io.observe(device);
+    }
+  }
+</script>

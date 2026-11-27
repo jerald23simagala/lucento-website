@@ -713,6 +713,78 @@ a.play:hover { color: #fff; background: #111; }
 }
 @keyframes sa-glow { 0%, 100% { fill: #26397A; } 50% { fill: #3563F5; } }
 
+/* ---------------------------------------------------------------- 03b tablets and foldables (owner, 2026-11-27) */
+/* Three real captures in the phone template's frame family, on one floor (LargeScreens.astro): the tablet held
+   sideways leads, then the unfolded foldable (its right half swings open once as the band arrives), then the folded
+   phone. Each device sits in its own size container (.ls-box), so cqw below is a share of that device's width. On phones: the tablet
+   across, then the foldable and the folded phone side by side. It follows Features on the same paper (Features'
+   bottom padding is the gap) and settles into Pricing's haze. */
+#tablets { padding-top: 0; background: linear-gradient(to bottom, var(--color-paper) 72%, var(--color-band)); }
+/* Each figure spans two shared rows (subgrid): the devices sit on one floor, the captions on one line below. */
+.ls-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.42fr); gap: var(--space-6) var(--space-4); }
+.ls-stage .ls-tablet { grid-column: 1 / -1; }
+@media (min-width: 64em) {
+  .ls-stage { grid-template-columns: minmax(0, 50fr) minmax(0, 36fr) minmax(0, 14fr); gap: clamp(var(--space-6), 3vw, var(--space-10)); }
+  .ls-stage .ls-tablet { grid-column: auto; }
+}
+.ls-dev { margin: 0; display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: var(--space-3); justify-items: center; min-width: 0; }
+/* The size container is this inner box: containment on the figure would switch its subgrid off. */
+.ls-box { width: 100%; align-self: end; container-type: inline-size; }
+.ls-dev figcaption { align-self: start; color: var(--color-ink-muted); font-size: var(--text-caption); line-height: 1.4; text-align: center; text-wrap: balance; }
+#tablets .lede { max-width: 34em; text-wrap: pretty; }
+.ls-frame {
+  position: relative; width: 100%; background: var(--color-device);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.75) inset, 0 0 0 max(1px, 0.25cqw) var(--color-device-edge), var(--shadow-device);
+}
+.ls-screen, .ls-half { overflow: hidden; background: var(--sb-bg, #10182B); }
+.ls-screen picture, .ls-screen img, .ls-shot img { display: block; width: 100%; height: auto; }
+.ls-crop { overflow: hidden; }
+/* Each half shows the whole capture at twice its width (one file for both). The 200 % box is .ls-shot, a div, so the
+   global reset's picture cap can't squeeze both panes into the left half (critic r1, P0), and the sharp copies line up
+   with the picture under them. */
+.ls-crop .ls-shot { width: 200%; }
+.ls-half-r .ls-crop .ls-shot { margin-left: -100%; }
+/* Principle 13, as on every phone screen (owner, 2026-11-27): never flat and whole. This band shows a layout, so it
+   uses a lighter version of the dialogs' focus (owner, 27 Nov): 1.5 px and barely dimmed, against 3 px and 80 %. The
+   rail and both panes read, the small text stays soft, and the story regions stay sharp (LargeScreens.astro lists them).
+   The folded phone, in the phone template, gets the same lighter softening. */
+#tablets { --ls-soft: blur(1.5px) saturate(0.95) brightness(0.92); }
+.ls-shot { position: relative; }
+.ls-shot > picture:first-child img, .ls-phone .device.is-focus .shot > picture:first-child img { filter: var(--ls-soft); }
+.ls-sharp { position: absolute; inset: 0; clip-path: inset(calc(var(--y) * 100%) calc((1 - var(--x) - var(--w)) * 100%) calc((1 - var(--y) - var(--h)) * 100%) calc(var(--x) * 100%) round 1.2cqw); }
+/* The wide status bars: the phone template's bar (9:41, icons; the time is drawn, not text), sized per device. */
+.statusbar-wide { display: flex; align-items: center; justify-content: space-between; background: var(--sb-bg, #10182B); color: var(--sb-ink, #F4F6FC); font-weight: 600; letter-spacing: -0.01em; line-height: 1; }
+.statusbar-wide .sb-icons { display: inline-flex; align-items: center; }
+.statusbar-wide .sb-icons svg { width: auto; fill: currentColor; }
+
+.ls-tablet .ls-frame { border-radius: 5.4cqw; padding: 2.9cqw; }
+.ls-tablet .ls-screen { border-radius: 2.6cqw; }
+.ls-cam { position: absolute; top: 1.05cqw; left: 50%; translate: -50% 0; width: 0.95cqw; aspect-ratio: 1; border-radius: 50%; background: #05070d; }
+.ls-tablet .statusbar-wide { height: 3.4cqw; padding: 0 2.3cqw; font-size: 1.8cqw; }
+.ls-tablet .statusbar-wide .sb-icons { gap: 0.8cqw; }
+.ls-tablet .statusbar-wide svg { height: 1.8cqw; }
+
+.ls-fold .ls-frame { border-radius: 5.2cqw; padding: 2.8cqw; perspective: 220cqw; }
+/* Behind the halves, the unlit inner screen: while the right half is still turned away, the device reads as folded,
+   not as a picture that failed to load (critic r2). */
+.ls-halves { display: grid; grid-template-columns: 1fr 1fr; background: var(--sb-bg, #10182B); border-radius: 2.6cqw; }
+.ls-half-l { border-radius: 2.6cqw 0 0 2.6cqw; }
+.ls-half-r { border-radius: 0 2.6cqw 2.6cqw 0; transform-origin: left center; backface-visibility: hidden; }
+.ls-fold .statusbar-wide { height: 4cqw; padding: 0 2.4cqw; font-size: 2.1cqw; }
+.ls-fold .statusbar-wide .sb-icons { gap: 0.9cqw; }
+.ls-fold .statusbar-wide svg { height: 2.1cqw; }
+/* The hinge shows only on the bezel; nothing is drawn on the screen. */
+.ls-hinge { position: absolute; left: 50%; translate: -50% 0; width: 5cqw; height: 0.85cqw; border-radius: 0.5cqw; background: var(--color-device-edge); }
+.ls-hinge-t { top: 0.95cqw; }
+.ls-hinge-b { bottom: 0.95cqw; }
+
+.ls-phone .device { --phone-w: 100cqw; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ls-half-r { transition: transform var(--dur-hero) var(--ease-emphasised), filter var(--dur-hero) var(--ease-emphasised); }
+  .ls-fold.is-folded .ls-half-r { transform: rotateY(-100deg); filter: brightness(0.55); }
+}
+
 /* ---------------------------------------------------------------- dialogs (feature details, the plan comparison) */
 .sheet {
   width: min(100% - 2 * var(--space-3), 46rem); max-width: none; max-height: min(100dvh - 2 * var(--space-3), 60rem); padding: 0;

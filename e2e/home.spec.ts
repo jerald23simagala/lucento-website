@@ -478,6 +478,103 @@ test.describe('homepage', () => {
     await expect(page.locator('#faq')).toContainText('Quick add widget');
   });
 
+  test('tablets and foldables: three real screens, honest captions, and the foldable opens once as it arrives', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const band = page.locator('#tablets');
+    // It sits between Features and Pricing.
+    const order = await page.evaluate(() => [...document.querySelectorAll('main > section[id]')].map((s) => s.id));
+    expect(order.indexOf('tablets')).toBe(order.indexOf('features') + 1);
+    expect(order.indexOf('pricing')).toBe(order.indexOf('tablets') + 1);
+    await expect(band.getByRole('heading', { level: 2 })).toHaveText('On a bigger screen, two views side by side.');
+    // A Galaxy Z Fold held upright keeps one pane, so the claim is "held in landscape" (lucento-android WW-5); a flip
+    // phone opened sideways keeps the phone layout, so it names foldables that open like a book.
+    await expect(band.locator('.lede')).toContainText('a foldable that opens like a book, in landscape');
+    await expect(band.locator('.lede')).not.toContainText('unfolded phone');
+    // The budget year is Pro, so the tablet's caption says so (principle 14).
+    await expect(band.locator('figcaption')).toHaveText(['Tablet, held in landscape (the budget year is Pro)', 'Foldable, unfolded in landscape', 'Folded: the phone app']);
+    // Three described captures. The foldable's second half and the focus treatment's sharp copies repeat a described
+    // file and stay silent.
+    const alts = await band.locator('img').evaluateAll((imgs) => imgs.map((img) => (img as HTMLImageElement).alt));
+    expect(alts.filter(Boolean)).toHaveLength(3);
+    await expect(band.locator('picture:not(.ls-sharp):not(.shot-sharp) > img')).toHaveCount(4);
+    await expect(band.locator('.device .statusbar')).toHaveCount(1);
+    // Folded only while below the screen; open once it arrives.
+    const fold = band.locator('[data-unfold]');
+    await expect(fold).toHaveClass(/is-folded/);
+    await fold.scrollIntoViewIfNeeded();
+    await expect(fold).not.toHaveClass(/is-folded/);
+    await expect.poll(() => fold.locator('.ls-half-r').evaluate((el) => getComputedStyle(el).transform), { timeout: 4000 }).toBe('none');
+    // Each half shows its own half of one capture: the image is twice the half's width, and the right half's image
+    // starts one half-width to the left, so "View wallet" fills the right half (critic r1: it was blank).
+    for (const side of ['l', 'r']) {
+      const [half, img] = await fold.locator(`.ls-half-${side}`).evaluate((el) => [el.getBoundingClientRect().toJSON(), el.querySelector('img')!.getBoundingClientRect().toJSON()]);
+      expect(img.width, side).toBeCloseTo(2 * half.width, 0);
+      expect(img.x, side).toBeCloseTo(side === 'l' ? half.x : half.x - half.width, 0);
+    }
+    for (const img of await band.locator('img').all()) {
+      await img.scrollIntoViewIfNeeded();
+      await expect.poll(() => img.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    }
+  });
+
+  test('tablets and foldables: without JavaScript, or with reduced motion, the foldable is simply open', async ({ browser }) => {
+    for (const options of [{ javaScriptEnabled: false }, { reducedMotion: 'reduce' as const }]) {
+      const context = await browser.newContext({ ...options, viewport: { width: 1440, height: 900 } });
+      const page = await context.newPage();
+      await page.goto('/');
+      const half = page.locator('#tablets .ls-half-r');
+      await expect(page.locator('#tablets [data-unfold]')).not.toHaveClass(/is-folded/);
+      expect(await half.evaluate((el) => getComputedStyle(el).transform)).toBe('none');
+      await context.close();
+    }
+  });
+
+  test('tablets and foldables: like every phone screen, none is flat and whole, and no file is larger than needed', async ({ page, request }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const band = page.locator('#tablets');
+    // Principle 13 (owner, 2026-11-27): the whole screen soft, one region per pane sharp. It's a lighter focus than the
+    // dialogs' (1.5 px against 3 px), so the layout reads.
+    for (const scope of ['.ls-tablet', '.ls-half-l', '.ls-half-r', '.ls-phone']) {
+      const base = band.locator(`${scope} :is(.ls-shot, .shot) > picture:first-child img`);
+      expect(await base.evaluate((el) => getComputedStyle(el).filter), scope).toContain('blur(1.5px)');
+    }
+    // What makes the layout legible stays sharp (owner, 27 Nov): the navigation, each pane's header, and one story region
+    // per pane. Each foldable half draws only the regions that reach into it.
+    const regions = (scope: string) =>
+      band.locator(scope).evaluateAll((els) =>
+        els.map((el) => Object.fromEntries(['x', 'y', 'w', 'h'].map((k) => [k, Number.parseFloat((el as HTMLElement).style.getPropertyValue(`--${k}`))]))),
+      );
+    for (const [scope, count] of [['.ls-tablet', 5], ['.ls-half-l', 3], ['.ls-half-r', 4]] as const) {
+      const sharp = band.locator(`${scope} .ls-sharp`);
+      await expect(sharp, scope).toHaveCount(count);
+      for (const copy of await sharp.all()) {
+        expect(await copy.evaluate((el) => getComputedStyle(el).clipPath), scope).toContain('inset(');
+        await expect(copy.locator('img')).toHaveAttribute('alt', '');
+      }
+    }
+    for (const scope of ['.ls-tablet', '.ls-fold']) {
+      const r = await regions(`${scope} .ls-sharp`);
+      expect(r.some((b) => b.x < 0.01 && b.h > 0.9), `${scope}: the rail`).toBe(true);
+      expect(new Set(r.filter((b) => b.y <= 0.03 && b.h < 0.2).map((b) => b.x)).size, `${scope}: both headers`).toBe(2);
+    }
+    await expect(band.locator('.ls-phone .device')).toHaveClass(/is-focus/);
+    const phone = await regions('.ls-phone .shot-sharp');
+    expect(phone.some((b) => b.y <= 0.03), 'the phone: its header').toBe(true);
+    expect(phone.some((b) => b.y >= 0.85 && b.w > 0.9), 'the phone: its dock').toBe(true);
+    // Files stop at about twice the largest width each device is shown at: tablet 600 px, foldable 420, phone 160 (560
+    // files, the dialogs' cap).
+    const largest = (scope: string) =>
+      band.locator(`${scope} source, ${scope} img`).evaluateAll((els) =>
+        Math.max(...els.flatMap((el) => (el.getAttribute('srcset') ?? '').split(',').map((part) => Number.parseInt(part.trim().split(/\s+/)[1] ?? '', 10) || 0))),
+      );
+    expect(await largest('.ls-tablet')).toBe(1200);
+    expect(await largest('.ls-fold')).toBe(840);
+    expect(await largest('.ls-phone')).toBe(560);
+    expect((await request.get('/screens/l-fold-wallets-1000.webp')).status()).toBe(404);
+  });
+
   test('the FAQ opens, and its structured data matches it', async ({ page }) => {
     await page.goto('/');
     const first = page.locator('.faq details').first();

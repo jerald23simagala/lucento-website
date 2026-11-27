@@ -173,6 +173,13 @@ export const faq: FaqGroup[] = [
         q: 'What does the AI do, and what does it send?',
         a: 'Ask Lucento’s reports work out your figures on your phone, send nothing, and are free. Two features use Google’s Gemini. The AI adviser in Ask Lucento is on once you sign in (5 questions a month on Free, 45 a month with Pro), but nothing is sent until you confirm your first question; then it sends your question with a summary of your finances, including your transactions from the last 60 days, and you can turn it off any time. Smarter reading, with Pro, stays off until you turn it on in Settings; each message then uses one of those questions and is sent with today’s date, your main currency and your category and wallet names. Lucento uses Gemini’s free service for now, so Google may keep what it receives to improve its products, and people at Google may read it.',
       },
+      {
+        // lucento-android navigation/NavLayout.kt: split from 804 dp wide, rail from 600 dp; read on a real Galaxy Z
+        // Fold7 (832 dp in landscape, 750 upright) and Fold8 (933 dp in landscape), KNOWN_ISSUES WW-5. Under 480 dp tall
+        // (a flip phone opened sideways) it keeps the dock; large tablets can split upright too, so only "smaller".
+        q: 'Does Lucento work on tablets and foldables?',
+        a: 'Yes. On a tablet, or a foldable that opens like a book (such as a Galaxy Z Fold), held in landscape, Lucento shows a side menu and two panes: the screen you’re on stays on the left and what you open appears beside it. Held upright, a Galaxy Z Fold or a smaller tablet shows one pane beside the menu. Flip phones, and any foldable when it’s folded, use the phone layout. It’s the same app with the same records in every layout.',
+      },
     ],
   },
   {

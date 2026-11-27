@@ -32,7 +32,8 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
 9. **Motion tells the story or stays still.** Allowed: the hero's one-time rise, single light sweep, slow float
    and drift of the supporting phones and gentle scroll parallax (transform only; paused off screen), the theme
    crossfade, the replica's rows arriving and its screen change after Save, a dialog rising into place, the newest
-   Shared row lighting on both phones. Since 2026-11-13/14 (owner: keep the original layout, add
+   Shared row lighting on both phones, the foldable in Tablets and foldables opening once as it arrives (owner,
+   2026-11-27; folded only while below the screen, so nothing waits and nothing is hidden without JavaScript). Since 2026-11-13/14 (owner: keep the original layout, add
    effects) also: the section heads below the first screen easing in once (`Reveal.astro`, on the motion tokens;
    nothing on the first screen waits; nothing is hidden without JavaScript or from keyboard focus), cards lifting on
    hover and answering a press (hover only on devices that hover), and the hero's warmer light and deeper phones. Not
@@ -54,8 +55,15 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
     `focus` (one region sharp, the rest soft), `angle` (turned in space) and `lift` (key pieces raised out of a soft,
     dim screen; Multicurrency and Budget). Pairs are window + angle; single phones are focus or lift; the theme
     switcher is angled. Dialog screens stop at 560 px files. The footer says "App screens © Lucento".
+    The tablets band follows the same rule (owner, 2026-11-27): every device there uses `focus`. The band sells the
+    layout, so what makes the layout legible stays sharp (owner, 27 Nov): the navigation (the rail; the folded phone's
+    dock), each pane's header, and one story region per pane (the tablet's budget card and budget year, the foldable's
+    net worth and the wallet it opened, the folded phone's net worth). Its softening is lighter than the dialogs':
+    1.5 px, dimmed to 92 %, against 3 px and 80 %. Its files stop at about twice the largest width a device is shown at:
+    tablet 1200 px (600), foldable 840 px (420). The folded phone keeps the dialogs' 560 px cap.
 14. **Premium, modern, confident, honest.** Every claim is checked against the app; signed amounts use U+2212; Pro
-    features are tagged Pro; limits are the app's exact numbers.
+    features are tagged Pro; limits are the app's exact numbers. The demo month's figures are shown unlabelled, the
+    same rule as the Play screenshots (owner, 2026-11-27).
 
 ## System
 
@@ -95,6 +103,18 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
    and the policy) · **Security and privacy** (owner review 3): lock, hide amounts (a real switch between two captures
    from one run), recents, backups, and what leaves the phone in the policy's words (every send path, linked to
    /privacy). Links to a dialog (`/#about-debts`) open it as a modal.
+3b. Tablets and foldables (owner, 2026-11-27, approved from a preview; `LargeScreens.astro`): the app's wide-window
+   layout in three real captures, in the phone template's light frame family on one floor: a tablet held sideways
+   (the Dashboard with Milestones open; captioned "The budget year is Pro"), a foldable unfolded in landscape (Wallets
+   with a wallet open; its right half swings open once as the band arrives) and the folded phone (the Dashboard: the
+   hero's own `s-dashboard`, so no capture is published twice). The
+   copy says "Hold a tablet, or a foldable that opens like a book, in landscape": a Galaxy Z Fold or a smaller tablet
+   held upright keeps one pane, and a flip phone opened sideways (under 480 dp tall) keeps the phone layout
+   (lucento-android `NavLayout.kt`, split from 804 dp; read on a real Galaxy Z Fold7 and Fold8, KNOWN_ISSUES WW-5).
+   The unfold runs on `--dur-hero`. Every screen in the band is lightly soft except its navigation, its pane
+   headers and one story region per pane (principle 13).
+   Not in the header
+   (it isn't a section people jump to). Goes live only with an app release that has the split screen (PR #158).
 4. Pricing: Free, Pro and Pro Lifetime. Pro opens on yearly with its saving (Save 33%, ₱598 less than monthly for a
    year, computed from the prices); Lifetime has Pro's premium treatment in gold. What happens after buying and if
    Pro ends; the full comparison opens in a dialog. Nothing on the site promises "no ads" (ads may come to Free;
@@ -152,6 +172,8 @@ site screen comes from one shot:
 | `f-loan` | tour › `12c-wallet-loan` |
 | `f-wallet-adjust` | tour › `12f-wallet-bank` |
 | `f-schedules` | tour › `18c-recurring-schedules` |
+| `l-tablet-milestones` | `capture_tablet.sh` › `t03-home-milestones` (Pixel Tablet 2560 × 1600; status bar 48 px and gesture bar 64 px cropped; 720 and 1200 px) |
+| `l-fold-wallets` | `capture_foldable.sh` › `wide-wallets` (2688 × 2016 at 420 dpi; bars from `wide.txt`, 63 and 84 px; 640 and 840 px). Raw captures: lucento-studio `lab/captures/2026-11-27-large-screens/` |
 | `f-shown`, `f-hidden` | showcase › `home-shown`, `home-hidden` |
 | `mc-rows` | showcase › `mc-wallets-rows` |
 | `t-<theme>-<mode>` | showcase › `theme-<theme>-<mode>` |

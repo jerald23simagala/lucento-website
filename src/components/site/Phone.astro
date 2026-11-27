@@ -6,7 +6,8 @@
  *
  * Treatments (owner, 2026-11-08: show what Lucento does without handing over a blueprint of every screen):
  * - `window`: the top of the screen tells the story; the rest fades into the frame.
- * - `focus`: one region (`region`, as fractions x, y, w, h of the screen) sharp; the rest softly out of focus.
+ * - `focus`: one region (`region`, as fractions x, y, w, h of the screen) sharp; the rest softly out of focus. A few
+ *   more can go in `regions` (the tablets band keeps the header and the dock sharp too).
  * - `angle`: the phone turned slightly in space, catching the light.
  * - `lift`: the screen dimmed and soft, with the regions in `lifts` raised out of it, sharp.
  * The sharp and lifted copies use the same sources as the screen, so the browser downloads one file.
@@ -24,12 +25,15 @@ interface Props {
   class?: string;
   treatment?: 'window' | 'focus' | 'angle' | 'lift';
   region?: Region;
+  /** More sharp regions for `focus`, beside `region`. */
+  regions?: readonly Region[];
   lifts?: readonly Region[];
   /** Largest file width to offer (560 keeps detail down where the phone is small). */
   max?: 560 | 720;
 }
 
-const { file, alt, sizes = '(min-width: 64em) 330px, 66vw', eager = false, class: extra, treatment, region, lifts = [], max = 720 } = Astro.props;
+const { file, alt, sizes = '(min-width: 64em) 330px, 66vw', eager = false, class: extra, treatment, region, regions = [], lifts = [], max = 720 } = Astro.props;
+const sharp = treatment === 'focus' ? [...(region ? [region] : []), ...regions] : [];
 const widths = [400, 560, 720].filter((w) => w <= max);
 const set = (format: 'avif' | 'webp') => widths.map((w) => `/screens/${file}-${w}.${format} ${w}w`).join(', ');
 const src = `/screens/${file}-560.webp`;
@@ -55,12 +59,12 @@ const vars = ([x, y, w, h]: Region) => `--x:${x};--y:${y};--w:${w};--h:${h}`;
         />
       </picture>
       {
-        treatment === 'focus' && region && (
-          <picture class="shot-sharp" style={vars(region)}>
+        sharp.map((r) => (
+          <picture class="shot-sharp" style={vars(r)}>
             <source type="image/avif" srcset={set('avif')} sizes={sizes} />
             <img src={src} srcset={set('webp')} sizes={sizes} width={SCREEN_W} height={SCREEN_H} alt="" decoding="async" loading="lazy" />
           </picture>
-        )
+        ))
       }
     </div>
   </div>
