@@ -481,10 +481,12 @@ test.describe('homepage', () => {
     expect(order.indexOf('tablets')).toBe(order.indexOf('features') + 1);
     expect(order.indexOf('pricing')).toBe(order.indexOf('tablets') + 1);
     await expect(band.getByRole('heading', { level: 2 })).toHaveText('On a bigger screen, two views side by side.');
-    // A Galaxy Z Fold held upright keeps one pane, so the claim is "held in landscape" (lucento-android WW-5).
-    await expect(band.locator('.lede')).toContainText('held in landscape');
+    // A Galaxy Z Fold held upright keeps one pane, so the claim is "held in landscape" (lucento-android WW-5); a flip
+    // phone opened sideways keeps the phone layout, so it names foldables that open like a book.
+    await expect(band.locator('.lede')).toContainText('a foldable that opens like a book, held in landscape');
+    await expect(band.locator('.lede')).not.toContainText('unfolded phone');
     // The budget year is Pro, so the tablet's caption says so (principle 14).
-    await expect(band.locator('figcaption')).toHaveText(['Tablet, held sideways. The budget year is Pro.', 'Foldable, unfolded in landscape', 'Folded: the phone app']);
+    await expect(band.locator('figcaption')).toHaveText(['Tablet, held in landscape. The budget year is Pro.', 'Foldable, unfolded in landscape', 'Folded: the phone app']);
     // Three described captures; the foldable's second half repeats the first half's file and stays silent.
     const alts = await band.locator('img').evaluateAll((imgs) => imgs.map((img) => (img as HTMLImageElement).alt));
     expect(alts.filter(Boolean)).toHaveLength(3);
@@ -496,6 +498,13 @@ test.describe('homepage', () => {
     await fold.scrollIntoViewIfNeeded();
     await expect(fold).not.toHaveClass(/is-folded/);
     await expect.poll(() => fold.locator('.ls-half-r').evaluate((el) => getComputedStyle(el).transform), { timeout: 4000 }).toBe('none');
+    // Each half shows its own half of one capture: the image is twice the half's width, and the right half's image
+    // starts one half-width to the left, so "View wallet" fills the right half (critic r1: it was blank).
+    for (const side of ['l', 'r']) {
+      const [half, img] = await fold.locator(`.ls-half-${side}`).evaluate((el) => [el.getBoundingClientRect().toJSON(), el.querySelector('img')!.getBoundingClientRect().toJSON()]);
+      expect(img.width, side).toBeCloseTo(2 * half.width, 0);
+      expect(img.x, side).toBeCloseTo(side === 'l' ? half.x : half.x - half.width, 0);
+    }
     for (const img of await band.locator('img').all()) {
       await img.scrollIntoViewIfNeeded();
       await expect.poll(() => img.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);

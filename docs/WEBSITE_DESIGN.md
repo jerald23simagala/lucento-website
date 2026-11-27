@@ -100,8 +100,10 @@ requirement; the app links to it) and `/auth/confirmed` (the sign-up email lands
    layout in three real captures, in the phone template's light frame family on one floor: a tablet held sideways
    (the Dashboard with Milestones open; captioned "The budget year is Pro"), a foldable unfolded in landscape (Wallets
    with a wallet open; its right half swings open once as the band arrives) and the folded phone (the Dashboard). The
-   copy says "held in landscape": a tablet or a Galaxy Z Fold held upright keeps one pane (lucento-android
-   `NavLayout.kt`, split from 804 dp; read on a real Galaxy Z Fold7 and Fold8, KNOWN_ISSUES WW-5). Not in the header
+   copy says "a tablet, or a foldable that opens like a book, held in landscape": a Galaxy Z Fold or a smaller tablet
+   held upright keeps one pane, and a flip phone opened sideways (under 480 dp tall) keeps the phone layout
+   (lucento-android `NavLayout.kt`, split from 804 dp; read on a real Galaxy Z Fold7 and Fold8, KNOWN_ISSUES WW-5).
+   The unfold runs on `--dur-hero`. Not in the header
    (it isn't a section people jump to). Goes live only with an app release that has the split screen (PR #158).
 4. Pricing: Free, Pro and Pro Lifetime. Pro opens on yearly with its saving (Save 33%, ₱598 less than monthly for a
    year, computed from the prices); Lifetime has Pro's premium treatment in gold. What happens after buying and if
