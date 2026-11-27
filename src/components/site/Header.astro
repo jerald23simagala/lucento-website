@@ -19,7 +19,7 @@ const links = [
     <nav class="nav" aria-label="Sections">
       {links.map((link) => <a href={link.href}>{link.label}</a>)}
     </nav>
-    <div class="header-cta"><PlayCta compact /></div>
+    <div class="header-cta"><PlayCta compact place="header" /></div>
     <details class="menu" data-menu>
       <summary aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="menu-word">Menu</span></summary>
       <nav class="menu-panel" aria-label="Sections">
