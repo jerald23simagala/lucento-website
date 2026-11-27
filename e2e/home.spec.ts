@@ -1,3 +1,4 @@
+import { readdirSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { faq, foreignWallets, looks, netWorthWithForeign, screens } from '../src/data/content';
 import { compareGroups, planCards } from '../src/data/plans';
@@ -158,6 +159,10 @@ test.describe('homepage', () => {
       expect((await request.get(`/screens/${file}-560.webp`)).status(), file).toBe(404);
     }
     for (const file of ['f-shown-720.webp', 'f-hidden-720.webp']) expect((await request.get(`/screens/${file}`)).status(), file).toBe(404);
+    // And nothing else: every file in public/screens is one the page shows (principle 13), so a dialog screen has no
+    // 720 px file and no unused capture is published.
+    const unused = readdirSync(new URL('../public/screens/', import.meta.url)).filter((file) => !html.includes(`/screens/${file}`));
+    expect(unused).toEqual([]);
     await expect(page.locator('.matrix')).toHaveCount(0);
   });
 
@@ -281,17 +286,18 @@ test.describe('homepage', () => {
     const list = sim.locator('[data-screen="list"]');
     await expect(list).not.toHaveAttribute('aria-hidden', 'true');
     await expect(list.locator('.sim-snack')).toHaveText('3 transactions saved');
-    // The demo month (11 transactions, expenses −₱22,979.90) with the three rows added.
-    await expect(list.locator('.sim-count')).toContainText('14 transactions');
-    await expect(list.locator('.sim-sums')).toContainText(`${MINUS}₱24,609.90`);
-    await expect(list.locator('.sim-sums')).toContainText('+₱17,390.10');
+    // The demo month (10 transactions, expenses −₱7,979.90) with the three rows added.
+    await expect(list.locator('.sim-count')).toContainText('13 transactions');
+    await expect(list.locator('.sim-sums')).toContainText(`${MINUS}₱9,609.90`);
+    await expect(list.locator('.sim-sums')).toContainText('+₱32,390.10');
     await expect(list.locator('.sim-dayhead')).toContainText(`${MINUS}₱3,995.90`);
+    await expect(demo.locator('[data-say]')).toContainText('Transactions now shows 13 this month');
     await expect(list.locator('.sim-tx').first()).toContainText('Shampoo');
     await expect(list.locator('.sim-tx').first()).toContainText('Personal care');
     // And again, from the start.
     await demo.getByRole('button', { name: 'Try it again' }).click();
     await expect(demo).toHaveAttribute('data-state', 'ready');
-    await expect(list.locator('.sim-count')).toContainText('11 transactions');
+    await expect(list.locator('.sim-count')).toContainText('10 transactions');
     await expect(demo.getByRole('button', { name: 'Send it' })).toBeFocused();
   });
 
@@ -415,9 +421,9 @@ test.describe('homepage', () => {
     await expect(rows.nth(1)).toContainText('₱66,108.00');
     await expect(rows.nth(2)).toContainText('¥60,000');
     await expect(rows.nth(2)).toContainText('₱22,950.00');
-    // The demo month's net worth (₱62,120.10) plus the three conversions.
-    expect(6_212_010 + foreignWallets.reduce((sum, w) => sum + w.pesoMinor, 0)).toBe(netWorthWithForeign);
-    await expect(page.locator('.fx-total b')).toHaveText('₱258,108.10');
+    // The demo month's net worth (₱232,350.10) plus the three conversions, as mc-home and mc-rows show it.
+    expect(23_235_010 + foreignWallets.reduce((sum, w) => sum + w.pesoMinor, 0)).toBe(netWorthWithForeign);
+    await expect(page.locator('.fx-total b')).toHaveText('₱428,338.10');
     // Signed amounts use U+2212.
     const money = await page.locator('.money').allTextContents();
     expect(money.some((t) => t.startsWith(MINUS))).toBe(true);

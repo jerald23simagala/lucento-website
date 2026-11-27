@@ -32,9 +32,11 @@ test('whole units feed the chart proportions', () => {
 });
 
 test('the demo month reconciles with the app screenshots', () => {
-  assert.equal(formatMinor(haveTotal), '₱176,520.10'); // Dashboard: Wallets
-  assert.equal(formatMinor(-oweTotal), '−₱114,400.00'); // Dashboard: Debt & Loans
-  assert.equal(formatMinor(netWorth), '₱62,120.10'); // Dashboard: net wallet balance
+  assert.equal(formatMinor(haveTotal), '₱346,750.10'); // Dashboard: Assets
+  assert.equal(formatMinor(-oweTotal), '−₱114,400.00'); // Dashboard: Debts & loans
+  assert.equal(formatMinor(netWorth), '₱232,350.10'); // Dashboard: Net worth
+  assert.equal(formatMinor(demo.budget.spent), '₱7,979.90'); // Dashboard: Monthly budget, spent
+  assert.equal(formatMinor(demo.budget.limit), '₱25,900.00'); // … of the budget
   assert.equal(sumMinor(demo.composer.rows.map((r) => r.minor)), demo.composer.expensesSoFar); // composer save bar
 });
 
